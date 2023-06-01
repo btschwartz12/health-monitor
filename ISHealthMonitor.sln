@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISHealthMonitor.UI", "ISHealthMonitor\ISHealthMonitor.UI.csproj", "{5A670674-1E01-4359-A66A-0B66A0F6A993}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISHealthMonitor.Core", "ISHealthMonitor.Core\ISHealthMonitor.Core.csproj", "{51A75E29-D10C-43A4-95FD-CD9048222742}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5A670674-1E01-4359-A66A-0B66A0F6A993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A670674-1E01-4359-A66A-0B66A0F6A993}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A670674-1E01-4359-A66A-0B66A0F6A993}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A670674-1E01-4359-A66A-0B66A0F6A993}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51A75E29-D10C-43A4-95FD-CD9048222742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51A75E29-D10C-43A4-95FD-CD9048222742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51A75E29-D10C-43A4-95FD-CD9048222742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51A75E29-D10C-43A4-95FD-CD9048222742}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E6246F9D-5DA6-437A-B9BF-8989C6F554F8}
+	EndGlobalSection
+EndGlobal

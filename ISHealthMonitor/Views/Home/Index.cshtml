@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="container" id="divLoading">
+    <div class="row">
+        <div class="form-group col-12">
+            <div style="display:inline-block; margin-left: 20px;">
+                Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-12" style="margin-left:50px;">
+            <table id="siteTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+        </div>
+
+    </div>
+</div>
+@section Scripts{
+    <script src="~/js/chosen/chosen.jquery.js"></script>
+
+    <script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
+    <script>
+		var buttonCommon = {
+			exportOptions: {
+				columns: [0, 1, 2, 3]
+			}
+		};
+
+		var formResults;
+        formResults = $('#siteTable').DataTable({
+
+			"autoWidth": false,
+			"scrollX": true,
+			"columns": [
+				{ "sTitle": "SiteName", "data": "SiteName" },
+				{ "sTitle": "ID", "data": "id" },
+				{ "sTitle": "SiteURL", "data": "SiteURL" },
+				{ "sTitle": "Action", "data": "Action" }
+				
+			],
+			dom: 'Bfrtip',
+			lengthMenu: [
+				[10, 50, 100, -1],
+				['10', '50', '100', 'All']
+			],
+			buttons: [
+				'pageLength',
+				$.extend(true, {}, buttonCommon, {
+					extend: 'copyHtml5',
+					title: "Training Billing Discounts"
+				}),
+				$.extend(true, {}, buttonCommon, {
+					extend: 'excelHtml5',
+					title: "Training Billing Discounts"
+				}),
+				$.extend(true, {}, buttonCommon, {
+					extend: 'pdfHtml5',
+					title: "Training Billing Discounts",
+					orientation: 'landscape',
+					customize: function (doc) {
+						doc.pageMargins = [5, 5, 0, 0];
+						doc.defaultStyle.fontSize = 8;
+						doc.styles.tableHeader.fontSize = 9;
+					}
+				})
+			]
+		});
+
+        DATATABLE_REQUESTS.LoadTable('all');
+    </script>
+}

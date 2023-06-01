@@ -1,0 +1,61 @@
+﻿@model ISHealthMonitor.Core.Models.DTO.CertificateDTO
+@{
+    ViewData["Title"] = "Configuration";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Update Confluence</p>
+<input type="submit" class="btn btn-primary" value="Update Confluence" />
+<div class="row">
+    <div class="col-sm-6 mainContentWrapper">
+        <div class="well">
+            
+                <fieldset>
+
+                    <h4>Add Site</h4>
+                    <hr />
+
+                    <section>
+
+                        <div class="form-group">
+                            Configure Hangfire Interval For Checking Sites SSL
+                            @Html.LabelFor(m => m.SiteName, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.SiteName, new { @class = "form-control" })
+                        </div>
+                    <div class="form-group">
+                        Configure Hangfire Interval For Checking Sites Azure Expiry date
+                        @Html.LabelFor(m => m.SiteName, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.SiteName, new { @class = "form-control" })
+                    </div>
+                        <div class="form-group">
+                            Email Group
+                            @Html.LabelFor(m => m.SiteName, new { @class = "control-label" })
+                            @Html.TextBoxFor(m => m.SiteName, new { @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            First Email Interval(months)
+                            @Html.LabelFor(m => m.SiteURL, new { @class = "control-label" })
+                            @*@Html.DropDownList(m => m.SiteURL, new {type = "url", @class = "form-control" })*@
+                        </div>
+                    <div class="form-group">
+                        Second Email Interval(weeks)
+                        @Html.LabelFor(m => m.SiteURL, new { @class = "control-label" })
+                        @*@Html.DropDownList(m => m.SiteURL, new {type = "url", @class = "form-control" })*@
+                    </div>
+                    <div class="form-group">
+                        Final Email Interval(days)
+                        @Html.LabelFor(m => m.SiteURL, new { @class = "control-label" })
+                       @* @Html.DropDownList(m => m.SiteURL, new {type = "url", @class = "form-control" })*@
+                    </div>
+
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary" value="Save" />
+                           
+                        </div>
+                    </section>
+                </fieldset>
+        </div>
+    </div>
+
+</div>
+
