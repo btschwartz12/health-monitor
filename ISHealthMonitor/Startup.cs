@@ -14,6 +14,9 @@ using System.Linq;
 using ISHealthMonitor.Core.Data.Contexts;
 using ISHealthMonitor.Core.DataAccess;
 using Microsoft.AspNetCore.Server.IISIntegration;
+using ISHealthMonitor.Core.Implementations;
+using ISHealthMonitor.UI.Auth;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ISHealthMonitor
 {
@@ -29,16 +32,34 @@ namespace ISHealthMonitor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllersWithViews();
+            services.AddSwaggerGen();
+
+            // Auth
+            services.AddAuthentication(IISDefaults.AuthenticationScheme);
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.Requirements.Add(new AdminRequirement()));
+            });
+            services.AddScoped<IAuthorizationHandler, AdminRequirementHandler>();
+
+
+            // Confluence
             Configuration.Bind("ConfluenceCloudApp", ConfluenceAPISettingsConfig);
             services.AddSingleton(ConfluenceAPISettingsConfig);
  
-            services.AddTransient<IHealthModel, HealthModel>();
+            // Db
             services.AddDbContext<IACMSEntityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ISHealthCheckDatabase")));
-            services.AddControllersWithViews();
-            services.AddSwaggerGen();
-            services.AddAuthentication(IISDefaults.AuthenticationScheme);
-         
-        }
+            services.AddDbContext<DatawarehouseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DatawarehouseConnection")));
+            
+            // Interfaces
+            services.AddTransient<IEmployee, Employee>();
+            services.AddTransient<IHealthModel, HealthModel>();
+
+
+            
+
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

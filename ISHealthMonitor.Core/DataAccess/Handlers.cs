@@ -15,8 +15,9 @@ namespace ISHealthMonitor.Core.Models
     {
         private HttpClientHandler _handler;
         private HttpClient _client;
-        public async Task<CertificateDTO> CheckAzureSiteAsync(string siteURL)
+        public async Task<CertificateDTO> CheckSSLSiteAsync(string siteURL)
         {
+
             var retModel = new CertificateDTO();
 
             _handler = new HttpClientHandler

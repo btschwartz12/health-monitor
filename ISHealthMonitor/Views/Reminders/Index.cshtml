@@ -1,0 +1,162 @@
+﻿@{
+	ViewData["Title"] = "Reminders Page";
+	ViewData["UserName"] = ViewBag.UserName;
+	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
+}
+
+
+<div class="container">
+	<div id="reminderAddEditModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Reminder Wizard</b>
+				</div>
+
+				<div class="modal-body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="reminderDeleteModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Delete Site</b>
+				</div>
+
+				<div class="modal-body">
+					<input type="hidden" value="" id="reminderToDeleteId" />
+					<div class="text-center">
+						<p>Are you sure you want to delete this reminder?</p>
+						<button class="btn btn-danger" id="deleteSiteYes" onclick="deleteReminder()">Delete</button>
+						<button class="btn btn-warning" onclick="toggleReminderDeleteModal()">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="container" id="divLoading">
+	<div class="row">
+		<div class="form-group col-12">
+			<div style="display:inline-block; margin-left: 20px;">
+				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-12 col-md-8">
+			<a onclick="showReminderAddEditModal(0)" class="btn btn-primary btn-block">Add Reminder</a>
+		</div>
+	</div>
+	<hr />
+	<div class="row">
+		<div class="col-12" style="margin-left:50px;">
+			<table id="reminderTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+		</div>
+
+	</div>
+</div>
+@section Scripts{
+
+	<script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
+	<script>
+		var buttonCommon = {
+			exportOptions: {
+				columns: [0, 1, 2, 3]
+			}
+		};
+
+		remindersDataTable = $('#reminderTable').DataTable({
+
+			"autoWidth": false,
+			"scrollX": true,
+			"columns": [
+				{ "sTitle": "UserName", "data": "UserName" },
+				{ "sTitle": "ID", "data": "ID" },
+				{ "sTitle": "SiteID", "data": "ISHealthMonitorSiteID" },
+				{ "sTitle": "IntervalID", "data": "ISHealthMonitorIntervalID" },
+				{ "sTitle": "GroupID", "data": "ISHealthMonitorGroupSubmissionID" },
+				{ "sTitle": "Action", "data": "Action" }
+
+			],
+			dom: 'Bfrtip',
+			lengthMenu: [
+				[10, 50, 100, -1],
+				['10', '50', '100', 'All']
+			],
+			buttons: [
+				'pageLength',
+				$.extend(true, {}, buttonCommon, {
+					extend: 'copyHtml5',
+					title: "Training Billing Discounts"
+				}),
+				$.extend(true, {}, buttonCommon, {
+					extend: 'excelHtml5',
+					title: "Training Billing Discounts"
+				}),
+				$.extend(true, {}, buttonCommon, {
+					extend: 'pdfHtml5',
+					title: "Training Billing Discounts",
+					orientation: 'landscape',
+					customize: function (doc) {
+						doc.pageMargins = [5, 5, 0, 0];
+						doc.defaultStyle.fontSize = 8;
+						doc.styles.tableHeader.fontSize = 9;
+					}
+				})
+			]
+		});
+
+		DATATABLE_REQUESTS.LoadRemindersTable('all');
+	</script>
+
+	<script>
+
+
+		function showReminderAddEditModal(id) {
+			var formDiv = $('#reminderAddEditModal .modal-body');
+			var url = "@Url.Action("AddEdit", "Reminders")" + "?id=" + id;
+
+			$.get(url)
+				.done(function (response) {
+					formDiv.html(response);
+					$('#reminderAddEditModal').modal('show');
+				});
+		}
+
+		function hideReminderAddEditModal() {
+			$('#reminderAddEditModal').modal('hide');
+		}
+
+		function showReminderDeleteModal(id) {
+			$('#reminderToDeleteId').val(id);
+			$('#reminderDeleteModal').modal('show');
+		}
+
+		function toggleReminderDeleteModal(id) {
+			$('#reminderDeleteModal').modal('toggle');
+		}
+
+		function deleteReminder() {
+			var id = $('#reminderToDeleteId').val();
+			$.ajax({
+				type: "PUT",
+				url: '/api/RemindersApi/DeleteReminder?id=' + id,
+				success: function (data) {
+					if (data) {
+						$("#reminderDeleteModal").modal('hide');
+						DATATABLE_REQUESTS.LoadRemindersTable();
+					}
+				}
+			});
+		}
+
+	</script>
+}

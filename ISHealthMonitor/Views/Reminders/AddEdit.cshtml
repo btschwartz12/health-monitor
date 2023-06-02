@@ -1,0 +1,40 @@
+﻿@model ISHealthMonitor.Core.Data.DTO.UserReminderDTO
+
+@{
+    Layout = null;
+}
+
+
+<form id="reminderForm" onsubmit="return SubmitCreateReminderForm()">
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="ISHealthMonitorSiteID" class="control-label"></label>
+            <input asp-for="ISHealthMonitorSiteID" class="form-control" />
+            <span asp-validation-for="ISHealthMonitorSiteID" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="ISHealthMonitorIntervalID" class="control-label"></label>
+            <input asp-for="ISHealthMonitorIntervalID" class="form-control" />
+            <span asp-validation-for="ISHealthMonitorIntervalID" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="ISHealthMonitorGroupSubmissionID" class="control-label"></label>
+            <input asp-for="ISHealthMonitorGroupSubmissionID" class="form-control" />
+            <span asp-validation-for="ISHealthMonitorGroupSubmissionID" class="text-danger"></span>
+        </div>
+    </div>
+
+    <input asp-for="ID" type="hidden" />
+
+    <div class="form-group d-flex justify-content-center">
+        <button type="submit" class="btn btn-success mr-3">Submit</button>
+        <button type="reset" onclick="hideReminderAddEditModal()" class="btn btn-warning mr-3">Cancel</button>
+        
+    </div>
+</form>

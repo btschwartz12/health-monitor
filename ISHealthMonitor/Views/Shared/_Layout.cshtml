@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/datatables/jquery.dataTables.min.css" />
     <link rel="stylesheet" href="~/lib/datatables/buttons.dataTables.min.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrapV5/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/selectize.bootstrap2.css" />
     <link rel="stylesheet" href="~/css/font-awesome.min.css" />
+
+    <script src="https://kit.fontawesome.com/b38e3673b1.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header>
@@ -23,13 +26,26 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AddEditSSLSite">Add SSL Site</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="Index">All Sites</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AddEditAzureSite">Add Azure Site</a>
+                        @if (ViewData.ContainsKey("UserIsAdmin") && bool.TryParse(ViewData["UserIsAdmin"].ToString(), out bool isAdmin) && isAdmin)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="Index">All Reminders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="ReminderIntervals" asp-action="Index">All Intervals</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">All Users</a>
+                            </li>
+                        }
+                        <li class="nav-item ml-auto">
+                            <span class="nav-link text-dark">@ViewData["UserName"]@((ViewData.ContainsKey("UserIsAdmin") && bool.TryParse(ViewData["UserIsAdmin"].ToString(), out bool isAdmin2) && isAdmin2) ? " (admin)" : "")</span>
                         </li>
                     </ul>
                 </div>
+
             </div>
         </nav>
     </header>
@@ -45,9 +61,14 @@
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrapV5/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    <script src="~/js/selectize.js" asp-append-version="true"></script>
+    <script src="~/js/ConfigurationForm.js" asp-append-version="true"></script>
     <script src="~/lib/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <link href="~/js/chosen/chosen.css" rel="stylesheet" type="text/css" />
     <link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet" type="text/css" />
 
@@ -60,6 +81,9 @@
     <script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/buttons.html5.min.js"></script>
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/buttons.print.min.js"></script>
+
+
+    <script src="~/js/AddEditForms.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

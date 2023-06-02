@@ -1,0 +1,177 @@
+﻿@{
+	ViewData["Title"] = "Sites Page";
+	ViewData["UserName"] = ViewBag.UserName;
+	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
+}
+
+
+<div class="container">
+	<div id="siteAddEditModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Site Wizard</b>
+				</div>
+
+				<div class="modal-body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="siteDeleteModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Delete Site</b>
+				</div>
+
+				<div class="modal-body">
+					<input type="hidden" value="" id="siteToDeleteId" />
+					<div class="text-center">
+						<p>Are you sure you want to delete this site?</p>
+						<button class="btn btn-danger" id="deleteSiteYes" onclick="deleteSite()">Delete</button>
+						<button class="btn btn-warning" onclick="toggleSiteDeleteModal()">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="container" id="divLoading">
+	<div class="row">
+		<div class="form-group col-12">
+			<div style="display:inline-block; margin-left: 20px;">
+				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container">
+	@if (ViewBag.UserIsAdmin)
+	{
+		<div class="row justify-content-center">
+			<div class="col-12 col-md-8">
+				<a onclick="showSiteAddEditModal(0)" class="btn btn-primary btn-block">Add Site</a>
+			</div>
+		</div>
+		<hr />
+	}
+	
+	<div class="row">
+		<div class="col-12" style="margin-left:50px;">
+			<table id="siteTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+		</div>
+	</div>
+</div>
+@section Scripts{
+
+	<script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
+	<script>
+		$(document).ready(function () {
+			var buttonCommon = {
+				exportOptions: {
+					columns: [0, 1, 2, 3]
+				}
+			};
+
+			var columns = [
+				{ "sTitle": "SiteName", "data": "SiteName" },
+				{ "sTitle": "SiteCategory", "data": "SiteCategory" },
+				{ "sTitle": "SiteURL", "data": "SiteURL" },
+				{ "sTitle": "EffDate", "data": "SSLEffectiveDate" },
+				{ "sTitle": "ExpDate", "data": "SSLExpirationDate" }
+			];
+
+			var userIsAdmin = @Html.Raw(Json.Serialize(ViewBag.UserIsAdmin));
+
+			if (userIsAdmin) {
+				columns.push({ "sTitle": "Action", "data": "Action" });
+			}
+
+			
+			sitesDataTable = $('#siteTable').DataTable({
+
+				"autoWidth": false,
+				"scrollX": true,
+				"columns": columns,
+				dom: 'Bfrtip',
+				lengthMenu: [
+					[10, 50, 100, -1],
+					['10', '50', '100', 'All']
+				],
+				buttons: [
+					'pageLength',
+					$.extend(true, {}, buttonCommon, {
+						extend: 'copyHtml5',
+						title: "Training Billing Discounts"
+					}),
+					$.extend(true, {}, buttonCommon, {
+						extend: 'excelHtml5',
+						title: "Training Billing Discounts"
+					}),
+					$.extend(true, {}, buttonCommon, {
+						extend: 'pdfHtml5',
+						title: "Training Billing Discounts",
+						orientation: 'landscape',
+						customize: function (doc) {
+							doc.pageMargins = [5, 5, 0, 0];
+							doc.defaultStyle.fontSize = 8;
+							doc.styles.tableHeader.fontSize = 9;
+						}
+					})
+				]
+			});
+
+			DATATABLE_REQUESTS.LoadSiteTable('all');
+		})
+	</script>
+
+	<script>
+
+
+		function showSiteAddEditModal(id) {
+			var formDiv = $('#siteAddEditModal .modal-body');
+			var url = "@Url.Action("AddEdit", "Sites")" + "?id=" + id;
+				
+			$.get(url)
+				.done(function (response) {
+					formDiv.html(response);
+					$('#siteAddEditModal').modal('show');
+				});
+		}
+
+		function hideSiteAddEditModal() {
+			$('#siteAddEditModal').modal('hide');
+		}
+
+		function showSiteDeleteModal(id) {
+			$('#siteToDeleteId').val(id);
+			$('#siteDeleteModal').modal('show');
+		}
+
+		function toggleSiteDeleteModal(id) {
+			$('#siteDeleteModal').modal('toggle');
+		}
+
+		function deleteSite() {
+			var id = $('#siteToDeleteId').val();
+			$.ajax({
+				type: "PUT",
+				url: '/api/SitesApi/DeleteSite?id=' + id,
+				success: function (data) {
+					$("#siteDeleteModal").modal('hide');
+					DATATABLE_REQUESTS.LoadSiteTable();
+				},
+				error: function (jqXHR) {
+					var response = JSON.parse(jqXHR.responseText);
+					var users = response.subscribedUsers.join(', ');
+					alert("Site deletion failed. The following users are still subscribed:\n\n" + users);
+				}
+			});
+		}
+
+
+	</script>
+}

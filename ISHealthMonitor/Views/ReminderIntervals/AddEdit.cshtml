@@ -1,0 +1,39 @@
+﻿@model ISHealthMonitor.Core.Data.DTO.ReminderIntervalDTO
+
+@{
+    Layout = null;
+}
+
+
+<form id="reminderIntervalForm" onsubmit="return SubmitCreateReminderIntervalForm()">
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="DurationInMinutes" class="control-label"></label>
+            <input asp-for="DurationInMinutes" class="form-control" />
+            <span asp-validation-for="DurationInMinutes" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="Type" class="control-label"></label>
+            <input asp-for="Type" class="form-control" />
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="DisplayName" class="control-label"></label>
+            <input asp-for="DisplayName" class="form-control" />
+            <span asp-validation-for="DisplayName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <input asp-for="ID" type="hidden" />
+
+    <div class="form-group d-flex justify-content-center">
+        <button type="submit" class="btn btn-success mr-3">Submit</button>
+        <button type="reset" onclick="hideIntervalAddEditModal()" class="btn btn-warning mr-3">Cancel</button>
+    </div>
+</form>

@@ -1,47 +1,158 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model ISHealthMonitor.UI.ViewModels.HomeViewModel
+
+@{
+	ViewData["Title"] = "Home Page";
+	ViewData["UserName"] = ViewBag.UserName;
+	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
 }
 
 
-<div class="container" id="divLoading">
-    <div class="row">
-        <div class="form-group col-12">
-            <div style="display:inline-block; margin-left: 20px;">
-                Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="container">
-    <div class="row">
-        <div class="col-12" style="margin-left:50px;">
-            <table id="siteTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
-        </div>
+	<div id="siteConfigurationDeleteModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Delete Site Configuration</b>
+				</div>
 
-    </div>
+				<div class="modal-body">
+					<input type="hidden" value="" id="siteConfigurationToDeleteId" />
+					<div class="text-center">
+						<p>Are you sure you want to delete this site configuration?</p>
+						<button class="btn btn-danger" id="deleteSiteConfigurationYes" onclick="deleteSiteConfiguration()">Delete</button>
+						<button class="btn btn-warning" onclick="toggleSiteConfigurationDeleteModal()">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
+
+<div class="container text-center">
+	<h1>Welcome, @Model.DisplayName!</h1>
+
+	@if (ViewBag.UserIsAdmin)
+	{
+		<div class="row justify-content-center">
+			<div class="col-12 col-md-8">
+				<a onclick="FireReminders()" class="btn btn-danger btn-block">Fire Reminders</a>
+			</div>
+		</div>
+		<div class="row justify-content-center">
+			<div class="col-12 col-md-8">
+				<a onclick="RefreshCerts()" class="btn btn-info btn-block">Refresh Certs</a>
+			</div>
+		</div>
+		<hr />
+	}
+
+	<div class="row my-5 justify-content-center">
+		<div class="col-md-5 d-flex flex-column justify-content-around border border-secondary rounded p-3 text-center" style="margin-right: 5px;">
+			<p>If you want to be reminded about the expiration of SSL certs of certain sites,</p>
+			<a class="btn btn-primary mt-3" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration</a>
+		</div>
+
+		<div class="col-md-5 d-flex flex-column justify-content-around border border-secondary rounded p-3 text-center" style="margin-left: 5px;">
+			<p>If you want to view or edit your past configurations,</p>
+			<a class="btn btn-warning mt-3" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History</a>
+		</div>
+	</div>
+
+
+
+
+	
+
+
+	<div class="row my-5">
+		<div class="col-12">
+			<h5>Here are all of the sites you have configured reminders for.</h5>
+		</div>
+	</div>
+
+	<div class="container" id="divLoading">
+		<div class="row justify-content-center">
+			<div class="col-auto">
+				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+
+	<div class="row my-5">
+		<div class="col-12">
+			<table id="siteConfigurationTable" class="table table-striped display compact wrap"></table>
+		</div>
+	</div>
+</div>
+
 @section Scripts{
-    <script src="~/js/chosen/chosen.jquery.js"></script>
+
+
+	<script>
+		function FireReminders() {
+			$.ajax({
+				type: "GET",
+				url: '/api/boomi/firereminders',
+				async: false,
+				cache: false,
+				contentType: false,
+				enctype: 'multipart/form-data',
+				processData: false
+			}).done(function (data) {
+				var json = JSON.parse(data);
+				console.log('YEAAAA')
+				console.log(json);
+				alert('Done!')
+			});
+		}
+
+		function RefreshCerts() {
+			$.ajax({
+				type: "GET",
+				url: '/api/boomi/refreshcerts',
+				async: false,
+				cache: false,
+				contentType: 'application/json',  // Set the content type to JSON
+				processData: false
+			}).done(function (data) {
+				console.log('YEAAAA');
+				console.log(data);
+				alert('Done!');
+			}).fail(function (error) {
+				console.log('Error:', error);
+				alert('Failed!');
+			});
+		}
+
+	</script>
 
     <script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
-    <script>
+    
+
+	<script>
 		var buttonCommon = {
 			exportOptions: {
 				columns: [0, 1, 2, 3]
 			}
 		};
 
-		var formResults;
-        formResults = $('#siteTable').DataTable({
+
+		siteConfigurationDataTable = $('#siteConfigurationTable').DataTable({
 
 			"autoWidth": false,
 			"scrollX": true,
+			"destroy": true,
 			"columns": [
 				{ "sTitle": "SiteName", "data": "SiteName" },
-				{ "sTitle": "ID", "data": "id" },
-				{ "sTitle": "SiteURL", "data": "SiteURL" },
+				{
+					"sTitle": "Reminder Intervals",
+					"data": "ReminderIntervals",
+					"render": function (data, type, row) {
+						
+						return data.map(ri => ri.DisplayName).join(', ');
+					}
+				},
 				{ "sTitle": "Action", "data": "Action" }
-				
 			],
 			dom: 'Bfrtip',
 			lengthMenu: [
@@ -71,6 +182,42 @@
 			]
 		});
 
-        DATATABLE_REQUESTS.LoadTable('all');
-    </script>
+		DATATABLE_REQUESTS.LoadSiteConfigurationsTable('all');
+	</script>
+
+
+	<script>
+		function redirectToConfigurationHistory(siteID) {
+			window.location.href = '/Reminders/ConfigurationHistory?siteID=' + siteID;
+		}
+	</script>
+
+
+	<script>
+
+		function showSiteConfigurationDeleteModal(id) {
+			$('#siteConfigurationToDeleteId').val(id);
+			$('#siteConfigurationDeleteModal').modal('show');
+		}
+
+		function toggleSiteConfigurationDeleteModal(id) {
+			$('#siteConfigurationDeleteModal').modal('toggle');
+		}
+
+		function deleteSiteConfiguration() {
+			var siteId = $('#siteConfigurationToDeleteId').val();
+			$.ajax({
+				type: "PUT",
+				url: '/api/RemindersApi/DeleteRemindersForSite?siteId=' + siteId,
+				success: function (data) {
+					if (data) {
+						$("#siteConfigurationDeleteModal").modal('hide');
+						DATATABLE_REQUESTS.LoadSiteConfigurationsTable();
+
+					}
+				}
+			});
+		}
+
+	</script>
 }

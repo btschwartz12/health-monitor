@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISHealthMonitor.UI", "ISHealthMonitor\ISHealthMonitor.UI.csproj", "{5A670674-1E01-4359-A66A-0B66A0F6A993}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISHealthMonitor.Core", "ISHealthMonitor.Core\ISHealthMonitor.Core.csproj", "{51A75E29-D10C-43A4-95FD-CD9048222742}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ISHealthMonitor.Core", "ISHealthMonitor.Core\ISHealthMonitor.Core.csproj", "{51A75E29-D10C-43A4-95FD-CD9048222742}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

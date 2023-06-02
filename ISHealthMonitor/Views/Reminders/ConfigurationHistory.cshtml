@@ -1,0 +1,201 @@
+﻿@{
+	ViewData["Title"] = "Configuration History Page";
+	ViewData["UserName"] = ViewBag.UserName;
+	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
+}
+
+
+<div class="container">
+	<div id="configurationFormDeleteModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Delete Configuration Form</b>
+				</div>
+
+				<div class="modal-body">
+					<input type="hidden" value="" id="configurationFormToDeleteId" />
+					<div class="text-center">
+						<p>Are you sure you want to delete this configuration form?</p>
+						<button class="btn btn-danger" id="deleteConfigurationFormYes" onclick="deleteConfigurationForm()">Delete</button>
+						<button class="btn btn-warning" onclick="toggleConfigurationFormDeleteModal()">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+<div class="container" id="divLoading">
+	<div class="row">
+		<div class="form-group col-12">
+			<div style="display:inline-block; margin-left: 20px;">
+				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container">
+	<div class="col-12" style="margin-left:50px;">
+		<h2 class="text-center" style="margin-bottom: 30px;">
+			@if (ViewBag.SiteDTO.ID == 0)
+			{
+				<span>Previous Configurations for All Sites</span>
+			}
+			else
+			{
+				<span>Previous Configurations for <strong>@ViewBag.SiteDTO.SiteName</strong></span>
+			}
+		</h2>
+		<h6 class="text-center" >Note: separate configurations may contain the same reminder for the same site. Hover over each row to see what is configured, or click the pencil icon to edit.</h6>
+		<hr />
+		<table id="configurationHistoryTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+	</div>
+
+</div>
+
+
+@section Scripts{
+
+	<script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
+
+	<script>
+		var siteID = @Html.Raw(Json.Serialize(ViewBag.SiteDTO.ID));
+	</script>
+
+	<script>
+		var buttonCommon = {
+			exportOptions: {
+				columns: [0, 1, 2, 3]
+			}
+		};
+
+
+		configurationHistoryDataTable = $('#configurationHistoryTable').DataTable({
+
+			"autoWidth": false,
+			"scrollX": true,
+			"columns": [
+				{
+					"sTitle": "Sites",
+					"data": "ConfiguredSiteNames",
+					"render": function (data, type, row) {
+						return data.join(', ');
+					}
+				},
+				{
+					"sTitle": "# Reminders",
+					"data": "NumReminders"
+				},
+				{
+					"sTitle": "Created Date",
+					"data": "CreatedDate"
+				},
+				
+				{ "sTitle": "Action", "data": "Action" }
+			],
+
+			dom: 'Bfrtip',
+			lengthMenu: [
+				[10, 50, 100, -1],
+				['10', '50', '100', 'All']
+			],
+			buttons: [
+				'pageLength',
+				$.extend(true, {}, buttonCommon, {
+					extend: 'copyHtml5',
+					title: "Training Billing Discounts"
+				}),
+				$.extend(true, {}, buttonCommon, {
+					extend: 'excelHtml5',
+					title: "Training Billing Discounts"
+				}),
+				$.extend(true, {}, buttonCommon, {
+					extend: 'pdfHtml5',
+					title: "Training Billing Discounts",
+					orientation: 'landscape',
+					customize: function (doc) {
+						doc.pageMargins = [5, 5, 0, 0];
+						doc.defaultStyle.fontSize = 8;
+						doc.styles.tableHeader.fontSize = 9;
+					}
+				})
+			]
+		});
+
+		DATATABLE_REQUESTS.LoadConfigurationHistoryTable(siteID);
+	</script>
+
+
+	
+
+
+	<script>
+		function redirectToConfigurationBuilder(groupID) {
+			window.location.href = '/Reminders/ConfigurationBuilder?groupID=' + groupID;
+		}
+	</script>
+
+	<script>
+
+		function showConfigurationFormDeleteModal(id) {
+			$('#configurationFormToDeleteId').val(id);
+			$('#configurationFormDeleteModal').modal('show');
+		}
+
+		function toggleConfigurationFormDeleteModal(id) {
+			$('#configurationFormDeleteModal').modal('toggle');
+		}
+
+		function deleteConfigurationForm() {
+			var groupId = $('#configurationFormToDeleteId').val();
+			$.ajax({
+				type: "PUT",
+				url: '/api/RemindersApi/DeleteReminderGroup?groupId=' + groupId,
+				success: function (data) {
+					if (data) {
+						$("#configurationFormDeleteModal").modal('hide');
+						DATATABLE_REQUESTS.LoadConfigurationHistoryTable(siteID);
+						
+					}
+				}
+			});
+		}
+
+	</script>
+
+
+
+	<script>
+		$(document).ready(function () {
+			var table = $('#configurationHistoryTable').DataTable();
+
+			$('#configurationHistoryTable tbody').on('mouseenter', 'tr', function () {
+				// Access the TooltipInfo data
+				var data = table.row(this).data();
+
+				// Generate the tooltip text
+				var tooltipText = "";
+				for (var siteName in data.SiteToRemindersMap) {
+					tooltipText += "<strong>" + siteName + "</strong>" + "<br/>" + data.SiteToRemindersMap[siteName].join(', ') + "<br/><br/>";
+				}
+
+				// Remove last line breaks
+				tooltipText = tooltipText.replace(/<br\/><br\/>$/, '');
+
+				$(this).attr('title', tooltipText);
+				$(this).attr('data-toggle', 'tooltip');
+				$(this).tooltip({
+					placement: 'left',
+					html: true
+				});
+				$(this).tooltip('show');
+			});
+
+		});
+
+	</script>
+}

@@ -1,0 +1,76 @@
+﻿@model ISHealthMonitor.Core.Data.DTO.SiteDTO
+
+@{
+    Layout = null;
+}
+<form id="siteForm" onsubmit="return SubmitCreateSiteForm()">
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="SiteName" class="control-label"></label>
+            <input asp-for="SiteName" class="form-control" />
+            <span asp-validation-for="SiteName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="SiteCategory" class="control-label"></label>
+            <input asp-for="SiteCategory" class="form-control" />
+            <span asp-validation-for="SiteCategory" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="SiteURL" class="control-label"></label>
+            <input asp-for="SiteURL" class="form-control" />
+            <span asp-validation-for="SiteURL" class="text-danger"></span>
+        </div>
+    </div>
+
+    
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <button onclick="FetchSSLCertificate()" type="button" class="btn btn-info btn-block">
+                <i id="spinner" class="fa fa-spinner fa-spin d-none"></i> Fetch Certificate Data
+            </button>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label asp-for="SSLEffectiveDate" class="control-label"></label>
+            <input asp-for="SSLEffectiveDate" class="form-control"  disabled />
+            <span asp-validation-for="SSLEffectiveDate" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="SSLExpirationDate" class="control-label"></label>
+            <input asp-for="SSLExpirationDate" class="form-control"  disabled />
+            <span asp-validation-for="SSLExpirationDate" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label asp-for="SSLIssuer" class="control-label"></label>
+            <input asp-for="SSLIssuer" class="form-control" disabled />
+            <span asp-validation-for="SSLIssuer" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="SSLSubject" class="control-label"></label>
+            <input asp-for="SSLSubject" class="form-control" disabled />
+            <span asp-validation-for="SSLSubject" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+
+    <input asp-for="ID" type="hidden" />
+
+    <div class="form-group d-flex justify-content-center">
+        <button id="submitButton" type="submit" class="btn btn-success mr-3" disabled>Submit</button>
+        <button type="reset" onclick="hideSiteAddEditModal()" class="btn btn-warning mr-3">Cancel</button>
+
+    </div>
+</form>

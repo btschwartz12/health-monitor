@@ -1,0 +1,161 @@
+﻿@{
+	ViewData["Title"] = "User Page";
+	ViewData["UserName"] = ViewBag.UserName;
+	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
+}
+
+
+<div class="container">
+	<div id="userAddEditModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>User Wizard</b>
+				</div>
+
+				<div class="modal-body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="userDeleteModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Delete User</b>
+				</div>
+
+				<div class="modal-body">
+					<input type="hidden" value="" id="userToDeleteId" />
+					<div class="text-center">
+						<p>Are you sure you want to delete this user?</p>
+						<button class="btn btn-danger" id="deleteSiteYes" onclick="deleteUser()">Delete</button>
+						<button class="btn btn-warning" onclick="toggleUserDeleteModal()">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="container" id="divLoading">
+	<div class="row">
+		<div class="form-group col-12">
+			<div style="display:inline-block; margin-left: 20px;">
+				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-12 col-md-8">
+			<a onclick="showUserAddEditModal(0)" class="btn btn-primary btn-block">Add User</a>
+		</div>
+	</div>
+	<hr />
+	<div class="row">
+		<div class="col-12" style="margin-left:50px;">
+			<table id="userTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+		</div>
+	</div>
+</div>
+@section Scripts{
+
+	<script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
+	<script>
+		$(document).ready(function () {
+			var buttonCommon = {
+				exportOptions: {
+					columns: [0, 1, 2, 3]
+				}
+			};
+
+
+			usersDataTable = $('#userTable').DataTable({
+
+				"autoWidth": false,
+				"scrollX": true,
+				"columns": [
+					{ "sTitle": "DisplayName", "data": "DisplayName" },
+					{ "sTitle": "IsAdmin", "data": "IsAdmin" },
+					{ "sTitle": "Action", "data": "Action" }
+
+				],
+				dom: 'Bfrtip',
+				lengthMenu: [
+					[10, 50, 100, -1],
+					['10', '50', '100', 'All']
+				],
+				buttons: [
+					'pageLength',
+					$.extend(true, {}, buttonCommon, {
+						extend: 'copyHtml5',
+						title: "Training Billing Discounts"
+					}),
+					$.extend(true, {}, buttonCommon, {
+						extend: 'excelHtml5',
+						title: "Training Billing Discounts"
+					}),
+					$.extend(true, {}, buttonCommon, {
+						extend: 'pdfHtml5',
+						title: "Training Billing Discounts",
+						orientation: 'landscape',
+						customize: function (doc) {
+							doc.pageMargins = [5, 5, 0, 0];
+							doc.defaultStyle.fontSize = 8;
+							doc.styles.tableHeader.fontSize = 9;
+						}
+					})
+				]
+			});
+
+			DATATABLE_REQUESTS.LoadUsersTable('all');
+		})
+	</script>
+
+	<script>
+
+
+		function showUserAddEditModal(id) {
+			var formDiv = $('#userAddEditModal .modal-body');
+			var url = "@Url.Action("AddEdit", "Users")" + "?id=" + id;
+
+			$.get(url)
+				.done(function (response) {
+					formDiv.html(response);
+					$('#userAddEditModal').modal('show');
+				});
+		}
+
+		function showUserDeleteModal(id) {
+			$('#userToDeleteId').val(id);
+			$('#userDeleteModal').modal('show');
+		}
+
+		function toggleUserDeleteModal(id) {
+			$('#userDeleteModal').modal('toggle');
+		}
+
+		function hideUserAddEditModal() {
+			$('#userAddEditModal').modal('hide');
+		}
+
+		function deleteUser() {
+			var id = $('#userToDeleteId').val();
+			$.ajax({
+				type: "PUT",
+				url: '/api/UsersApi/DeleteUser?id=' + id,
+				success: function (data) {
+					if (data) {
+						$("#userDeleteModal").modal('hide');
+						DATATABLE_REQUESTS.LoadUsersTable();
+					}
+				}
+			});
+		}
+
+
+	</script>
+}

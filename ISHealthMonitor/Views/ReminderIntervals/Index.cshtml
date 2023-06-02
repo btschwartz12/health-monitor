@@ -1,0 +1,165 @@
+﻿@{
+	ViewData["Title"] = "Reminder Interval Page";
+	ViewData["UserName"] = ViewBag.UserName;
+	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
+}
+
+<div class="container">
+	<div id="intervalAddEditModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Reminder Interval Wizard</b>
+				</div>
+
+				<div class="modal-body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="intervalDeleteModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Delete Reminder Interval</b>
+				</div>
+
+				<div class="modal-body">
+					<input type="hidden" value="" id="intervalToDeleteId" />
+					<div class="text-center">
+						<p>Are you sure you want to delete this reminder interval?</p>
+						<button class="btn btn-danger" id="deleteIntervalYes" onclick="deleteInterval()">Delete</button>
+						<button class="btn btn-warning" onclick="toggleIntervalDeleteModal()">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<div class="container" id="divLoading">
+	<div class="row">
+		<div class="form-group col-12">
+			<div style="display:inline-block; margin-left: 20px;">
+				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-12 col-md-8">
+			<a onclick="showIntervalAddEditModal(0)" class="btn btn-primary btn-block">Add Reminder Interval</a>
+		</div>
+	</div>
+	<hr />
+	<div class="row">
+		<div class="col-12" style="margin-left:50px;">
+			<table id="reminderIntervalsTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+		</div>
+
+	</div>
+</div>
+@section Scripts{
+
+	<script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
+	<script>
+		var buttonCommon = {
+			exportOptions: {
+				columns: [0, 1, 2, 3]
+			}
+		};
+
+		reminderIntervalsDataTable = $('#reminderIntervalsTable').DataTable({
+
+			"autoWidth": false,
+			"scrollX": true,
+			"columns": [
+				{ "sTitle": "Category", "data": "Type" },
+				{ "sTitle": "ID", "data": "ID" },
+				{ "sTitle": "Name", "data": "DisplayName" },
+				{ "sTitle": "DurationInMinutes", "data": "DurationInMinutes" },
+				{ "sTitle": "Action", "data": "Action" }
+
+			],
+			dom: 'Bfrtip',
+			lengthMenu: [
+				[10, 50, 100, -1],
+				['10', '50', '100', 'All']
+			],
+			buttons: [
+				'pageLength',
+				$.extend(true, {}, buttonCommon, {
+					extend: 'copyHtml5',
+					title: "Training Billing Discounts"
+				}),
+				$.extend(true, {}, buttonCommon, {
+					extend: 'excelHtml5',
+					title: "Training Billing Discounts"
+				}),
+				$.extend(true, {}, buttonCommon, {
+					extend: 'pdfHtml5',
+					title: "Training Billing Discounts",
+					orientation: 'landscape',
+					customize: function (doc) {
+						doc.pageMargins = [5, 5, 0, 0];
+						doc.defaultStyle.fontSize = 8;
+						doc.styles.tableHeader.fontSize = 9;
+					}
+				})
+			]
+		});
+
+		DATATABLE_REQUESTS.LoadReminderIntervalsTable('all');
+	</script>
+
+	<script>
+
+
+		function showIntervalAddEditModal(id) {
+			var formDiv = $('#intervalAddEditModal .modal-body');
+			var url = "@Url.Action("AddEdit", "ReminderIntervals")" + "?id=" + id;
+
+			$.get(url)
+				.done(function (response) {
+					formDiv.html(response);
+					$('#intervalAddEditModal').modal('show');
+				});
+		}
+
+		function hideIntervalAddEditModal() {
+			$("#intervalAddEditModal").modal('hide');
+		}
+
+		function showIntervalDeleteModal(id) {
+			$('#intervalToDeleteId').val(id);
+			$('#intervalDeleteModal').modal('show');
+		}
+
+		function toggleIntervalDeleteModal(id) {
+			$('#intervalDeleteModal').modal('toggle');
+		}
+
+		function deleteInterval() {
+			var id = $('#intervalToDeleteId').val();
+			$.ajax({
+				type: "PUT",
+				url: '/api/ReminderIntervalsApi/DeleteReminderInterval?id=' + id,
+				success: function (data) {
+					$("#intervalDeleteModal").modal('hide');
+					DATATABLE_REQUESTS.LoadReminderIntervalsTable();
+				},
+				error: function (jqXHR) {
+					var response = JSON.parse(jqXHR.responseText);
+					var users = response.subscribedUsers.join(', ');
+					alert("Interval deletion failed. The following users have current configurations with this reminder interval:\n\n" + users);
+				}
+			});
+		}
+
+			
+
+	</script>
+}
