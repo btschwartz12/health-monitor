@@ -32,6 +32,16 @@ namespace ISHealthMonitor.Core.Models
                         retModel.ExpDate = certificate.GetExpirationDateString();
                         retModel.Issuer = certificate.Issuer;
                         retModel.Subject = certificate.Subject;
+                        retModel.CommonName = certificate.GetNameInfo(X509NameType.SimpleName, false);
+                        retModel.ErrorCommonName = false;
+
+                        Uri myUri = new Uri(siteURL);
+                        string host = myUri.Host;
+
+                        if (host.ToLower() != retModel.CommonName)
+                        {
+                            retModel.ErrorCommonName = true;
+                        }
                     }
                     return true;
                 }

@@ -11,5 +11,7 @@ namespace ISHealthMonitor.Core.Models.DTO
         public string ExpDate { get; set; }
         public string Issuer { get; set; }
         public string Subject { get; set; }
+        public string CommonName { get; set; }
+        public bool ErrorCommonName { get; set; }
     }
 }

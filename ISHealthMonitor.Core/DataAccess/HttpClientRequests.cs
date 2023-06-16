@@ -10,50 +10,51 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using ISHealthMonitor.Core.Common;
+using ISHealthMonitor.Core.Contracts;
+using Microsoft.Extensions.Configuration;
+using Azure;
+using Azure.Core;
 
 namespace ISHealthMonitor.Core.DataAccess
 {
     public class HttpClientRequests : IDisposable
     {
         private readonly ILogger<Rest> _logger;
-        private HttpClient _httpClient;
         private string _baseURL;
         private string _token;
         private string _mediaType;// = "application/json";
         private HttpContentTypes _contentType;
-
-        public HttpClientRequests(string baseUrl, string token, string mediaType, HttpContentTypes contentType, ILogger<Rest> logger)
+        private readonly IConfiguration _config;
+        public HttpClientRequests(IConfiguration config, string mediaType, HttpContentTypes contentType, ILogger<Rest> logger)
         {
-            _baseURL = baseUrl;
-            _token = token;
+            _baseURL = config["ConfluenceCloudApp:Endpoint"];
             _mediaType = mediaType;
             _contentType = contentType;
             _logger = logger;
+            _config = config;
         }
+
         #region GET Request
-        public async Task<T> GetAsync<T>(string url)
+        public async Task<T> GetHTTPAsync<T>(string url)
         {
-            var strResponse = await GetAsync(url);
+            var strResponse = await GetHTTPAsync(url);
 
             return JsonConvert.DeserializeObject<T>(strResponse);
         }
-
-        public async Task<string> GetAsync(string url)
+        public async Task<string> GetHTTPAsync(string url)
         {
-            _httpClient = GetMyHttpClient();
-
-            using (var response = await _httpClient.GetAsync(url))
+            using (var httpClient = new HttpClient())
             {
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    var contents = response.Content.ReadAsStringAsync();
-                    //log error
-                    return contents.Result;
-                }
+                httpClient.BaseAddress = new Uri(_baseURL);
+                byte[] cred = UTF8Encoding.UTF8.GetBytes(_config["ConfluenceCloudApp:ServiceAccount"] + ":" + _config["ConfluenceCloudApp:ServiceAccountToken"]);
+
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(cred));
+                httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                var responseMessage = await httpClient.GetAsync(_baseURL + url);
+
+                var contents = responseMessage.Content.ReadAsStringAsync();
+                return contents.Result;
             }
         }
         #endregion
@@ -69,22 +70,19 @@ namespace ISHealthMonitor.Core.DataAccess
         }
         public async Task<string> PostAsync(string url, string input, HttpContentTypes contentType)
         {
-            _httpClient = GetMyHttpClient();
             var content = GetContent(input);
-            //# true if groupMembershipClaims is "SecurityGroup", false if it's "All"
-
-            using (var response = await _httpClient.PostAsync(url, content))
+            using (var httpClient = new HttpClient())
             {
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    var contents = response.Content.ReadAsStringAsync();
-                    //log error
-                    return contents.Result;
-                }
+                httpClient.BaseAddress = new Uri(_baseURL);
+                byte[] cred = UTF8Encoding.UTF8.GetBytes(_config["ConfluenceCloudApp:ServiceAccount"] + ":" + _config["ConfluenceCloudApp:ServiceAccountToken"]);
+
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(cred));
+                httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                var response = await httpClient.PostAsync(url, content);
+
+                var contents = response.Content.ReadAsStringAsync();
+                return contents.Result;
+
             }
         }
 
@@ -97,56 +95,37 @@ namespace ISHealthMonitor.Core.DataAccess
         }
         public async Task<string> PutByteArrayAsync(string url, object input)
         {
-            //var content = new ByteArrayContent(ConvertURItoByte(input.ToString()));
-            //content.Headers.Add("Content-Type", "image/jpeg");
-
             return await PutAsync(url, input.ToString(), HttpContentTypes.ByteArray);
         }
-        public async Task<string> PutAsync(string url, string input, HttpContentTypes contentType)
+        public async Task<string> PutAsync(string url, object input, HttpContentTypes contentType)
         {
-            _httpClient = GetMyHttpClient();
             var content = GetContent(input);
 
-            using (var response = await _httpClient.PutAsync(url, content))
+            using (var httpClient = new HttpClient())
             {
-                if (response.IsSuccessStatusCode)
-                {
-                    return await response.Content.ReadAsStringAsync();
-                }
-                else
-                {
-                    var contents = response.Content.ReadAsStringAsync();
-                    //log error
-                    return contents.Result;
-                }
+                httpClient.BaseAddress = new Uri(_baseURL);
+                byte[] cred = UTF8Encoding.UTF8.GetBytes(_config["ConfluenceCloudApp:ServiceAccount"] + ":" + _config["ConfluenceCloudApp:ServiceAccountToken"]);
+
+                httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(cred));
+                httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                var response = await httpClient.PutAsync(_baseURL + url, content);
+
+                var contents = response.Content.ReadAsStringAsync();
+                return contents.Result;
+
             }
         }
 
         #endregion
-
-        private HttpClient GetMyHttpClient()
-        {
-            if (_httpClient == null)
-            {
-                CreateHttpClient();
-            }
-            return _httpClient;
-        }
-
-        private void CreateHttpClient()
-        {
-            _httpClient = new HttpClient();
-            _httpClient.BaseAddress = new Uri(_baseURL);
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_mediaType));
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-        }
 
         private HttpContent GetContent(object input)
         {
             switch (_contentType)
             {
                 case HttpContentTypes.String:
-                    return new StringContent(ConvertToJsonString(input), Encoding.UTF8, _mediaType);
+                    var inputJson = input.ToString();
+                    return new StringContent(inputJson, Encoding.UTF8, _mediaType);
                 case HttpContentTypes.Image:
                     var myByteArray = ConvertURItoByte(input.ToString());
                     MemoryStream stream = new MemoryStream(myByteArray);
@@ -156,7 +135,8 @@ namespace ISHealthMonitor.Core.DataAccess
                     content.Headers.Add("Content-Type", MediaTypes.JPeg);
                     return content;
                 default:
-                    return new StringContent(input.ToString(), Encoding.UTF8, _mediaType);
+                    var inputJsonDefault = input.ToString();
+                    return new StringContent(inputJsonDefault, Encoding.UTF8, _mediaType);
             }
         }
         private byte[] ConvertURItoByte(string imgUrl)
@@ -180,10 +160,10 @@ namespace ISHealthMonitor.Core.DataAccess
 
             return JsonConvert.SerializeObject(obj);
         }
+
         public void Dispose()
         {
-            _httpClient?.Dispose();
-        }
 
+        }
     }
 }

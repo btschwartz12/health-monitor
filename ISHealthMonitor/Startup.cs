@@ -55,11 +55,11 @@ namespace ISHealthMonitor
             // Interfaces
             services.AddTransient<IEmployee, Employee>();
             services.AddTransient<IHealthModel, HealthModel>();
+            services.AddTransient<IRest, Rest>();
 
 
-            
 
-		}
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
