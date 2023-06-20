@@ -16,6 +16,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using ISHealthMonitor.Core.Implementations;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ISHealthMonitor.UI.Controllers.API
 {
@@ -41,18 +42,23 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[HttpGet("GetSites")]
 		public async Task<string> GetSitesAsync()
 		{
+			// This is used for the datatable, so we dont want to display 'All Sites' row or Test sites
+			List<SiteDTO> siteList = _healthModel.GetSites()
+				.Where(s => s.SiteCategory != "All" && s.SiteCategory != "Test").ToList();
 
-			//List<SiteDTO> siteDtoList = await ProcessJsonFileAsync(@"C:\Users\bschwartz\Downloads\data.json", "IS Application");
+			// Change thumbprint string and make date short version
+			foreach (var site in siteList)
+			{
 
-			//foreach (SiteDTO site in siteDtoList)
-			//{
-			//	CreateSiteInternal(site);
-			//}
+				var formatted = string.Join(" ", Enumerable.Range(0, site.SSLThumbprint.Length / 2).Select(i => site.SSLThumbprint.Substring(i * 2, 2)));
+				site.SSLThumbprint = formatted;
+				site.SSLEffectiveDate = DateTime.Parse(site.SSLEffectiveDate).ToShortDateString();
+				site.SSLExpirationDate = DateTime.Parse(site.SSLExpirationDate).ToShortDateString();
+
+			}
 
 
-
-			List<SiteDTO> retList = _healthModel.GetSites();
-			return JsonConvert.SerializeObject(retList);
+			return JsonConvert.SerializeObject(siteList);
 		}
 
 		[HttpPut]
@@ -94,6 +100,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 					SSLExpirationDate = DateTime.Parse(siteDTO.SSLExpirationDate),
 					SSLIssuer = siteDTO.SSLIssuer,
 					SSLSubject = siteDTO.SSLSubject,
+					SSLCommonName = siteDTO.SSLCommonName,
+					SSLThumbprint = siteDTO.SSLThumbprint,
 					CreatedBy = new Guid(employee.GUID),
 					DateCreated = DateTime.Now,
 					Active = true,
@@ -116,6 +124,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 					existingSite.SSLExpirationDate = DateTime.Parse(siteDTO.SSLExpirationDate);
 					existingSite.SSLIssuer = siteDTO.SSLIssuer;
 					existingSite.SSLSubject = siteDTO.SSLSubject;
+					existingSite.SSLCommonName = siteDTO.SSLCommonName;
+					existingSite.SSLThumbprint = siteDTO.SSLThumbprint;
 
 					_healthModel.UpdateSite(existingSite);
 					return Ok(existingSite);
@@ -183,123 +193,127 @@ namespace ISHealthMonitor.UI.Controllers.API
 		}
 
 
-		public async Task<SiteDTO> GetSiteDTO(string name, string category, string url, CertificateHandlers certHandlers)
-		{
-			try
-			{
-				CertificateDTO res = await certHandlers.CheckSSLSiteAsync(url);
-				if (res.Issuer == null || res.Subject == null || res.EffectiveDate == null || res.ExpDate == null)
-				{
-					throw new Exception("null value in cert");
-				}
-				return new SiteDTO()
-				{
-					SiteURL = url,
-					SiteName = name,
-					SiteCategory = category,
-					SSLEffectiveDate = res.EffectiveDate,
-					SSLExpirationDate = res.ExpDate,
-					SSLIssuer = res.Issuer,
-					SSLSubject = res.Subject
-				};
 
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
-			}
-		}
-
-		public async Task<List<SiteDTO>> ProcessJsonFileAsync(string filePath, string category)
-		{
-			// Prepare the result list
-			List<SiteDTO> result = new List<SiteDTO>();
-
-			// Initialize certificate handler
-			var certHandlers = new CertificateHandlers();
-
-			// Load json file
-			string json = await System.IO.File.ReadAllTextAsync(filePath);
-
-			// Parse json file
-			var sites = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
+		/// The below functions are for adding sites in bulk from a json file, but now you can just add individual sites within the app
 
 
-			List<string> failedUrls = new List<string>();
+		//public async Task<SiteDTO> GetSiteDTO(string name, string category, string url, CertificateHandlers certHandlers)
+		//{
+		//	try
+		//	{
+		//		CertificateDTO res = await certHandlers.CheckSSLSiteAsync(url);
+		//		if (res.Issuer == null || res.Subject == null || res.EffectiveDate == null || res.ExpDate == null)
+		//		{
+		//			throw new Exception("null value in cert");
+		//		}
+		//		return new SiteDTO()
+		//		{
+		//			SiteURL = url,
+		//			SiteName = name,
+		//			SiteCategory = category,
+		//			SSLEffectiveDate = res.EffectiveDate,
+		//			SSLExpirationDate = res.ExpDate,
+		//			SSLIssuer = res.Issuer,
+		//			SSLSubject = res.Subject
+		//		};
 
-			// Iterate through each key-value pair
-			foreach (var site in sites)
-			{
-				string name = site.Key;
-				var urls = site.Value;
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		throw new Exception(ex.Message);
+		//	}
+		//}
+
+		//public async Task<List<SiteDTO>> ProcessJsonFileAsync(string filePath, string category)
+		//{
+		//	// Prepare the result list
+		//	List<SiteDTO> result = new List<SiteDTO>();
+
+		//	// Initialize certificate handler
+		//	var certHandlers = new CertificateHandlers();
+
+		//	// Load json file
+		//	string json = await System.IO.File.ReadAllTextAsync(filePath);
+
+		//	// Parse json file
+		//	var sites = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
+
+
+		//	List<string> failedUrls = new List<string>();
+
+		//	// Iterate through each key-value pair
+		//	foreach (var site in sites)
+		//	{
+		//		string name = site.Key;
+		//		var urls = site.Value;
 
 
 
 
-				// Check if urls list is empty
-				if (urls.Count == 0) continue;
+		//		// Check if urls list is empty
+		//		if (urls.Count == 0) continue;
 
-				for (int i = 0; i < urls.Count; i++)
-				{
-					string url = urls[i];
-					string finalName = name;
+		//		for (int i = 0; i < urls.Count; i++)
+		//		{
+		//			string url = urls[i];
+		//			string finalName = name;
 
-					// Check if url contains 'dev' and is the second url
-					if (url.Contains("dev") && urls.Count == 2)
-					{
-						finalName += " Dev";
-					}
-					// If there are more than two urls, append the URL to the end of the name
-					else if (urls.Count > 2)
-					{
-						finalName += " " + url;
-					}
+		//			// Check if url contains 'dev' and is the second url
+		//			if (url.Contains("dev") && urls.Count == 2)
+		//			{
+		//				finalName += " Dev";
+		//			}
+		//			// If there are more than two urls, append the URL to the end of the name
+		//			else if (urls.Count > 2)
+		//			{
+		//				finalName += " " + url;
+		//			}
 
-					// Call GetSiteDTO function and add the result to the list
-					try
-					{
-						SiteDTO siteDto = await GetSiteDTO(finalName, category, url, certHandlers);
-						result.Add(siteDto);
-					}
-					catch (Exception ex)
-					{
-						failedUrls.Add(url);
-						Console.WriteLine(ex);
-					}
+		//			// Call GetSiteDTO function and add the result to the list
+		//			try
+		//			{
+		//				SiteDTO siteDto = await GetSiteDTO(finalName, category, url, certHandlers);
+		//				result.Add(siteDto);
+		//			}
+		//			catch (Exception ex)
+		//			{
+		//				failedUrls.Add(url);
+		//				Console.WriteLine(ex);
+		//			}
 					
-				}
-			}
+		//		}
+		//	}
 
-			return result;
-		}
-
-
-		public void CreateSiteInternal(SiteDTO siteDTO)
-		{
-
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-
-			var employee = _employee.GetEmployeeByUserName(username);
+		//	return result;
+		//}
 
 
-			var newSite = new ISHealthMonitorSiteDbSet()
-			{
-				URL = siteDTO.SiteURL,
-				DisplayName = siteDTO.SiteName,
-				SiteCategory = siteDTO.SiteCategory,
-				SSLEffectiveDate = DateTime.Parse(siteDTO.SSLEffectiveDate),
-				SSLExpirationDate = DateTime.Parse(siteDTO.SSLExpirationDate),
-				SSLIssuer = siteDTO.SSLIssuer,
-				SSLSubject = siteDTO.SSLSubject,
-				CreatedBy = new Guid(employee.GUID),
-				DateCreated = DateTime.Now,
-				Active = true,
-				Deleted = false,
-				Disabled = false
-			};
+		//public void CreateSiteInternal(SiteDTO siteDTO)
+		//{
 
-			_healthModel.AddSite(newSite);
-		}
+		//	var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+		//	var employee = _employee.GetEmployeeByUserName(username);
+
+
+		//	var newSite = new ISHealthMonitorSiteDbSet()
+		//	{
+		//		URL = siteDTO.SiteURL,
+		//		DisplayName = siteDTO.SiteName,
+		//		SiteCategory = siteDTO.SiteCategory,
+		//		SSLEffectiveDate = DateTime.Parse(siteDTO.SSLEffectiveDate),
+		//		SSLExpirationDate = DateTime.Parse(siteDTO.SSLExpirationDate),
+		//		SSLIssuer = siteDTO.SSLIssuer,
+		//		SSLSubject = siteDTO.SSLSubject,
+		//		CreatedBy = new Guid(employee.GUID),
+		//		DateCreated = DateTime.Now,
+		//		Active = true,
+		//		Deleted = false,
+		//		Disabled = false
+		//	};
+
+		//	_healthModel.AddSite(newSite);
+		//}
 
 
 

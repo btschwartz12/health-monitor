@@ -33,10 +33,13 @@ namespace ISHealthMonitor.Core.Models
                         retModel.Issuer = certificate.Issuer;
                         retModel.Subject = certificate.Subject;
                         retModel.CommonName = certificate.GetNameInfo(X509NameType.SimpleName, false);
+                        retModel.Thumbprint = certificate.Thumbprint;
                         retModel.ErrorCommonName = false;
 
                         Uri myUri = new Uri(siteURL);
                         string host = myUri.Host;
+
+                        host = host.Replace("www.", "");
 
                         if (host.ToLower() != retModel.CommonName)
                         {

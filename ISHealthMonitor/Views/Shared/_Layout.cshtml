@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/lib/bootstrapV5/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/selectize.bootstrap2.css" />
+    <link rel="stylesheet" href="~/css/animate.min.css"  />
     <link rel="stylesheet" href="~/css/font-awesome.min.css" />
 
     <script src="https://kit.fontawesome.com/b38e3673b1.js" crossorigin="anonymous"></script>
@@ -28,7 +29,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="Index">All Sites</a>
                         </li>
-                        @if (ViewData.ContainsKey("UserIsAdmin") && bool.TryParse(ViewData["UserIsAdmin"].ToString(), out bool isAdmin) && isAdmin)
+
+                        @{
+                            bool isAdmin = ViewData.ContainsKey("UserIsAdmin") && bool.TryParse(ViewData["UserIsAdmin"].ToString(), out bool isAdmin2) && isAdmin2;
+                            string displayName = ViewData["UserName"].ToString() + (isAdmin ? " (admin)" : "");
+                        }
+                        @if (isAdmin)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="Index">All Reminders</a>
@@ -40,9 +46,19 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">All Users</a>
                             </li>
                         }
+                        
+
                         <li class="nav-item ml-auto">
-                            <span class="nav-link text-dark">@ViewData["UserName"]@((ViewData.ContainsKey("UserIsAdmin") && bool.TryParse(ViewData["UserIsAdmin"].ToString(), out bool isAdmin2) && isAdmin2) ? " (admin)" : "")</span>
+                            @if (isAdmin)
+                            {
+                                <a href="#" class="nav-link text-dark" onclick="showAdminModal()">@Html.Raw(displayName)</a>
+                            }
+                            else
+                            {
+                                <span class="nav-link text-dark">@Html.Raw(displayName)</span>
+                            }
                         </li>
+
                     </ul>
                 </div>
 
@@ -50,6 +66,53 @@
         </nav>
     </header>
     <div class="container">
+
+        <div id="adminModal" class="modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <b>Admin Actions</b>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-8">
+                                <button onclick="FireReminders()" type="button" class="btn btn-danger btn-block mt-3">
+                                    <i id="spinnerFireReminders" class="fa fa-spinner fa-spin d-none"></i> Fire Reminders
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-8">
+                                <button onclick="RefreshCerts()" type="button" class="btn btn-info btn-block mt-3">
+                                    <i id="spinnerRefreshCerts" class="fa fa-spinner fa-spin d-none"></i> Update Certs
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-8">
+                                <button onclick="UpdateConfluence()" type="button" class="btn btn-warning btn-block mt-3">
+                                    <i id="spinnerUpdateConfluence" class="fa fa-spinner fa-spin d-none"></i> Update Confluence
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+
+                        <div id="alertFireReminders" class="alert alert-danger d-block d-none" role="alert"></div>
+
+                        <div id="alertRefreshCerts" class="alert alert-info d-block d-none" role="alert"></div>
+
+                        <div id="alertUpdateConfluence" class="alert alert-warning d-block d-none" role="alert"></div>
+                            
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
@@ -87,4 +150,89 @@
 
     @RenderSection("Scripts", required: false)
 </body>
+
+
+    
 </html>
+
+
+<script>
+    function showAdminModal(id) {
+        $('#adminModal').modal('show');
+    }
+
+    function FireReminders() {
+        $('#spinnerFireReminders').removeClass('d-none');
+
+        $.ajax({
+            type: "GET",
+            url: '/api/boomi/firereminders',
+            async: true,
+            cache: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            processData: false
+        }).done(function (data) {
+            var json = JSON.parse(data);
+            console.log(json);
+            $('#alertFireReminders').removeClass('d-none').text('Successfully sent reminders!');
+        }).fail(function (error) {
+            console.log('Error:', error);
+            $('#alertFireReminders').removeClass('d-none').text('Failed to send reminders :(');
+        }).always(function () {
+            $('#spinnerFireReminders').addClass('d-none');
+        });
+    }
+
+    function RefreshCerts() {
+        $('#spinnerRefreshCerts').removeClass('d-none');
+
+        $.ajax({
+            type: "GET",
+            url: '/api/boomi/refreshcerts',
+            async: true,
+            cache: false,
+            contentType: 'application/json',
+            processData: false
+        }).done(function (data) {
+            console.log(data);
+            if (data.message === "Success") {
+                $('#alertRefreshCerts').removeClass('d-none').text('Successfully refreshed certificates!');
+            }
+            else if (data.message === "Failed") {
+                var failedUrlCount = Object.keys(data.failedSiteUrls).length;
+
+                $('#alertRefreshCerts').removeClass('d-none').text('Successfully refreshed some certificates (' + failedUrlCount + ' failed)');
+
+            }
+            
+        }).fail(function (error) {
+            console.log('Error:', error);
+            $('#alertRefreshCerts').removeClass('d-none').text('Failed to refresh certificates :(');
+        }).always(function () {
+            $('#spinnerRefreshCerts').addClass('d-none');
+        });
+    }
+
+    function UpdateConfluence() {
+        $('#spinnerUpdateConfluence').removeClass('d-none');
+
+        $.ajax({
+            type: "GET",
+            url: '/api/boomi/updateconfluence',
+            async: true,
+            cache: false,
+            contentType: 'application/json',
+            processData: false
+        }).done(function (data) {
+            console.log(data);
+            $('#alertUpdateConfluence').removeClass('d-none').text('Successfully updated the Confluence page!');
+        }).fail(function (error) {
+            console.log('Error:', error);
+            $('#alertUpdateConfluence').removeClass('d-none').text('Failed to update the Confluence page :(');
+        }).always(function () {
+            $('#spinnerUpdateConfluence').addClass('d-none');
+        });
+    }
+
+</script>

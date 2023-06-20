@@ -1,7 +1,10 @@
-﻿using ISHealthMonitor.Core.Contracts;
+﻿using ISHealthMonitor.Core.Common;
+using ISHealthMonitor.Core.Contracts;
 using ISHealthMonitor.Core.Data.Contexts;
 using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
+using ISHealthMonitor.Core.DataAccess;
+using ISHealthMonitor.Core.Helpers.Confluence;
 using ISHealthMonitor.Core.Helpers.Email;
 using ISHealthMonitor.Core.Implementations;
 using ISHealthMonitor.Core.Models;
@@ -27,45 +30,121 @@ namespace ISHealthMonitor.UI.Controllers.API
     {
         private readonly IHealthModel _healthModel;
         private readonly IEmployee _employee;
+        private readonly IRest _restModel;
 
 
-		public BoomiApiController(IHealthModel healthModel, IEmployee employee)
+        public BoomiApiController(IHealthModel healthModel, IEmployee employee, IRest rest)
         {
             _employee = employee;
             _healthModel = healthModel;
+			_restModel = rest;
 		}
+
+		[HttpGet]
+		[Route("updateconfluence")]
+		public async Task<IActionResult> UpdateConfluence()
+		{
+
+			List<SiteDTO> sites = _healthModel.GetSites()
+                .Where(site => site.SiteCategory != "All" && site.SiteCategory != "Test")
+                .OrderBy(site => site.SiteName).ToList();
+
+            ConfluenceTableModel model = new ConfluenceTableModel()
+            {
+                sites = sites
+            };
+
+            var tableStr = ConfluenceTableHelper.GetSiteTableHTML(model);
+
+
+            //example to get Page Source
+            var action = "/wiki/api/v2/pages/300580865?body-format=storage";
+            var rek = await _restModel.GetHttpContent(action);
+
+            var confluencePage = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfluencePageInfo>(rek);
+
+			int curVersion = confluencePage.version.number;
+
+
+			//example to Update Page
+			var pp = new ConfluenceAPIPage()
+			{
+				id = 300580865,
+				spaceId = 300482563,
+				title = "IS Health Monitor Resource",
+				status = "current",
+				version = new ISHealthMonitor.Core.DataAccess.Version()
+				{
+					number = curVersion + 1
+                },
+                body = new ISHealthMonitor.Core.DataAccess.Body()
+                {
+                    representation = "storage",
+                    value = tableStr
+                },
+            };
+
+			try
+			{
+                var rekt = await _restModel.PutHttpContent("/wiki/api/v2/pages/300580865", Newtonsoft.Json.JsonConvert.SerializeObject(pp), HttpContentTypes.String);
+
+				return Ok("Success");
+            }
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+
+        }
+
 
 
 		[HttpGet]
 		[Route("refreshcerts")]
 		public async Task<IActionResult> RefreshCerts()
 		{
-			List<ISHealthMonitorSiteDbSet> sites = await _healthModel.GetSiteDbSets();
 
-			sites.RemoveAll(site => site.ID == 1); // Disregard the row for All Sites
+
+            List<ISHealthMonitorSiteDbSet> sites = await _healthModel.GetSiteDbSets();
+
+			sites.RemoveAll(site => site.ID == 1); // Disregard the row for 'All Sites'
 
 			var certHandlers = new CertificateHandlers();
 
-			var failedSiteUrls = new List<string>();
+			var failedSiteUrls = new Dictionary<string, string>();
 
 			foreach (var site in sites)
 			{
 				try
 				{
-                    CertificateDTO cert = await certHandlers.CheckSSLSiteAsync(site.URL);
+					CertificateDTO cert = await certHandlers.CheckSSLSiteAsync(site.URL);
 
-                    site.SSLEffectiveDate = DateTime.Parse(cert.EffectiveDate);
-                    site.SSLExpirationDate = DateTime.Parse(cert.ExpDate);
-                    site.SSLIssuer = cert.Issuer;
-                    site.SSLSubject = cert.Subject;
+					site.SSLEffectiveDate = DateTime.Parse(cert.EffectiveDate);
+					site.SSLExpirationDate = DateTime.Parse(cert.ExpDate);
+					site.SSLIssuer = cert.Issuer;
+					site.SSLSubject = cert.Subject;
+					site.SSLCommonName = cert.CommonName;
+					site.SSLThumbprint = cert.Thumbprint;
 
-                    _healthModel.UpdateSite(site);
-                }
+					if (cert.ErrorCommonName)
+					{
+						site.SSLCommonName = "INVALID (" + cert.CommonName + ")";
+                        _healthModel.UpdateSite(site);
+                        throw new Exception("Invalid SSL Common Name for the site.");
+						
+					}
+					else
+					{
+                        _healthModel.UpdateSite(site);
+                    }
+
+					
+				}
 				catch (Exception ex)
 				{
-					failedSiteUrls.Add(site.URL);
+					failedSiteUrls.Add(site.URL, ex.Message);
 				}
-				
+
 			}
 
 			if (failedSiteUrls.Count > 0)
@@ -85,8 +164,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public async Task<IActionResult> FireReminders()
 		{
 
-
-			List<EmailReminderModel> emailModels = new List<EmailReminderModel>() { };
+            List<EmailReminderModel> emailModels = new List<EmailReminderModel>() { };
 
 			var nearExpiredSites = await GetNearExpiredSites();
 			var remindersList = await GetRemindersForNearExpiredSites(nearExpiredSites);
@@ -168,6 +246,8 @@ namespace ISHealthMonitor.UI.Controllers.API
                     SSLExpirationDate = site.SSLExpirationDate.ToString(),
                     SSLIssuer = site.SSLIssuer,
                     SSLSubject = site.SSLSubject,
+					SSLCommonName = site.SSLCommonName,
+					SSLThumbprint = site.SSLThumbprint
                 })
                 .ToList();
 

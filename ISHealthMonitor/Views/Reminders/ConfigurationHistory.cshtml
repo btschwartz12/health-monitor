@@ -38,24 +38,59 @@
 		</div>
 	</div>
 </div>
-<div class="container">
-	<div class="col-12" style="margin-left:50px;">
-		<h2 class="text-center" style="margin-bottom: 30px;">
-			@if (ViewBag.SiteDTO.ID == 0)
-			{
-				<span>Previous Configurations for All Sites</span>
-			}
-			else
-			{
-				<span>Previous Configurations for <strong>@ViewBag.SiteDTO.SiteName</strong></span>
-			}
-		</h2>
-		<h6 class="text-center" >Note: separate configurations may contain the same reminder for the same site. Hover over each row to see what is configured, or click the pencil icon to edit.</h6>
-		<hr />
-		<table id="configurationHistoryTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+
+
+<div class="container text-center">
+
+	<h1>
+		@if (ViewBag.SiteDTO.ID == 0)
+		{
+			<span>Previous Configurations for All Sites</span>
+		}
+		else
+		{
+			<span>Previous Configurations for <strong>@ViewBag.SiteDTO.SiteName</strong></span>
+		}
+	</h1>
+
+	<hr />
+
+	<div class="row justify-content-center my-4">
+		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+			<i class="fas fa-history fa-3x"></i>
+		</div>
+		<div class="col-11 col-md-8 text-left">
+			<p>Here are all of the past configuration forms you have submitted, which collectively define all of the reminders for each site you are subscribed to.</p>
+		</div>
 	</div>
 
+	<div class="row justify-content-center  my-4">
+		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+			<i class="fas fa-info-circle fa-3x"></i>
+		</div>
+		<div class="col-11 col-md-8 text-left">
+			<p>Hover over each row to see which sites and reminders are present in each form, or click the pencil icon to edit them!</p>
+
+		</div>
+	</div>
+
+	<div class="row justify-content-center  my-4">
+		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+			<i class="fas fa-warning fa-3x"></i>
+		</div>
+		<div class="col-11 col-md-8 text-left">
+			<p>Please note that since it is possible for you to configure the same reminder for the same site in different configuration forms, if you want to be unsubscribed from a particular site/interval combination, you must do so for each form. If you want to be unsubscribed from just a particular site, you can remove that site from the table on the home screen.</p>
+
+		</div>
+	</div>
+
+	<hr />
+
+	<table id="configurationHistoryTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+
+
 </div>
+
 
 
 @section Scripts{

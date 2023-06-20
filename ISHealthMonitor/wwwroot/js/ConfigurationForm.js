@@ -433,6 +433,7 @@ function validateForm() {
 
     if (sites.length === 0) {
         $('#error-message').text('Please select at least one site.');
+        $('#error-message').removeClass('d-none');
         // Add red border to the site selection control
         $('#select-sites')[0].nextElementSibling.style.borderColor = "red";
         isValid = false;
@@ -455,6 +456,7 @@ function validateForm() {
         if (selectedReminders.length === 0) {
             var errorMessage = $('#sameReminder').is(':checked') ? 'Please select at least one reminder.' : 'Please select at least one reminder for site ' + site.name + '.';
             $('#error-message').text(errorMessage);
+            $('#error-message').removeClass('d-none');
             // Add red border to the reminder selection control
             remindersControl.$control[0].style.borderColor = "red";
             isValid = false;
@@ -467,6 +469,7 @@ function validateForm() {
     // If the form is valid, clear the error message
     if (isValid) {
         $('#error-message').text('');
+        $('#error-message').addClass('d-none');
     }
 
     return isValid;
@@ -513,7 +516,7 @@ function getData() {
     var siteControl = $('#select-sites')[0].selectize;
     var sites = siteControl.getValue().map(function (id) {
         var site = siteControl.options[id];
-        return { SiteName: site.siteName, ID: site.id, SiteURL: "x", 'SiteCategory': "x", SSLExpirationDate: "x", SSLEffectiveDate: "x", SSLIssuer: "x", SSLSubject: "x", Action: "x" };
+        return { SiteName: site.siteName, ID: site.id, SiteURL: "x", 'SiteCategory': "x", SSLExpirationDate: "x", SSLEffectiveDate: "x", SSLIssuer: "x", SSLSubject: "x", SSLCommonName: "x", SSLThumbprint: "x", Action: "x" };
     });
 
     var userReminders = [];
@@ -566,54 +569,3 @@ function getData() {
 }
 
 
-function getDataTest() {
-    var data = {
-        "UserReminders": [
-            {
-                "ID": 0,
-                "Site": {
-                    "SiteName": "Example 2",
-                    "ID": 2,
-                },
-                "ReminderInterval": {
-                    "ID": 2,
-                    "DisplayName": "48 hours",
-                }
-            },
-            {
-                "ID": 0,
-                "Site": {
-                    "SiteName": "Example 2",
-                    "ID": 2,
-                },
-                "ReminderInterval": {
-                    "ID": 1,
-                    "DisplayName": "24 hours",
-                }
-            },
-            {
-                "ID": 0,
-                "Site": {
-                    "SiteName": "Example 1222",
-                    "ID": 1,
-                },
-                "ReminderInterval": {
-                    "ID": 3,
-                    "DisplayName": "1 week",
-                }
-            },
-            {
-                "ID": 0,
-                "Site": {
-                    "SiteName": "Example 1222",
-                    "ID": 1,
-                },
-                "ReminderInterval": {
-                    "ID": 4,
-                    "DisplayName": "1 month",
-                }
-            }
-        ]
-    };
-    return data;
-}

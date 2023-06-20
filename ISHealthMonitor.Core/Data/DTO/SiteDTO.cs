@@ -40,7 +40,15 @@ namespace ISHealthMonitor.Core.Data.DTO
 		[Display(Name = "SSL Subject")]
 		public string? SSLSubject { get; set; }
 
-		public string? Action { get; set; }
+		[Required(ErrorMessage = "SSLCommonName is required")]
+		[Display(Name = "SSL Common Name")]
+		public string? SSLCommonName { get; set; }
+
+        [Required(ErrorMessage = "SSLThumbprint is required")]
+        [Display(Name = "SSL Thumbprint")]
+        public string? SSLThumbprint { get; set; }
+
+        public string? Action { get; set; }
 	}
 
 }

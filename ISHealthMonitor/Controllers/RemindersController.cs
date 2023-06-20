@@ -102,6 +102,23 @@ namespace ISHealthMonitor.UI.Controllers
 			    .Where(r => r.ISHealthMonitorGroupSubmissionID == groupID)
 			    .ToList();
 
+				if (remindersByGroup.Count == 0) 
+				{
+					return RedirectToAction("Index", "Home");
+				}
+
+
+				// Need to make sure correct user is accessing this
+				if (!ViewBag.UserIsAdmin)
+				{
+					var firstReminder = remindersByGroup[0];
+					// Should I be using GUID instead?
+					if (firstReminder.UserName != user)
+					{
+						return RedirectToAction("Index", "Home");
+					}
+				}
+
 			    ReminderConfiguration viewModel = new ReminderConfiguration()
 			    {
 					GroupID = groupID,

@@ -41,6 +41,8 @@ namespace ISHealthMonitor.Core.Models
 							  SSLExpirationDate = d.SSLExpirationDate.ToString(),
 							  SSLIssuer = d.SSLIssuer,
 							  SSLSubject = d.SSLSubject,
+							  SSLCommonName = d.SSLCommonName,
+							  SSLThumbprint = d.SSLThumbprint,
 							  Action =	"<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' " +
 										"onclick=showSiteAddEditModal(" + d.ID + ")></i><i style='cursor: pointer;' class='fa fa-trash fa-lg " +
 										" text-danger' onclick=showSiteDeleteModal(" + d.ID + ")></i></div>"
@@ -73,6 +75,8 @@ namespace ISHealthMonitor.Core.Models
 				SSLExpirationDate = site.SSLExpirationDate.ToString(),
 				SSLIssuer = site.SSLIssuer, 
 				SSLSubject = site.SSLSubject,
+				SSLCommonName = site.SSLCommonName,
+				SSLThumbprint = site.SSLThumbprint
 			};
 		}
 

@@ -58,6 +58,8 @@ namespace ISHealthMonitor.UI.Controllers
                     SSLExpirationDate = site.SSLExpirationDate.ToString("yyyy-MM-dd"),
                     SSLIssuer = site.SSLIssuer,
                     SSLSubject = site.SSLSubject,
+                    SSLCommonName = site.SSLCommonName,
+                    SSLThumbprint = site.SSLThumbprint
                 };
 
 

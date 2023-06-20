@@ -28,103 +28,89 @@
 	</div>
 </div>
 
+
 <div class="container text-center">
-	<h1>Welcome, @Model.DisplayName!</h1>
+	<h1 class="animate__animated animate__backInUp">Welcome, @Model.DisplayName!</h1>
 
-	@if (ViewBag.UserIsAdmin)
-	{
-		<div class="row justify-content-center">
-			<div class="col-12 col-md-8">
-				<a onclick="FireReminders()" class="btn btn-danger btn-block">Fire Reminders</a>
-			</div>
-		</div>
-		<div class="row justify-content-center">
-			<div class="col-12 col-md-8">
-				<a onclick="RefreshCerts()" class="btn btn-info btn-block">Refresh Certs</a>
-			</div>
-		</div>
-		<hr />
-	}
+	<hr />
 
-	<div class="row my-5 justify-content-center">
-		<div class="col-md-5 d-flex flex-column justify-content-around border border-secondary rounded p-3 text-center" style="margin-right: 5px;">
-			<p>If you want to be reminded about the expiration of SSL certs of certain sites,</p>
-			<a class="btn btn-primary mt-3" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration</a>
+	<div class="row justify-content-center animate__animated animate__fadeIn animate__delay-1s my-4">
+		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+			<i class="fas fa-info-circle fa-3x"></i>
 		</div>
-
-		<div class="col-md-5 d-flex flex-column justify-content-around border border-secondary rounded p-3 text-center" style="margin-left: 5px;">
-			<p>If you want to view or edit your past configurations,</p>
-			<a class="btn btn-warning mt-3" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History</a>
+		<div class="col-11 col-md-8 text-left">
+			<p>Welcome to the ISHealthMonitor, a platform that aims to streamline the management of Hyland's internal site certificates. It provides you with the capability to set reminders for site certificates that are on the brink of expiry, thereby ensuring timely renewal.</p>
 		</div>
 	</div>
 
+	<div class="row justify-content-center animate__animated animate__fadeIn animate__delay-1s my-4">
+		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+			<i class="fas fa-envelope-open-text fa-3x"></i>
+		</div>
+		<div class="col-11 col-md-8 text-left">
+			<p>You can proceed to create a configuration below, where you can select which sites and the time frame in which you'd like to be reminded. Once set up, you will be able to receive an email reminder at your specified interval.</p>
+		</div>
+	</div>
 
+	<div class="row justify-content-center animate__animated animate__fadeIn animate__delay-1s my-4">
+		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+			<i class="fas fa-exclamation-triangle fa-3x"></i>
+		</div>
+		<div class="col-11 col-md-8 text-left">
+			<p>Please note that this platform is still in its beta release. We encourage you to provide feedback on any bugs you encounter or features you'd like to see. We appreciate your support!</p>
+		</div>
+	</div>
+
+	<hr />
+
+	<div class="row justify-content-center">
+		<div class="col-12 col-md-8 text-center animate__animated animate__fadeIn animate__delay-2s ">
+			<a class="btn btn-primary mt-3 btn-block animate__animated animate__infinite animate__pulse" id="configBuilderBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration <i class="fas fa-cogs"></i></a>
+		</div>
+	</div>
+
+	<div class="row justify-content-center">
+		<div class="col-12 col-md-8 text-center animate__animated animate__fadeIn animate__delay-2s">
+			<a class="btn btn-warning mt-3 btn-block" id="configHistoryBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History <i class="fas fa-history"></i></a>
+		</div>
+	</div>
+
+	<hr />
+
+	<div class="row my-5">
+		<div class="col-12 col-md-6 mx-auto animate__animated animate__fadeIn animate__delay-2s">
+			<h3 class="animate__animated animate__fadeIn">Sites with Reminders Configured</h3>
+		</div>
+	</div>
+
+	<div id="divLoading" class="row justify-content-center animate__animated animate__fadeIn animate__delay-2s">
+		<div class="col-auto">
+			Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+		</div>
+	</div>
+
+	<div class="row my-5">
+		<div class="col-12 animate__animated animate__fadeIn animate__delay-2s">
+			<table id="siteConfigurationTable" class="table table-striped display compact wrap"></table>
+		</div>
+	</div>
+
+</div>
 
 
 	
 
 
-	<div class="row my-5">
-		<div class="col-12">
-			<h5>Here are all of the sites you have configured reminders for.</h5>
-		</div>
-	</div>
 
-	<div class="container" id="divLoading">
-		<div class="row justify-content-center">
-			<div class="col-auto">
-				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-			</div>
-		</div>
-	</div>
+	
 
-	<div class="row my-5">
-		<div class="col-12">
-			<table id="siteConfigurationTable" class="table table-striped display compact wrap"></table>
-		</div>
-	</div>
-</div>
+	
+
 
 @section Scripts{
 
 
-	<script>
-		function FireReminders() {
-			$.ajax({
-				type: "GET",
-				url: '/api/boomi/firereminders',
-				async: false,
-				cache: false,
-				contentType: false,
-				enctype: 'multipart/form-data',
-				processData: false
-			}).done(function (data) {
-				var json = JSON.parse(data);
-				console.log('YEAAAA')
-				console.log(json);
-				alert('Done!')
-			});
-		}
-
-		function RefreshCerts() {
-			$.ajax({
-				type: "GET",
-				url: '/api/boomi/refreshcerts',
-				async: false,
-				cache: false,
-				contentType: 'application/json',  // Set the content type to JSON
-				processData: false
-			}).done(function (data) {
-				console.log('YEAAAA');
-				console.log(data);
-				alert('Done!');
-			}).fail(function (error) {
-				console.log('Error:', error);
-				alert('Failed!');
-			});
-		}
-
-	</script>
+	
 
     <script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
     
@@ -190,6 +176,22 @@
 		function redirectToConfigurationHistory(siteID) {
 			window.location.href = '/Reminders/ConfigurationHistory?siteID=' + siteID;
 		}
+	</script>
+
+
+	<script>
+		$(document).ready(function () {
+			$('#configBuilderBtn').tooltip({
+				title: "Create a Configuration if you want to be reminded about the expiration of SSL certs of certain sites.",
+				placement: 'bottom'
+			});
+
+			$('#configHistoryBtn').tooltip({
+				title: "View your Configuration History if you want to view or edit your past configurations",
+				placement: 'bottom'
+			});
+		});
+
 	</script>
 
 

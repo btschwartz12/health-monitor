@@ -15,6 +15,8 @@ namespace ISHealthMonitor.Core.Data.DbSet
 		public DateTime SSLExpirationDate { get; set; }
 		public string SSLIssuer { get; set; }
 		public string SSLSubject { get; set; }
+		public string SSLCommonName { get; set; }
+		public string SSLThumbprint { get; set; }
 		public string SiteCategory { get; set; }
 		public Guid CreatedBy { get; set; }
 		public DateTime DateCreated { get; set; }

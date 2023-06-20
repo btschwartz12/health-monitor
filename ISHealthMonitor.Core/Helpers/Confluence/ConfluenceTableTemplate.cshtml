@@ -1,0 +1,45 @@
+﻿<table data-layout="default" ac:local-id="10fea502-e105-47a1-8476-486ae919b919">
+    <colgroup>
+        <col style="width: 136.0px;" />
+        <col style="width: 136.0px;" />
+        <col style="width: 136.0px;" />
+        <col style="width: 136.0px;" />
+        <col style="width: 136.0px;" />
+        <col style="width: 136.0px;" />
+    </colgroup>
+    <tbody>
+        <tr>
+            <th>
+                <p><strong>Site Name</strong></p>
+            </th>
+            <th>
+                <p><strong>Thumbprint</strong></p>
+            </th>
+            <th>
+                <p><strong>Common name</strong></p>
+            </th>
+            <th>
+                <p><strong>Issuer</strong></p>
+            </th>
+            <th>
+                <p><strong>Eff Date</strong></p>
+            </th>
+            <th>
+                <p><strong>Exp Date</strong></p>
+            </th>
+        </tr>
+        @foreach (var site in Model.sites)
+        {
+            <tr>
+                <td>
+                    <a href="@site.SiteURL">@site.SiteName</a>
+                </td>
+                <td>@site.SSLThumbprint</td>
+                <td>@site.SSLCommonName</td>
+                <td>@site.SSLIssuer</td>
+                <td>@site.SSLEffectiveDate</td>
+                <td>@site.SSLExpirationDate</td>
+            </tr>
+        }
+    </tbody>
+</table>

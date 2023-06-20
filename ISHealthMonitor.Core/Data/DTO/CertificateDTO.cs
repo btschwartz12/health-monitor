@@ -13,5 +13,6 @@ namespace ISHealthMonitor.Core.Models.DTO
         public string Subject { get; set; }
         public string CommonName { get; set; }
         public bool ErrorCommonName { get; set; }
+        public string Thumbprint { get; set; }
     }
 }

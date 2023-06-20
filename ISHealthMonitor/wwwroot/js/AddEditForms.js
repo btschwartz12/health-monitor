@@ -1,35 +1,4 @@
 ﻿
-//function ValidateUser() {
-//	const usernameInput = $('#Username');
-//	const username = usernameInput.val();
-
-//	// Show spinner
-//	$('#spinner').removeClass('d-none');
-
-//	$.ajax({
-//		url: '/api/UsersApi/ValidateUser?username=' + username,
-//		type: 'POST',
-//		dataType: 'json',
-//		contentType: 'application/json',
-//		success: function (data) {
-//			$('#Guid').val(data);
-//			$('#IsAdmin').prop('disabled', false);
-//			$('#submitButton').prop('disabled', false);
-//			$('#errorMessage').addClass('d-none');
-
-//			// Hide spinner
-//			$('#spinner').addClass('d-none');
-//		},
-//		error: function (xhr, textStatus, error) {
-//			console.log(error);
-//			$('#errorMessage').text('Failed to find the specified user.');
-//			$('#errorMessage').removeClass('d-none');
-
-//			// Hide spinner
-//			$('#spinner').addClass('d-none');
-//		}
-//	});
-//}
 
 
 function initUserSelectize(selectedUserGuid) {
@@ -180,9 +149,18 @@ function FetchSSLCertificate() {
 			$('#SSLExpirationDate').val(data.ExpDate);
 			$('#SSLIssuer').val(data.Issuer);
 			$('#SSLSubject').val(data.Subject);
+			$('#SSLCommonName').val(data.CommonName);
+			$('#SSLThumbprint').val(data.Thumbprint);
 
-			$('#submitButton').prop('disabled', false);
-			$('#errorMessage').addClass('d-none');
+			if (data.ErrorCommonName) {
+				$('#errorMessage').text('Invalid Common Name');
+				$('#errorMessage').removeClass('d-none');
+			}
+			else {
+				$('#submitButton').prop('disabled', false);
+				$('#errorMessage').addClass('d-none');
+				
+			}
 
 			// Hide spinner
 			$('#spinner').addClass('d-none');
@@ -213,6 +191,8 @@ function SubmitCreateSiteForm() {
 		'SSLExpirationDate': $('#SSLExpirationDate').val(),
 		'SSLIssuer': $('#SSLIssuer').val(),
 		'SSLSubject': $('#SSLSubject').val(),
+		'SSLCommonName': $('#SSLCommonName').val(),
+		'SSLThumbprint': $('#SSLThumbprint').val(),
 		'Action': "x"
 	};
 

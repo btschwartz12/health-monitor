@@ -30,6 +30,7 @@ DATATABLE_REQUESTS.LoadSiteTable = function () {
         var json = JSON.parse(data);
 
         sitesDataTable.rows.add(json).draw();
+        sitesDataTable.columns.adjust().draw();
         $("#divLoading").hide();
     });
 }
