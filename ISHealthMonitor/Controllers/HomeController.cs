@@ -16,9 +16,12 @@ using ISHealthMonitor.Core.Common;
 using ISHealthMonitor.Core.DataAccess;
 using ISHealthMonitor.Core.Implementations;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ISHealthMonitor.Controllers
 {
+    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -36,7 +39,7 @@ namespace ISHealthMonitor.Controllers
 
         public IActionResult Index()
         {
-            
+
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
 			var CurrentEmployee = _employee.GetEmployeeByUserName(user);

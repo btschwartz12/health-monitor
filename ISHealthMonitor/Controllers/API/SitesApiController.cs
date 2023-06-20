@@ -16,12 +16,15 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using ISHealthMonitor.Core.Implementations;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class SitesApiController : ControllerBase
+    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    public class SitesApiController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
@@ -183,7 +186,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 		}
 
 
-		public async Task<SiteDTO> GetSiteDTO(string name, string category, string url, CertificateHandlers certHandlers)
+		private async Task<SiteDTO> GetSiteDTO(string name, string category, string url, CertificateHandlers certHandlers)
 		{
 			try
 			{
@@ -210,7 +213,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 			}
 		}
 
-		public async Task<List<SiteDTO>> ProcessJsonFileAsync(string filePath, string category)
+        private async Task<List<SiteDTO>> ProcessJsonFileAsync(string filePath, string category)
 		{
 			// Prepare the result list
 			List<SiteDTO> result = new List<SiteDTO>();
@@ -274,7 +277,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 		}
 
 
-		public void CreateSiteInternal(SiteDTO siteDTO)
+        private void CreateSiteInternal(SiteDTO siteDTO)
 		{
 
 			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");

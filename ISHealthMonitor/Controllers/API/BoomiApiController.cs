@@ -6,6 +6,8 @@ using ISHealthMonitor.Core.Helpers.Email;
 using ISHealthMonitor.Core.Implementations;
 using ISHealthMonitor.Core.Models;
 using ISHealthMonitor.Core.Models.DTO;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +25,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
     [Route("api/boomi")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class BoomiApiController : ControllerBase
     {
         private readonly IHealthModel _healthModel;

@@ -1,12 +1,15 @@
 ﻿using ISHealthMonitor.Core.Contracts;
 using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 
 namespace ISHealthMonitor.UI.Controllers
 {
+    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class SitesController : Controller
     {
 

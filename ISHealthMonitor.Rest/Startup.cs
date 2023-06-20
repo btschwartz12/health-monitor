@@ -38,7 +38,7 @@ namespace ISHealthMonitor.Rest
             
             services.AddControllers();
             services.AddSwaggerGen();
-            services.AddTokenAuthentication(Configuration);
+          //  services.AddTokenAuthentication(Configuration);
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

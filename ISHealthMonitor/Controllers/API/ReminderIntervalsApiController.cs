@@ -3,6 +3,8 @@ using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
 using ISHealthMonitor.Core.Implementations;
 using ISHealthMonitor.Core.Models.DTO;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,7 +19,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class ReminderIntervalsApiController : ControllerBase
+    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    public class ReminderIntervalsApiController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;

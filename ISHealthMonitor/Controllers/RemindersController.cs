@@ -3,6 +3,7 @@ using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
 using ISHealthMonitor.Core.Data.Models;
 using ISHealthMonitor.Core.Implementations;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-    
+    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class RemindersController : Controller
 	{
 
