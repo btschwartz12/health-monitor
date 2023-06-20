@@ -31,7 +31,7 @@ namespace ISHealthMonitor.UI.Controllers
 
             var CurrentEmployee = _employee.GetEmployeeByUserName(user);
 
-            ViewBag.UserName = user;
+            ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
             return View();
@@ -71,7 +71,7 @@ namespace ISHealthMonitor.UI.Controllers
 
             var CurrentEmployee = _employee.GetEmployeeByUserName(user);
 
-            ViewBag.UserName = user;
+            ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
             ViewBag.SiteDTO = _healthModel.GetSiteDTO(siteID);
 			return View();
@@ -84,7 +84,7 @@ namespace ISHealthMonitor.UI.Controllers
 
 			var CurrentEmployee = _employee.GetEmployeeByUserName(user);
 
-			ViewBag.UserName = user;
+			ViewBag.UserName = CurrentEmployee.DisplayName;
 			ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
 			if (groupID == 0)

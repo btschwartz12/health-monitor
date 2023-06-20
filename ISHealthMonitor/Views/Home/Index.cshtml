@@ -30,9 +30,7 @@
 
 
 <div class="container text-center">
-	<h1 class="animate__animated animate__backInUp">Welcome, @Model.DisplayName!</h1>
 
-	<hr />
 
 	<div class="row justify-content-center animate__animated animate__fadeIn animate__delay-1s my-4">
 		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
@@ -63,25 +61,24 @@
 
 	<hr />
 
-	<div class="row justify-content-center">
-		<div class="col-12 col-md-8 text-center animate__animated animate__fadeIn animate__delay-2s ">
-			<a class="btn btn-primary mt-3 btn-block animate__animated animate__infinite animate__pulse" id="configBuilderBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration <i class="fas fa-cogs"></i></a>
+	<div class="row my-2">
+		<div class="col-12 col-md-6 my-2 mx-auto animate__animated animate__fadeIn animate__delay-2s">
+			<h2 class="animate__animated animate__fadeIn">My Reminders</h2>
 		</div>
 	</div>
 
 	<div class="row justify-content-center">
-		<div class="col-12 col-md-8 text-center animate__animated animate__fadeIn animate__delay-2s">
-			<a class="btn btn-warning mt-3 btn-block" id="configHistoryBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History <i class="fas fa-history"></i></a>
+		<div class="col-6 col-md-4 text-center animate__animated animate__fadeIn animate__delay-2s">
+			<a class="btn btn-primary my-2 btn-block" id="configBuilderBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration <i class="fas fa-cogs"></i></a>
+		</div>
+		<div class="col-6 col-md-4 text-center animate__animated animate__fadeIn animate__delay-2s">
+			<a class="btn btn-warning my-2 btn-block" id="configHistoryBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History <i class="fas fa-history"></i></a>
 		</div>
 	</div>
 
-	<hr />
 
-	<div class="row my-5">
-		<div class="col-12 col-md-6 mx-auto animate__animated animate__fadeIn animate__delay-2s">
-			<h3 class="animate__animated animate__fadeIn">Sites with Reminders Configured</h3>
-		</div>
-	</div>
+
+	
 
 	<div id="divLoading" class="row justify-content-center animate__animated animate__fadeIn animate__delay-2s">
 		<div class="col-auto">

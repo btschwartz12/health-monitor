@@ -44,7 +44,7 @@ namespace ISHealthMonitor.Controllers
 
 			var CurrentEmployee = _employee.GetEmployeeByUserName(user);
 
-			ViewBag.UserName = user;
+            ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
 
