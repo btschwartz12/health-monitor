@@ -8,6 +8,7 @@ using ISHealthMonitor.Core.Helpers.Email;
 using ISHealthMonitor.Core.Models;
 using ISHealthMonitor.Core.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,13 +24,15 @@ namespace ISHealthMonitor.UI.Controllers.API
         private readonly IHealthModel _healthModel;
         private readonly IEmployee _employee;
         private readonly IRest _restModel;
+		private readonly IConfiguration _configuration;
 
 
-        public BoomiApiController(IHealthModel healthModel, IEmployee employee, IRest rest)
+        public BoomiApiController(IHealthModel healthModel, IEmployee employee, IRest rest, IConfiguration configuration)
         {
             _employee = employee;
             _healthModel = healthModel;
 			_restModel = rest;
+			_configuration = configuration;
 		}
 
 		[HttpGet]
@@ -47,8 +50,10 @@ namespace ISHealthMonitor.UI.Controllers.API
 			};
 
 
+			string rootDir = _configuration.GetSection("TemplatePaths")["ConfluenceTable"];
 
-			var tableStr = ConfluenceTableHelper.GetSiteTableHTML(model);
+
+			var tableStr = ConfluenceTableHelper.GetSiteTableHTML(model, rootDir);
 
 
 			//example to get Page Source
@@ -158,7 +163,10 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public async Task<IActionResult> FireReminders()
 		{
 
-            List<EmailReminderModel> emailModels = new List<EmailReminderModel>() { };
+
+			string rootDir = _configuration.GetSection("TemplatePaths")["EmailReminder"];
+
+			List<EmailReminderModel> emailModels = new List<EmailReminderModel>() { };
 
 			var nearExpiredSites = await GetNearExpiredSites();
 			var remindersList = await GetRemindersForNearExpiredSites(nearExpiredSites);
@@ -200,7 +208,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
             foreach (var emailModel in emailModels)
             {
-				EmailHelper.SendEmail(emailModel);
+				EmailHelper.SendEmail(emailModel, rootDir);
 			}
 
             return Ok(remindersList.Count); 

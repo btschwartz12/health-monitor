@@ -12,9 +12,22 @@ namespace ISHealthMonitor.Core.Helpers.Confluence
     public class ConfluenceTableHelper
     {
 
-        public static string GetSiteTableHTML(ConfluenceTableModel model)
+        public static string GetSiteTableHTML(ConfluenceTableModel model, string rootDir)
         {
-            var Template = File.ReadAllText(model.TemplatePath);
+
+            string templatePath = "";
+
+            if (rootDir == "local")
+            {
+                templatePath = Path.Combine(Path.GetDirectoryName(Environment.CurrentDirectory), model.TemplateRelativePath);
+
+			}
+            else
+            {
+				templatePath = Path.Combine(rootDir, model.TemplateRelativePath);
+			}
+
+			var Template = File.ReadAllText(templatePath);
 
             foreach (var site in model.sites)
             {

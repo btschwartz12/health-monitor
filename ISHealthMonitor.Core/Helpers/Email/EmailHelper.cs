@@ -14,10 +14,22 @@ namespace ISHealthMonitor.Core.Helpers.Email
     public class EmailHelper
     {
 
-		public static void SendEmail(EmailReminderModel model)
+		public static void SendEmail(EmailReminderModel model, string rootDir)
         {
 
-			var Template = File.ReadAllText(model.TemplatePath);
+			string templatePath;
+
+			if (rootDir == "local")
+			{
+				templatePath = Path.Combine(Path.GetDirectoryName(Environment.CurrentDirectory), model.TemplateRelativePath);
+
+			}
+			else
+			{
+				templatePath = Path.Combine(rootDir, model.TemplateRelativePath);
+			}
+
+			var Template = File.ReadAllText(templatePath);
 
             string body = Engine.Razor.RunCompile(new LoadedTemplateSource(Template),
                                         "templateKey",
