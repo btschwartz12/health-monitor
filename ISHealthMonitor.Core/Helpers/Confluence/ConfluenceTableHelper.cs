@@ -19,7 +19,8 @@ namespace ISHealthMonitor.Core.Helpers.Confluence
 
             if (rootDir == "local")
             {
-                templatePath = Path.Combine(Path.GetDirectoryName(Environment.CurrentDirectory), model.TemplateRelativePath);
+                templatePath = "rootDir";
+                //templatePath = Path.Combine(Path.GetDirectoryName(Environment.CurrentDirectory), model.TemplateRelativePath);
 
 			}
             else
