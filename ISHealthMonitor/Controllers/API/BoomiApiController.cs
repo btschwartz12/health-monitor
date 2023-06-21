@@ -1,30 +1,22 @@
 ﻿using ISHealthMonitor.Core.Common;
 using ISHealthMonitor.Core.Contracts;
-using ISHealthMonitor.Core.Data.Contexts;
 using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
 using ISHealthMonitor.Core.DataAccess;
 using ISHealthMonitor.Core.Helpers.Confluence;
 using ISHealthMonitor.Core.Helpers.Email;
-using ISHealthMonitor.Core.Implementations;
 using ISHealthMonitor.Core.Models;
 using ISHealthMonitor.Core.Models.DTO;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
-using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace ISHealthMonitor.UI.Controllers.API
 {
 
-    [Route("api/boomi")]
+	[Route("api/boomi")]
     [ApiController]
     public class BoomiApiController : ControllerBase
     {
@@ -52,13 +44,25 @@ namespace ISHealthMonitor.UI.Controllers.API
             ConfluenceTableModel model = new ConfluenceTableModel()
             {
                 sites = sites
-            };
+			};
 
-            var tableStr = ConfluenceTableHelper.GetSiteTableHTML(model);
+			try
+			{
+				
+				var tableStr2 = ConfluenceTableHelper.GetSiteTableHTML(model);
+
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+			}
+
+			var tableStr = "";
+		
 
 
-            //example to get Page Source
-            var action = "/wiki/api/v2/pages/300580865?body-format=storage";
+			//example to get Page Source
+			var action = "/wiki/api/v2/pages/300580865?body-format=storage";
             var rek = await _restModel.GetHttpContent(action);
 
             var confluencePage = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfluencePageInfo>(rek);
