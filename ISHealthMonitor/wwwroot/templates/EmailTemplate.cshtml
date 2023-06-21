@@ -1,0 +1,70 @@
+<html>
+<body>
+    <div style="width: 600px; margin: 0 auto;">
+        <h2 style="text-align: center;">Certificate Expiration Warning</h2>
+        <p style="margin-bottom: 1rem; line-height: 1.5;">Our records indicate that you have elected to be informed about the upcoming SSL certificate expiration for the following site:</p>
+
+        <table style="width: 100%; margin-bottom: 2rem; background-color: #a2fdf6; border: 1px solid #a2fdf6; border-radius: 10px; padding: 0.75rem 1.25rem;">
+            <tr>
+                <td style="text-align: center; width: 50%; vertical-align: middle;">
+                    <span>@Model.SiteName</span>
+                </td>
+                <td style="text-align: center; width: 50%; vertical-align: middle;">
+                    <span><a href="@Model.SiteURL" style="color: inherit;">@Model.SiteURL</a></span>
+                </td>
+            </tr>
+        </table>
+
+        <table style="width: 100%; margin-bottom: 2rem; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 10px; padding: 0.75rem 1.25rem;">
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <span>This certificate is set to expire in less than @Model.IntervalDisplayName</span>
+                </td>
+            </tr>
+        </table>
+
+        <h3 style="text-align: center; margin-bottom: 1rem;">Certificate Details</h3>
+        <div style="border: 1px solid #000; border-radius: 0.25rem; overflow: hidden;">
+            <table style="width: 100%; margin-bottom: 1rem; color: #212529; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 1px solid #dee2e6;">
+                        <th style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6;">Certificate Field</th>
+                        <th style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6;">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background-color: white;">
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6; border-right: 1px solid #dee2e6;">Site Name</td>
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6;">@Model.SiteName</td>
+                    </tr>
+                    <tr style="background-color: #f8f9fa;">
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6; border-right: 1px solid #dee2e6;">Site URL</td>
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6;">@Model.SiteURL</td>
+                    </tr>
+                    <tr style="background-color: white;">
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6; border-right: 1px solid #dee2e6;">SSL Effective Date</td>
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6;">@Model.SSLEffectiveDate</td>
+                    </tr>
+                    <tr style="background-color: #f8f9fa;">
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6; border-right: 1px solid #dee2e6;">SSL Expiration Date</td>
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6;">@Model.SSLExpirationDate</td>
+                    </tr>
+                    <tr style="background-color: white;">
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6; border-right: 1px solid #dee2e6;">SSL Issuer</td>
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6;">@Model.SSLIssuer</td>
+                    </tr>
+                    <tr style="background-color: #f8f9fa;">
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6; border-right: 1px solid #dee2e6;">SSL Subject</td>
+                        <td style="padding: 0.75rem; vertical-align: top; border-top: 1px solid #dee2e6;">@Model.SSLSubject</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+        <p style="margin-bottom: 1rem; line-height: 1.5;">It is important to renew your SSL/TLS certificate before it expires. If the certificate is not renewed, visitors to the web site may be presented with warning messages and/or a secure session may not be established.</p>
+        <p style="margin-bottom: 1rem; line-height: 1.5;">You are receiving this because you have opted to be reminded when the certificate for <strong>@Model.SiteName</strong> has less than @Model.IntervalDisplayName until expiration. To modify your subscription, please see the ISHealthMonitor. </p>
+    </div>
+</body>
+</html>

@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\templates\ConfluenceTableTemplate.cshtml" />
+    <Content Remove="wwwroot\templates\EmailTemplate.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <_WebToolingArtifacts Remove="Properties\launchSettings.json" />
   </ItemGroup>
 
@@ -31,6 +36,11 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\lib\bootstrapV5\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\templates\ConfluenceTableTemplate.cshtml" />
+    <None Include="wwwroot\templates\EmailTemplate.cshtml" />
   </ItemGroup>
 
 </Project>
