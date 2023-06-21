@@ -46,19 +46,9 @@ namespace ISHealthMonitor.UI.Controllers.API
                 sites = sites
 			};
 
-			try
-			{
-				
-				var tableStr2 = ConfluenceTableHelper.GetSiteTableHTML(model);
 
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-			}
 
-			var tableStr = "";
-		
+			var tableStr = ConfluenceTableHelper.GetSiteTableHTML(model);
 
 
 			//example to get Page Source
