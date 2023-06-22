@@ -20,8 +20,8 @@ namespace ISHealthMonitor.Core.Helpers.Email
         public string IntervalDisplayName { get; set; }
 
 
-		//public readonly string TemplateRelativePath = "ISHealthMonitor\\wwwroot\\templates\\EmailTemplate.cshtml";
-		public readonly string TemplateRelativePath = "wwwroot\\lib\\templates\\EmailTemplate.cshtml";
+
+		public readonly string TemplateRelativePath = "wwwroot\\lib\\templates\\EmailTemplate.html";
 
 		public readonly string Subject = "Site Certificate Expiration Warning";
 		

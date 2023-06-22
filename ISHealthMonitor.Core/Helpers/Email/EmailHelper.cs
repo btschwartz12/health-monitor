@@ -21,7 +21,7 @@ namespace ISHealthMonitor.Core.Helpers.Email
 
 			if (rootDir == "local")
 			{
-				templatePath = Path.Combine(Path.GetDirectoryName(Environment.CurrentDirectory), model.TemplateRelativePath);
+				templatePath = Path.Combine(Environment.CurrentDirectory, model.TemplateRelativePath);
 
 			}
 			else
