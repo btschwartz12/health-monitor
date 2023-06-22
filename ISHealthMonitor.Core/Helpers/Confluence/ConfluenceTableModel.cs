@@ -11,7 +11,7 @@ namespace ISHealthMonitor.Core.Helpers.Confluence
     {
         public List<SiteDTO> sites;
 
-		public readonly string TemplateRelativePath = "wwwroot\\templates\\ConfluenceTableTemplate.cshtml";
+		public readonly string TemplateRelativePath = "wwwroot\\lib\\templates\\ConfluenceTableTemplate.cshtml";
 		//public readonly string TemplateRelativePath = "ISHealthMonitor\\wwwroot\\templates\\ConfluenceTableTemplate.cshtml";
 
 	}
