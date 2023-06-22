@@ -17,6 +17,8 @@ namespace ISHealthMonitor.Core.Helpers.Email
         public string SSLExpirationDate { get; set; }
         public string SSLIssuer { get; set; }
         public string SSLSubject { get; set; }
+        public string SSLThumbprint { get; set; }
+        public string SSLCommonName { get; set; }
         public string IntervalDisplayName { get; set; }
 
 

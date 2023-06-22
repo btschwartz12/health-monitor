@@ -31,7 +31,14 @@ namespace ISHealthMonitor.Core.Helpers.Email
 
 			var Template = File.ReadAllText(templatePath);
 
-			
+
+
+            if (!string.IsNullOrEmpty(model.SSLThumbprint))
+            {
+                var formatted = string.Join(" ", Enumerable.Range(0, model.SSLThumbprint.Length / 2).Select(i => model.SSLThumbprint.Substring(i * 2, 2)));
+                model.SSLThumbprint = formatted;
+            }
+
 
             string body = Engine.Razor.RunCompile(new LoadedTemplateSource(Template),
                                         "templateKey" + key.ToString(),

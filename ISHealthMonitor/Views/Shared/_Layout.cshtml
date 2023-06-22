@@ -27,7 +27,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="Index">All Sites</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="Index">Sites</a>
                         </li>
 
                         @{
@@ -37,13 +37,13 @@
                         @if (isAdmin)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="Index">All Reminders</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="Index">Reminders</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ReminderIntervals" asp-action="Index">All Intervals</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="ReminderIntervals" asp-action="Index">Intervals</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">All Users</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
                             </li>
                         }
                         
@@ -132,7 +132,6 @@
     <script src="~/lib/datatables/jquery.dataTables.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
-    <link href="~/js/chosen/chosen.css" rel="stylesheet" type="text/css" />
     <link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet" type="text/css" />
 
     <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
@@ -144,6 +143,8 @@
     <script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/buttons.html5.min.js"></script>
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/buttons.print.min.js"></script>
+    <script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script type="text/javascript" language="javascript" src="//cdn.datatables.net/plug-ins/1.13.4/sorting/datetime-moment.js"></script>
 
 
     <script src="~/js/AddEditForms.js" asp-append-version="true"></script>
@@ -155,6 +156,12 @@
     
 </html>
 
+<script> 
+    $(document).ready(function () {
+        $.fn.dataTable.moment('MM/DD/YYYY');
+        $.fn.dataTable.moment('yyyy-MM-dd');
+    });
+</script>
 
 <script>
     function showAdminModal(id) {

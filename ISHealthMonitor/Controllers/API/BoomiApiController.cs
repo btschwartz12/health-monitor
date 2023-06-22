@@ -189,15 +189,17 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 				if (emailList.Count > 0)
 				{
-                    var model = new EmailReminderModel
-                    {
-                        Emails = emailList,
-                        SiteURL = siteReminders.Site.SiteURL,
-                        SiteName = siteReminders.Site.SiteName,
-                        SSLEffectiveDate = siteReminders.Site.SSLEffectiveDate,
-                        SSLExpirationDate = siteReminders.Site.SSLExpirationDate,
-                        SSLIssuer = siteReminders.Site.SSLIssuer,
-                        SSLSubject = siteReminders.Site.SSLSubject,
+					var model = new EmailReminderModel
+					{
+						Emails = emailList,
+						SiteURL = siteReminders.Site.SiteURL,
+						SiteName = siteReminders.Site.SiteName,
+						SSLEffectiveDate = siteReminders.Site.SSLEffectiveDate,
+						SSLExpirationDate = siteReminders.Site.SSLExpirationDate,
+						SSLIssuer = siteReminders.Site.SSLIssuer,
+						SSLSubject = siteReminders.Site.SSLSubject,
+						SSLCommonName = siteReminders.Site.SSLCommonName,
+						SSLThumbprint = siteReminders.Site.SSLThumbprint,
                         IntervalDisplayName = siteReminders.ReminderInterval.DisplayName
                     };
 
@@ -270,8 +272,8 @@ namespace ISHealthMonitor.UI.Controllers.API
                     ID = site.ID,
                     SiteURL = site.URL,
                     SiteName = site.DisplayName,
-                    SSLEffectiveDate = site.SSLEffectiveDate.ToString(),
-                    SSLExpirationDate = site.SSLExpirationDate.ToString(),
+                    SSLEffectiveDate = site.SSLEffectiveDate.ToString("yyyy-MM-dd"),
+                    SSLExpirationDate = site.SSLExpirationDate.ToString("yyyy-MM-dd"),
                     SSLIssuer = site.SSLIssuer,
                     SSLSubject = site.SSLSubject,
 					SSLCommonName = site.SSLCommonName,
@@ -312,7 +314,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 				{
 					// For each site that needs a reminder in that interval, collect any user-configured reminders that exist
 					var siteReminders = reminders
-						.Where(r => r.ISHealthMonitorSiteID == site.ID && r.ISHealthMonitorIntervalID == interval.ID)
+						.Where(r => r.ISHealthMonitorSiteID == site.ID || r.ISHealthMonitorSiteID == 1 ) // SiteID = 1 means All Sites
+						.Where(r => r.ISHealthMonitorIntervalID == interval.ID)
 						.Select(r => new UserReminderDTO
 						{
 							ID = r.ID,

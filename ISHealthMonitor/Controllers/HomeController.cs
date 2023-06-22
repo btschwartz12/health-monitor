@@ -37,7 +37,7 @@ namespace ISHealthMonitor.Controllers
             _restModel = restModel;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
@@ -47,9 +47,8 @@ namespace ISHealthMonitor.Controllers
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-
-
-            
+			bool userHasReminders = await _healthModel.UserHasReminders(new Guid(CurrentEmployee.GUID));
+			ViewBag.UserHasReminders = userHasReminders;
 
 
 

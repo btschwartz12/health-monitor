@@ -70,6 +70,9 @@
 	<script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
 	<script>
 		$(document).ready(function () {
+
+			
+
 			var buttonCommon = {
 				exportOptions: {
 					columns: [0, 1, 2, 3]
@@ -81,8 +84,8 @@
 				{ "sTitle": "Site Category", "data": "SiteCategory" },
 				{ "sTitle": "Site URL", "data": "SiteURL" },
 				
-				{ "sTitle": "Effective\nDate", "data": "SSLEffectiveDate" },
-				{ "sTitle": "Expiration\nDate", "data": "SSLExpirationDate" },
+				{ "sTitle": "Effective\nDate", "data": "SSLEffectiveDate", "type": "date" },
+				{ "sTitle": "Expiration\nDate", "data": "SSLExpirationDate", "type": "date" },
 				{ "sTitle": "Thumbprint", "data": "SSLThumbprint" },
 			];
 

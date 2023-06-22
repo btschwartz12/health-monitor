@@ -120,7 +120,7 @@ function initSelectize(modelData) {
         // Whenever the checkbox is toggled, re-render all the selections
         renderReminderSection();
 
-        validateForm();
+        validateForm(false);
     });
 
     
@@ -245,7 +245,7 @@ function initSitesSelectize(modelData) {
     // Whenever a site is added or removed, re-render all the selections
     sitesControl.on('change', function () {
         renderReminderSection();
-        validateForm();
+        validateForm(false);
     });
 }
 
@@ -271,7 +271,7 @@ function initIntervalSelectize(modelData) {
     remindersControl.on('change', function () {
         var sameValues = remindersControl.getValue();
         propagateSameSelections(sameValues);
-        validateForm();
+        validateForm(false);
     });
 }
 
@@ -365,10 +365,8 @@ function renderReminderSection() {
         var $group = $('<div class="form-group col-6"></div>'); 
 
 
-        var $label = $('<label style="display: block; margin-bottom: 10px; color: ' + color + ';">' + selectedSites[i].siteName + ' </label>');
-        var $link = $('<a href="' + selectedSites[i].siteURL + '" style="color: ' + color + ';" target="_blank">(link)</a>');
+        var $label = $('<a href="' + selectedSites[i].siteURL + '" style="display: block; margin-bottom: 10px; color: ' + color + ';" target="_blank">' + selectedSites[i].siteName + ' </a>');
 
-        $label.append($link); 
 
         var $select = $('<select id="select-reminders-' + selectedSites[i].id + '" class="site-reminder" placeholder="Select reminders..." style="margin: 0 auto;"></select>');
 
@@ -400,7 +398,7 @@ function renderReminderSection() {
 
 
         siteSelectize.on('change', function () {
-            validateForm();
+            validateForm(false);
         });
 
 
@@ -422,7 +420,7 @@ function renderReminderSection() {
 }
 
 
-function validateForm() {
+function validateForm(showError) {
     var siteControl = $('#select-sites')[0].selectize;
     var sites = siteControl.getValue().map(function (id) {
         var site = siteControl.options[id];
@@ -432,8 +430,11 @@ function validateForm() {
     var isValid = true; // Start with assuming the form is valid
 
     if (sites.length === 0) {
-        $('#error-message').text('Please select at least one site.');
-        $('#error-message').removeClass('d-none');
+        if (showError) {
+            $('#error-message').text('Please select at least one site.');
+            $('#error-message').removeClass('d-none');
+        }
+        
         // Add red border to the site selection control
         $('#select-sites')[0].nextElementSibling.style.borderColor = "red";
         isValid = false;
@@ -455,8 +456,11 @@ function validateForm() {
 
         if (selectedReminders.length === 0) {
             var errorMessage = $('#sameReminder').is(':checked') ? 'Please select at least one reminder.' : 'Please select at least one reminder for site ' + site.name + '.';
-            $('#error-message').text(errorMessage);
-            $('#error-message').removeClass('d-none');
+            if (showError) {
+                $('#error-message').text(errorMessage);
+                $('#error-message').removeClass('d-none');
+            }
+            
             // Add red border to the reminder selection control
             remindersControl.$control[0].style.borderColor = "red";
             isValid = false;
@@ -509,7 +513,7 @@ function SubmitConfigurationForm() {
     
 function getData() {
 
-    if (!validateForm()) {
+    if (!validateForm(true)) {
         return false;
     }
 

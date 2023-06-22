@@ -67,34 +67,43 @@
 		<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
 			<a class="btn btn-primary my-2 btn-block" id="configBuilderBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration <i class="fas fa-cogs"></i></a>
 		</div>
-		<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
-			<a class="btn btn-warning my-2 btn-block" id="configHistoryBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History <i class="fas fa-history"></i></a>
-		</div>
-		<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
-			<a class="btn btn-info my-2 btn-block" id="trackedSitesBtn" sp-area="" asp-controller="Sites" asp-action="Index">View Tracked Sites <i class="fas fa-globe"></i></a>
-		</div>
+		@if (ViewBag.UserHasReminders)
+		{
+			<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
+				<a class="btn btn-warning my-2 btn-block" id="configHistoryBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History <i class="fas fa-history"></i></a>
+			</div>
+			<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
+				<a class="btn btn-info my-2 btn-block" id="trackedSitesBtn" sp-area="" asp-controller="Sites" asp-action="Index">View Tracked Sites <i class="fas fa-globe"></i></a>
+			</div>
+		}
+		
 	</div>
 
-	<hr />
+	@if (ViewBag.UserHasReminders)
+	{
+		<hr />
 
-	<div class="row ">
-		<div class="col-12 col-md-6 mx-auto animate__animated animate__fadeIn animate__delay-2s">
-			<h2 class="animate__animated animate__fadeIn">My Reminders</h2>
+		<div class="row ">
+			<div class="col-12 col-md-6 mx-auto animate__animated animate__fadeIn animate__delay-2s">
+				<h2 class="animate__animated animate__fadeIn">My Reminders</h2>
+			</div>
 		</div>
-	</div>
+
+
+		<div id="divLoading" class="row justify-content-center animate__animated animate__fadeIn animate__delay-2s">
+			<div class="col-auto">
+				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+			</div>
+		</div>
+
+		<div class="row my-2">
+			<div class="col-12 animate__animated animate__fadeIn animate__delay-2s">
+				<table id="siteConfigurationTable" class="table table-striped display compact wrap"></table>
+			</div>
+		</div>
+	}
+
 	
-
-	<div id="divLoading" class="row justify-content-center animate__animated animate__fadeIn animate__delay-2s">
-		<div class="col-auto">
-			Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-		</div>
-	</div>
-
-	<div class="row my-2">
-		<div class="col-12 animate__animated animate__fadeIn animate__delay-2s">
-			<table id="siteConfigurationTable" class="table table-striped display compact wrap"></table>
-		</div>
-	</div>
 
 </div>
 

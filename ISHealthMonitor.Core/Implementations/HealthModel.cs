@@ -37,8 +37,8 @@ namespace ISHealthMonitor.Core.Models
 							  SiteURL = d.URL,
 							  SiteName = d.DisplayName,
 							  SiteCategory = d.SiteCategory,
-							  SSLEffectiveDate = d.SSLEffectiveDate.ToString(),
-							  SSLExpirationDate = d.SSLExpirationDate.ToString(),
+							  SSLEffectiveDate = d.SSLEffectiveDate.ToString("yyyy-MM-dd"),
+							  SSLExpirationDate = d.SSLExpirationDate.ToString("yyyy-MM-dd"),
 							  SSLIssuer = d.SSLIssuer,
 							  SSLSubject = d.SSLSubject,
 							  SSLCommonName = d.SSLCommonName,
@@ -71,8 +71,8 @@ namespace ISHealthMonitor.Core.Models
 				SiteURL = site.URL,
 				SiteName= site.DisplayName,
 				SiteCategory = site.SiteCategory,
-				SSLEffectiveDate = site.SSLEffectiveDate.ToString(),
-				SSLExpirationDate = site.SSLExpirationDate.ToString(),
+				SSLEffectiveDate = site.SSLEffectiveDate.ToString("yyyy-MM-dd"),
+				SSLExpirationDate = site.SSLExpirationDate.ToString("yyyy-MM-dd"),
 				SSLIssuer = site.SSLIssuer, 
 				SSLSubject = site.SSLSubject,
 				SSLCommonName = site.SSLCommonName,
@@ -452,6 +452,16 @@ namespace ISHealthMonitor.Core.Models
 
 			return intervals;
         }
-    }
+
+		public async Task<bool> UserHasReminders(Guid guid)
+		{
+			var reminders = await _IACMSEntityContext.ISHealthMonitorUserReminders
+				.Where(r => !r.Deleted)
+				.Where(r => r.CreatedBy == guid)
+				.ToListAsync();
+
+			return reminders.Count > 0;
+		}
+	}
 }
 

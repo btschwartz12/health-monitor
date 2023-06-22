@@ -59,7 +59,12 @@ namespace ISHealthMonitor.Core.Contracts
 
 
 
-        List<SiteReminderConfiguration> GetSiteReminderConfigurations(Guid guid);
+		Task<bool> UserHasReminders(Guid guid);
+
+
+
+
+		List<SiteReminderConfiguration> GetSiteReminderConfigurations(Guid guid);
 		List<ReminderConfigurationData> GetReminderConfigurationsData(Guid guid, int siteID);
 
 
