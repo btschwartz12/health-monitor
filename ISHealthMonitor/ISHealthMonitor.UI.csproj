@@ -5,8 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\templates\ConfluenceTableTemplate.cshtml" />
-    <Content Remove="wwwroot\templates\EmailTemplate.cshtml" />
+    <Compile Remove="wwwroot\templates\**" />
+    <Content Remove="wwwroot\templates\**" />
+    <EmbeddedResource Remove="wwwroot\templates\**" />
+    <None Remove="wwwroot\templates\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,10 +39,9 @@
   <ItemGroup>
     <Folder Include="wwwroot\lib\bootstrapV5\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\templates\ConfluenceTableTemplate.cshtml" />
-    <None Include="wwwroot\templates\EmailTemplate.cshtml" />
-  </ItemGroup>
+	
+   <ItemGroup>
+    <Folder Include="wwwroot\lib\templates\" />
+   </ItemGroup>
 
 </Project>
