@@ -170,7 +170,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 			var nearExpiredSites = await GetNearExpiredSites();
 			var remindersList = await GetRemindersForNearExpiredSites(nearExpiredSites);
-			var filteredReminderList = RemoveDuplicates(remindersList);
+			List<RemindersToSendForSite> filteredReminderList = RemoveDuplicates(remindersList);
 
 			foreach (var siteReminders in filteredReminderList)
 			{
@@ -206,12 +206,35 @@ namespace ISHealthMonitor.UI.Controllers.API
                 
             }
 
-            foreach (var emailModel in emailModels)
-            {
+			foreach (var emailModel in emailModels)
+			{
 				EmailHelper.SendEmail(emailModel, rootDir);
 			}
 
-            return Ok(remindersList.Count); 
+			var result = new Dictionary<string, Dictionary<string, List<string>>>();
+
+			foreach (var reminder in remindersList)
+			{
+				string siteUrl = reminder.Site.SiteURL;
+				string intervalDisplayName = reminder.ReminderInterval.DisplayName;
+
+				if (!result.ContainsKey(siteUrl))
+				{
+					result[siteUrl] = new Dictionary<string, List<string>>();
+				}
+
+				if (!result[siteUrl].ContainsKey(intervalDisplayName))
+				{
+					result[siteUrl][intervalDisplayName] = new List<string>();
+				}
+
+				foreach (var userReminder in reminder.Reminders)
+				{
+					result[siteUrl][intervalDisplayName].Add(userReminder.CreatedBy.ToString());
+				}
+			}
+
+			return Ok(new { result });
 		}
 
 
@@ -230,13 +253,13 @@ namespace ISHealthMonitor.UI.Controllers.API
 			{
                 var minutes = interval.DurationInMinutes;
                 var timeSpan = TimeSpan.FromMinutes(minutes);
-                var lowerBound = now.Date - timeSpan;
+                var lowerBound = now.Date + timeSpan;
                 var upperBound = lowerBound + TimeSpan.FromDays(1);
 
                 // Get all sites that are within the interval (need a reminder sent)
                 var sitesWithinInterval = sites.Where(site =>
                 {
-                    var expiryDate = site.SSLExpirationDate.Date;
+                    var expiryDate = site.SSLExpirationDate;
                     return expiryDate >= lowerBound && expiryDate < upperBound;
                 })
                 .Select(site => new SiteDTO

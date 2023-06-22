@@ -173,8 +173,7 @@
             enctype: 'multipart/form-data',
             processData: false
         }).done(function (data) {
-            var json = JSON.parse(data);
-            console.log(json);
+            console.log(data);
             $('#alertFireReminders').removeClass('d-none').text('Successfully sent reminders!');
         }).fail(function (error) {
             console.log('Error:', error);
