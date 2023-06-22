@@ -92,7 +92,7 @@
 		function FireReminders() {
 			$.ajax({
 				type: "GET",
-				url: '/api/boomi/firereminders',
+				url: '/api/adminfunctions/firereminders',
 				async: false,
 				cache: false,
 				contentType: false,
@@ -109,7 +109,7 @@
 		function RefreshCerts() {
 			$.ajax({
 				type: "GET",
-				url: '/api/boomi/refreshcerts',
+				url: '/api/adminfunctions/refreshcerts',
 				async: false,
 				cache: false,
 				contentType: 'application/json',  // Set the content type to JSON
@@ -208,7 +208,7 @@
 			var siteId = $('#siteConfigurationToDeleteId').val();
 			$.ajax({
 				type: "PUT",
-				url: '/api/RemindersApi/DeleteRemindersForSite?siteId=' + siteId,
+				url: '/api/Reminders/DeleteRemindersForSite?siteId=' + siteId,
 				success: function (data) {
 					if (data) {
 						$("#siteConfigurationDeleteModal").modal('hide');

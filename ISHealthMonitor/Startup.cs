@@ -106,12 +106,7 @@ namespace ISHealthMonitor
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-            //app.UseFileServer(new FileServerOptions
-            //{
-            //    FileProvider = new PhysicalFileProvider("C:\\Source Code\\Samples\\ISHealthMonitor\\ISHealthMonitor.Rest"),//(@"\\server\path"),
-            //    RequestPath = new PathString("/Rest"),
-            //    EnableDirectoryBrowsing = false
-            //});
+            
          }
     }
 }

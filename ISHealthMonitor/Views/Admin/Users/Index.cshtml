@@ -146,7 +146,7 @@
 			var id = $('#userToDeleteId').val();
 			$.ajax({
 				type: "PUT",
-				url: '/api/UsersApi/DeleteUser?id=' + id,
+				url: '/api/Users/DeleteUser?id=' + id,
 				success: function (data) {
 					if (data) {
 						$("#userDeleteModal").modal('hide');

@@ -23,14 +23,14 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-    public class SitesApiController : ControllerBase
+  
+    public class SitesController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
 
-		private readonly ILogger<SitesApiController> _logger;
-		public SitesApiController(ILogger<SitesApiController> logger,
+		private readonly ILogger<SitesController> _logger;
+		public SitesController(ILogger<SitesController> logger,
 			IHealthModel healthModel,
 			IEmployee employee)
 		{

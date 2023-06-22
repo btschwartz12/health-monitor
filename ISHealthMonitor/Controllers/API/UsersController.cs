@@ -17,13 +17,12 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-   // [AllowAnonymous]
-    public class UsersApiController : ControllerBase
+     public class UsersController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
 
-        public UsersApiController(IHealthModel healthModel, IEmployee employee)
+        public UsersController(IHealthModel healthModel, IEmployee employee)
         {
             _employee = employee;
 			_healthModel = healthModel;

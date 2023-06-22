@@ -34,7 +34,8 @@ namespace ISHealthMonitor.Core.Contracts
 		void DeleteReminderGroup(int id);
 		void DeleteRemindersBySite(Guid user, int id);
 
-
+		Task<List<string>> UpdateSiteCerts();
+		Task<int> FireEmailReminders();
 
 
 		// Reminder Intervals

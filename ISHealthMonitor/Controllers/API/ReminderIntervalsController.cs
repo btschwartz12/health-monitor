@@ -19,14 +19,14 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-    public class ReminderIntervalsApiController : ControllerBase
+    
+    public class ReminderIntervalsController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
-		private readonly ILogger<ReminderIntervalsApiController> _logger;
+		private readonly ILogger<ReminderIntervalsController> _logger;
 
-		public ReminderIntervalsApiController(ILogger<ReminderIntervalsApiController> logger,
+		public ReminderIntervalsController(ILogger<ReminderIntervalsController> logger,
 			IHealthModel healthModel,
 			IEmployee employee)
 		{

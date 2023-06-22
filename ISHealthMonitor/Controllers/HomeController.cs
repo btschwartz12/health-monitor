@@ -18,6 +18,7 @@ using ISHealthMonitor.Core.Implementations;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Configuration;
 
 namespace ISHealthMonitor.Controllers
 {
@@ -28,13 +29,15 @@ namespace ISHealthMonitor.Controllers
         private readonly IHealthModel _healthModel;
         private readonly IEmployee _employee;
         private readonly IRest _restModel;
+        private readonly IConfiguration _config;
         public HomeController(ILogger<HomeController> logger,
-            IHealthModel healthModel, IEmployee employee, IRest restModel)
+            IHealthModel healthModel, IEmployee employee, IRest restModel, IConfiguration config)
         {
             _logger = logger;
             _employee = employee;
             _healthModel = healthModel;
             _restModel = restModel;
+            _config = config;
         }
 
         public IActionResult Index()
@@ -46,12 +49,6 @@ namespace ISHealthMonitor.Controllers
 
 			ViewBag.UserName = user;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
-
-
-
-            
-
-
 
 			HomeViewModel model = new()
             {

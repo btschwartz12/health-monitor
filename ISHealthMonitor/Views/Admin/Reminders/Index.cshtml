@@ -148,7 +148,7 @@
 			var id = $('#reminderToDeleteId').val();
 			$.ajax({
 				type: "PUT",
-				url: '/api/RemindersApi/DeleteReminder?id=' + id,
+				url: '/api/Reminders/DeleteReminder?id=' + id,
 				success: function (data) {
 					if (data) {
 						$("#reminderDeleteModal").modal('hide');
