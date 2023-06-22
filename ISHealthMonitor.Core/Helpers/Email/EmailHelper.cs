@@ -14,7 +14,7 @@ namespace ISHealthMonitor.Core.Helpers.Email
     public class EmailHelper
     {
 
-		public static void SendEmail(EmailReminderModel model, string rootDir)
+		public static void SendEmail(EmailReminderModel model, string rootDir, int key)
         {
 
 			string templatePath;
@@ -31,8 +31,10 @@ namespace ISHealthMonitor.Core.Helpers.Email
 
 			var Template = File.ReadAllText(templatePath);
 
+			
+
             string body = Engine.Razor.RunCompile(new LoadedTemplateSource(Template),
-                                        "templateKey",
+                                        "templateKey" + key.ToString(),
                                         typeof(EmailReminderModel),
                                         model);
 

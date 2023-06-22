@@ -206,9 +206,12 @@ namespace ISHealthMonitor.UI.Controllers.API
                 
             }
 
+			int key = 0;
+
 			foreach (var emailModel in emailModels)
 			{
-				EmailHelper.SendEmail(emailModel, rootDir);
+				EmailHelper.SendEmail(emailModel, rootDir, key);
+				key += 1;
 			}
 
 			var result = new Dictionary<string, Dictionary<string, List<string>>>();
