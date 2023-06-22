@@ -61,11 +61,7 @@
 
 	<hr />
 
-	<div class="row my-2">
-		<div class="col-12 col-md-6 my-2 mx-auto animate__animated animate__fadeIn animate__delay-2s">
-			<h2 class="animate__animated animate__fadeIn">My Reminders</h2>
-		</div>
-	</div>
+	
 
 	<div class="row justify-content-center">
 		<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
@@ -75,12 +71,17 @@
 			<a class="btn btn-warning my-2 btn-block" id="configHistoryBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History <i class="fas fa-history"></i></a>
 		</div>
 		<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
-			<a class="btn btn-info my-2 btn-block" id="configHistoryBtn" sp-area="" asp-controller="Sites" asp-action="Index">View Tracked Sites <i class="fas fa-globe"></i></a>
+			<a class="btn btn-info my-2 btn-block" id="trackedSitesBtn" sp-area="" asp-controller="Sites" asp-action="Index">View Tracked Sites <i class="fas fa-globe"></i></a>
 		</div>
 	</div>
 
+	<hr />
 
-
+	<div class="row ">
+		<div class="col-12 col-md-6 mx-auto animate__animated animate__fadeIn animate__delay-2s">
+			<h2 class="animate__animated animate__fadeIn">My Reminders</h2>
+		</div>
+	</div>
 	
 
 	<div id="divLoading" class="row justify-content-center animate__animated animate__fadeIn animate__delay-2s">
@@ -89,10 +90,15 @@
 		</div>
 	</div>
 
-	<div class="row my-5">
+	<div class="row my-2">
 		<div class="col-12 animate__animated animate__fadeIn animate__delay-2s">
 			<table id="siteConfigurationTable" class="table table-striped display compact wrap"></table>
 		</div>
+	</div>
+
+
+	<div id="scroll-indicator" class="scroll-indicator">
+		<i class="fas fa-arrow-down"></i>
 	</div>
 
 </div>
@@ -182,12 +188,17 @@
 	<script>
 		$(document).ready(function () {
 			$('#configBuilderBtn').tooltip({
-				title: "Create a Configuration if you want to be reminded about the expiration of SSL certs of certain sites.",
+				title: "Create a Configuration if you want to set reminders for the expiration of SSL certs of certain sites",
 				placement: 'bottom'
 			});
 
 			$('#configHistoryBtn').tooltip({
 				title: "View your Configuration History if you want to view or edit your past configurations",
+				placement: 'bottom'
+			});
+
+			$('#trackedSitesBtn').tooltip({
+				title: "View all of the sites this app keeps track of and their certificate information",
 				placement: 'bottom'
 			});
 		});
