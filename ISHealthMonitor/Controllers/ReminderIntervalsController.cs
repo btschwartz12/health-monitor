@@ -31,7 +31,7 @@ namespace ISHealthMonitor.UI.Controllers
 			ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-            return View();
+            return View("~/Views/Admin/ReminderIntervals/Index.cshtml");
 		}
 
 		[HttpGet]
@@ -43,7 +43,7 @@ namespace ISHealthMonitor.UI.Controllers
 				{
 
 				};
-				return View(newReminderIntervalDTO);
+				return View("~/Views/Admin/ReminderIntervals/AddEdit.cshtml", newReminderIntervalDTO);
 			}
 			else
 			{
@@ -57,7 +57,7 @@ namespace ISHealthMonitor.UI.Controllers
 					DisplayName = reminderInterval.DisplayName,
 				};
 
-				return View(reminderIntervalDTO);
+				return View("~/Views/Admin/ReminderIntervals/AddEdit.cshtml", reminderIntervalDTO);
 			}
 		}
 	}

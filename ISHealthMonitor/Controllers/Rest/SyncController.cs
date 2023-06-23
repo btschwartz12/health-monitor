@@ -31,22 +31,22 @@ namespace ISHealthMonitor.UI.Controllers.Rest
             _healthModel = healthModel;
         }
 
-        [HttpGet(Name = "SyncSites")]
-        public async Task<IActionResult> Get()
-        {
-			var failedSiteUrls = await _healthModel.UpdateSiteCerts();
-			var fireEmailRemindersCount = await _healthModel.FireEmailReminders();
+  //      [HttpGet(Name = "SyncSites")]
+  //      public async Task<IActionResult> Get()
+  //      {
+		//	var failedSiteUrls = await _healthModel.UpdateSiteCerts();
+		//	var fireEmailRemindersCount = await _healthModel.FireEmailReminders();
 
-			if (failedSiteUrls.Count > 0)
-			{
-				return Ok(new { Message = "Failed", FailedSiteUrls = failedSiteUrls });
-			}
-			else
-			{
-				return Ok(new { Message = "Success. " + fireEmailRemindersCount + " were sent out." });
-			}
+		//	if (failedSiteUrls.Count > 0)
+		//	{
+		//		return Ok(new { Message = "Failed", FailedSiteUrls = failedSiteUrls });
+		//	}
+		//	else
+		//	{
+		//		return Ok(new { Message = "Success. " + fireEmailRemindersCount + " were sent out." });
+		//	}
 
-		}
+		//}
 
 	}
 }

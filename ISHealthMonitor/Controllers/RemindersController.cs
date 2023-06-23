@@ -35,8 +35,10 @@ namespace ISHealthMonitor.UI.Controllers
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-            return View();
+            return View("~/Views/Admin/Reminders/Index.cshtml");
 		}
+
+
 		[Authorize(Policy = "Admin")]
 		[HttpGet]
 		public IActionResult AddEdit(int id = 0)
@@ -47,7 +49,7 @@ namespace ISHealthMonitor.UI.Controllers
 				{
 					
 				};
-				return View(newReminderDTO);
+				return View("~/Views/Admin/Reminders/AddEdit.cshtml", newReminderDTO);
 			}
 			else
 			{
@@ -62,7 +64,7 @@ namespace ISHealthMonitor.UI.Controllers
 					ISHealthMonitorGroupSubmissionID = reminder.ISHealthMonitorGroupSubmissionID
 				};
 
-				return View(reminderDTO);
+				return View("~/Views/Admin/Reminders/AddEdit.cshtml", reminderDTO);
 			}
 		}
 
@@ -75,7 +77,8 @@ namespace ISHealthMonitor.UI.Controllers
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
             ViewBag.SiteDTO = _healthModel.GetSiteDTO(siteID);
-			return View();
+
+			return View("~/Views/Admin/Reminders/ConfigurationHistory.cshtml");
 		}
 
 		public IActionResult ConfigurationBuilder(int groupID = 0)
@@ -95,7 +98,7 @@ namespace ISHealthMonitor.UI.Controllers
 					GroupID = 0,
 			        UserReminders = new List<UserReminderDTO> { },
 			    };
-			    return View(viewModel);
+			    return View("~/Views/Admin/Reminders/ConfigurationBuilder.cshtml", viewModel);
 			}
 			else
 			{
@@ -126,7 +129,7 @@ namespace ISHealthMonitor.UI.Controllers
 			        UserReminders = remindersByGroup
 			    };
 
-			    return View(viewModel);
+			    return View("~/Views/Admin/Reminders/ConfigurationBuilder.cshtml", viewModel);
 			}
 
 

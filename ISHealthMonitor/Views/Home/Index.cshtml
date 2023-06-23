@@ -32,7 +32,7 @@
 <div class="container text-center">
 
 
-	<div class="row justify-content-center animate__animated animate__fadeIn animate__delay-1s my-4">
+	<div class="row justify-content-center animate__animated animate__fadeInRight animate__delay-1s my-4">
 		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
 			<i class="fas fa-info-circle fa-3x"></i>
 		</div>
@@ -41,7 +41,7 @@
 		</div>
 	</div>
 
-	<div class="row justify-content-center animate__animated animate__fadeIn animate__delay-1s my-4">
+	<div class="row justify-content-center animate__animated animate__fadeInLeft animate__delay-1s my-4">
 		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
 			<i class="fas fa-envelope-open-text fa-3x"></i>
 		</div>
@@ -50,7 +50,7 @@
 		</div>
 	</div>
 
-	<div class="row justify-content-center animate__animated animate__fadeIn animate__delay-1s my-4">
+	<div class="row justify-content-center animate__animated animate__fadeInRight animate__delay-1s my-4">
 		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
 			<i class="fas fa-exclamation-triangle fa-3x"></i>
 		</div>
@@ -64,19 +64,26 @@
 	
 
 	<div class="row justify-content-center">
-		<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
-			<a class="btn btn-primary my-2 btn-block" id="configBuilderBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration <i class="fas fa-cogs"></i></a>
-		</div>
+		
 		@if (ViewBag.UserHasReminders)
 		{
-			<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
+			<div class="col-4 col-md-3 text-center animate__animated animate__fadeInBottomLeft animate__delay-2s">
+				<a class="btn btn-primary my-2 btn-block" id="configBuilderBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration <i class="fas fa-cogs"></i></a>
+			</div>
+			<div class="col-4 col-md-3 text-center animate__animated animate__fadeInUp animate__delay-2s">
 				<a class="btn btn-warning my-2 btn-block" id="configHistoryBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History <i class="fas fa-history"></i></a>
 			</div>
-			<div class="col-4 col-md-3 text-center animate__animated animate__fadeIn animate__delay-2s">
+			<div class="col-4 col-md-3 text-center animate__animated animate__fadeInBottomRight animate__delay-2s">
 				<a class="btn btn-info my-2 btn-block" id="trackedSitesBtn" sp-area="" asp-controller="Sites" asp-action="Index">View Tracked Sites <i class="fas fa-globe"></i></a>
 			</div>
 		}
-		
+		else
+		{
+			<div class="col-4 col-md-3 text-center animate__animated animate__fadeInUp animate__delay-2s">
+				<a class="btn btn-primary my-2 btn-block" id="configBuilderBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration <i class="fas fa-cogs"></i></a>
+			</div>
+		}
+
 	</div>
 
 	@if (ViewBag.UserHasReminders)
@@ -84,20 +91,20 @@
 		<hr />
 
 		<div class="row ">
-			<div class="col-12 col-md-6 mx-auto animate__animated animate__fadeIn animate__delay-2s">
+			<div class="col-12 col-md-6 mx-auto animate__animated animate__fadeInDown animate__delay-2s">
 				<h2 class="animate__animated animate__fadeIn">My Reminders</h2>
 			</div>
 		</div>
 
 
-		<div id="divLoading" class="row justify-content-center animate__animated animate__fadeIn animate__delay-2s">
+		<div id="divLoading" class="row justify-content-center animate__animated animate__fadeInDown animate__delay-2s">
 			<div class="col-auto">
 				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
 			</div>
 		</div>
 
 		<div class="row my-2">
-			<div class="col-12 animate__animated animate__fadeIn animate__delay-2s">
+			<div class="col-12 animate__animated animate__fadeInDown animate__delay-2s">
 				<table id="siteConfigurationTable" class="table table-striped display compact wrap"></table>
 			</div>
 		</div>

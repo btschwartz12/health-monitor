@@ -30,7 +30,7 @@ namespace ISHealthMonitor.UI.Controllers
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-            return View();
+            return View("~/Views/Admin/Users/Index.cshtml");
 		}
 
 		[HttpGet]
@@ -44,7 +44,7 @@ namespace ISHealthMonitor.UI.Controllers
 					Guid = "",
 					IsAdmin = false
 				};
-				return View(newUserDTO);
+				return View("~/Views/Admin/Users/AddEdit.cshtml", newUserDTO);
 			}
 			else
 			{
@@ -59,7 +59,7 @@ namespace ISHealthMonitor.UI.Controllers
 					DisplayName = user.DisplayName
 				};
 
-				return View(userDTO);
+				return View("~/Views/Admin/Users/AddEdit.cshtml", userDTO);
 			}
 		}
 	}

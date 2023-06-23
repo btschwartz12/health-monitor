@@ -18,6 +18,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using ISHealthMonitor.Core.Implementations;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ISHealthMonitor.UI.Controllers.API
 {
@@ -45,17 +46,30 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public async Task<string> GetSitesAsync()
 		{
 
-			//List<SiteDTO> siteDtoList = await ProcessJsonFileAsync(@"C:\Users\bschwartz\Downloads\data.json", "IS Application");
+            //List<SiteDTO> siteDtoList = await ProcessJsonFileAsync(@"C:\Users\bschwartz\Downloads\data.json", "IS Application");
 
-			//foreach (SiteDTO site in siteDtoList)
-			//{
-			//	CreateSiteInternal(site);
-			//}
+            //foreach (SiteDTO site in siteDtoList)
+            //{
+            //	CreateSiteInternal(site);
+            //}
 
 
 
-			List<SiteDTO> retList = _healthModel.GetSites();
-			return JsonConvert.SerializeObject(retList);
+			List<SiteDTO> retList = _healthModel.GetSites()
+                .Where(site => site.SiteCategory != "All")
+				.ToList();
+
+
+            foreach (SiteDTO site in retList)
+            {
+                if (!string.IsNullOrEmpty(site.SSLThumbprint))
+                {
+                    var formatted = string.Join(" ", Enumerable.Range(0, site.SSLThumbprint.Length / 2).Select(i => site.SSLThumbprint.Substring(i * 2, 2)));
+                    site.SSLThumbprint = formatted;
+                }
+            }
+
+            return JsonConvert.SerializeObject(retList);
 		}
 
 		[HttpPut]
@@ -97,6 +111,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 					SSLExpirationDate = DateTime.Parse(siteDTO.SSLExpirationDate),
 					SSLIssuer = siteDTO.SSLIssuer,
 					SSLSubject = siteDTO.SSLSubject,
+					SSLCommonName = siteDTO.SSLCommonName,
+					SSLThumbprint = siteDTO.SSLThumbprint,
 					CreatedBy = new Guid(employee.GUID),
 					DateCreated = DateTime.Now,
 					Active = true,
@@ -119,6 +135,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 					existingSite.SSLExpirationDate = DateTime.Parse(siteDTO.SSLExpirationDate);
 					existingSite.SSLIssuer = siteDTO.SSLIssuer;
 					existingSite.SSLSubject = siteDTO.SSLSubject;
+					existingSite.SSLCommonName = siteDTO.SSLCommonName;
+					existingSite.SSLThumbprint = siteDTO.SSLThumbprint;
 
 					_healthModel.UpdateSite(existingSite);
 					return Ok(existingSite);
@@ -203,7 +221,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 					SSLEffectiveDate = res.EffectiveDate,
 					SSLExpirationDate = res.ExpDate,
 					SSLIssuer = res.Issuer,
-					SSLSubject = res.Subject
+					SSLSubject = res.Subject,
+					SSLCommonName = res.CommonName,
+					SSLThumbprint = res.Thumbprint
 				};
 
 			}
@@ -294,6 +314,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 				SSLExpirationDate = DateTime.Parse(siteDTO.SSLExpirationDate),
 				SSLIssuer = siteDTO.SSLIssuer,
 				SSLSubject = siteDTO.SSLSubject,
+				SSLCommonName = siteDTO.SSLCommonName,
+				SSLThumbprint = siteDTO.SSLThumbprint,
 				CreatedBy = new Guid(employee.GUID),
 				DateCreated = DateTime.Now,
 				Active = true,

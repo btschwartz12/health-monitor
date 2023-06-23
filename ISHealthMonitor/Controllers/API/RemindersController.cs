@@ -38,7 +38,23 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[HttpGet("GetReminders")]
 		public string GetReminders()
 		{
-			var retList = _healthModel.GetReminders();
+			var reminders = _healthModel.GetReminders();
+
+			var retList = reminders.Select(r => new
+			{
+				r.ID,
+				r.UserName,
+				r.ISHealthMonitorSiteID,
+				r.ISHealthMonitorIntervalID,
+				r.ISHealthMonitorGroupSubmissionID,
+				r.Action,
+				r.CreatedBy,
+				r.Site,
+				r.ReminderInterval,
+				SiteName = $"{r.Site?.SiteName} (ID={r.ISHealthMonitorSiteID})",
+				IntervalName = $"{r.ReminderInterval?.DisplayName} (ID={r.ISHealthMonitorIntervalID})"
+			}).ToList();
+
 			return JsonConvert.SerializeObject(retList);
 		}
 
