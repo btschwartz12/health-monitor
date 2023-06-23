@@ -16,7 +16,7 @@ var configurationHistoryDataTable;
 DATATABLE_REQUESTS.LoadSiteTable = function () {
 
     DATATABLE_REQUESTS.ClearSiteTable();
-    var sitelocation = "/api/SitesApi/GetSites";
+    var sitelocation = "/api/Sites/GetSites";
 
     $.ajax({
         type: "GET",
@@ -49,7 +49,7 @@ DATATABLE_REQUESTS.ClearSiteTable = function () {
 DATATABLE_REQUESTS.LoadRemindersTable = function () {
 
     DATATABLE_REQUESTS.ClearRemindersTable();
-    var sitelocation = "/api/RemindersApi/GetReminders";
+    var sitelocation = "/api/Reminders/GetReminders";
 
     $.ajax({
         type: "GET",
@@ -80,7 +80,7 @@ DATATABLE_REQUESTS.ClearRemindersTable = function () {
 DATATABLE_REQUESTS.LoadReminderIntervalsTable = function () {
 
     DATATABLE_REQUESTS.ClearReminderIntervalsTable();
-    var sitelocation = "/api/ReminderIntervalsApi/GetReminderIntervals";
+    var sitelocation = "/api/ReminderIntervals/GetReminderIntervals";
 
     $.ajax({
         type: "GET",
@@ -112,7 +112,7 @@ DATATABLE_REQUESTS.ClearReminderIntervalsTable = function () {
 DATATABLE_REQUESTS.LoadUsersTable = function () {
 
     DATATABLE_REQUESTS.ClearUsersTable();
-    var sitelocation = "/api/UsersApi/GetUsers";
+    var sitelocation = "/api/Users/GetUsers";
 
     $.ajax({
         type: "GET",
@@ -144,7 +144,7 @@ DATATABLE_REQUESTS.ClearUsersTable = function () {
 DATATABLE_REQUESTS.LoadSiteConfigurationsTable = function () {
 
     DATATABLE_REQUESTS.ClearSiteConfigurationsTable();
-    var sitelocation = "/api/SitesApi/GetSiteReminderConfigurations";
+    var sitelocation = "/api/Sites/GetSiteReminderConfigurations";
 
     $.ajax({
         type: "GET",
@@ -182,7 +182,7 @@ DATATABLE_REQUESTS.LoadConfigurationHistoryTable = function (siteID) {
     console.log(siteID);
 
     DATATABLE_REQUESTS.ClearConfigurationHistoryTable();
-    var sitelocation = "/api/RemindersApi/GetReminderConfigurationData?siteID=" + siteID;
+    var sitelocation = "/api/Reminders/GetReminderConfigurationData?siteID=" + siteID;
 
     $.ajax({
         type: "GET",

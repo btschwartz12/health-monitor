@@ -146,7 +146,7 @@
 			var id = $('#intervalToDeleteId').val();
 			$.ajax({
 				type: "PUT",
-				url: '/api/ReminderIntervalsApi/DeleteReminderInterval?id=' + id,
+				url: '/api/ReminderIntervals/DeleteReminderInterval?id=' + id,
 				success: function (data) {
 					$("#intervalDeleteModal").modal('hide');
 					DATATABLE_REQUESTS.LoadReminderIntervalsTable();

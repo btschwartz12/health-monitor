@@ -1,6 +1,7 @@
 ﻿using ISHealthMonitor.Core.Contracts;
 using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -8,6 +9,7 @@ using System;
 namespace ISHealthMonitor.UI.Controllers
 {
     [Authorize(Policy = "Admin")]
+    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class UsersController : Controller
 	{
 

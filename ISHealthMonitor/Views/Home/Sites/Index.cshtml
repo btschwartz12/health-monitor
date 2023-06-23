@@ -164,7 +164,7 @@
 			var id = $('#siteToDeleteId').val();
 			$.ajax({
 				type: "PUT",
-				url: '/api/SitesApi/DeleteSite?id=' + id,
+				url: '/api/Sites/DeleteSite?id=' + id,
 				success: function (data) {
 					$("#siteDeleteModal").modal('hide');
 					DATATABLE_REQUESTS.LoadSiteTable();

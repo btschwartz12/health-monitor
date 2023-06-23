@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Server.IISIntegration;
 using ISHealthMonitor.Core.Implementations;
 using ISHealthMonitor.UI.Auth;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 
 namespace ISHealthMonitor
 {
@@ -35,13 +38,18 @@ namespace ISHealthMonitor
             services.AddControllersWithViews();
             services.AddSwaggerGen();
 
+
             // Auth
-            services.AddAuthentication(IISDefaults.AuthenticationScheme);
+
+           // services.AddAuthentication(IISDefaults.AuthenticationScheme);
+            services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", policy => policy.Requirements.Add(new AdminRequirement()));
             });
             services.AddScoped<IAuthorizationHandler, AdminRequirementHandler>();
+
+            services.AddTokenAuthentication(Configuration);
 
 
             // Confluence
@@ -98,6 +106,7 @@ namespace ISHealthMonitor
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-        }
+            
+         }
     }
 }

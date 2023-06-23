@@ -189,7 +189,7 @@
 			var groupId = $('#configurationFormToDeleteId').val();
 			$.ajax({
 				type: "PUT",
-				url: '/api/RemindersApi/DeleteReminderGroup?groupId=' + groupId,
+				url: '/api/Reminders/DeleteReminderGroup?groupId=' + groupId,
 				success: function (data) {
 					if (data) {
 						$("#configurationFormDeleteModal").modal('hide');

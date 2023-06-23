@@ -13,16 +13,20 @@ using System.Net.Http;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ISHealthMonitor.Core.Helpers.Email;
+using ISHealthMonitor.Core.Implementations;
 
 namespace ISHealthMonitor.Core.Models
 {
     public class HealthModel : IHealthModel
     {
 		private readonly IACMSEntityContext _IACMSEntityContext;
+		private readonly IEmployee _employee;
 
-        public HealthModel(IACMSEntityContext context)
+		public HealthModel(IACMSEntityContext context,IEmployee employee)
         {
             _IACMSEntityContext = context;
+			_employee = employee;
         }
 
 

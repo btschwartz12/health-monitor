@@ -27,7 +27,7 @@ function initUserSelectize(selectedUserGuid) {
 	userControl.updatePlaceholder();
 
 
-	fetch('/api/UsersApi/GetAvailableUsers')
+	fetch('/api/Users/GetAvailableUsers')
 		.then(response => response.json())
 		.then(availableUsers => {
 			for (let user of availableUsers) {
@@ -102,7 +102,7 @@ function SubmitCreateUserForm() {
 	if ($(form).valid()) {
 		$.ajax({
 			type: "post",
-			url: '/api/UsersApi/CreateUser',
+			url: '/api/Users/CreateUser',
 			data: JSON.stringify(data),
 			traditional: true,
 			dataType: 'json',
@@ -139,7 +139,7 @@ function FetchSSLCertificate() {
 	$('#spinner').removeClass('d-none');
 
 	$.ajax({
-		url: '/api/SitesApi/GetSiteCertificate',
+		url: '/api/Sites/GetSiteCertificate',
 		type: 'POST',
 		dataType: 'json',
 		contentType: 'application/json',
@@ -201,7 +201,7 @@ function SubmitCreateSiteForm() {
 	if ($(form).valid()) {
 		$.ajax({
 			type: "POST",
-			url: '/api/SitesApi/CreateSite',
+			url: '/api/Sites/CreateSite',
 			data: JSON.stringify(data),
 			traditional: true,
 			dataType: 'json',
@@ -237,7 +237,7 @@ function SubmitCreateReminderForm() {
 	if ($(form).valid()) {
 		$.ajax({
 			type: "post",
-			url: '/api/RemindersApi/CreateReminder',
+			url: '/api/Reminders/CreateReminder',
 			data: JSON.stringify(data),
 			traditional: true,
 			dataType: 'json',
@@ -272,7 +272,7 @@ function SubmitCreateReminderIntervalForm() {
 	if ($(form).valid()) {
 		$.ajax({
 			type: "post",
-			url: '/api/ReminderIntervalsApi/CreateReminderInterval',
+			url: '/api/ReminderIntervals/CreateReminderInterval',
 			data: JSON.stringify(data),
 			traditional: true,
 			dataType: 'json',

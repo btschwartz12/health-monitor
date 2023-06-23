@@ -2,6 +2,7 @@
 using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
 using ISHealthMonitor.Core.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,12 +17,12 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class UsersApiController : ControllerBase
+     public class UsersController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
 
-        public UsersApiController(IHealthModel healthModel, IEmployee employee)
+        public UsersController(IHealthModel healthModel, IEmployee employee)
         {
             _employee = employee;
 			_healthModel = healthModel;

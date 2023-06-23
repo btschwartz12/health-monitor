@@ -130,7 +130,7 @@ function fetchAvailableSites(modelData) {
 
     var sitesControl = $('#select-sites')[0].selectize;
 
-    return fetch('/api/SitesApi/GetSitesToSelect')
+    return fetch('/api/Sites/GetSitesToSelect')
         .then(response => response.json())
         .then(availableSites => {
             for (let site of availableSites) {
@@ -173,7 +173,7 @@ function fetchAvailableReminderIntervals(modelData) {
 
     var remindersControl = $('#select-reminders')[0].selectize;
 
-    return fetch('/api/ReminderIntervalsApi/GetIntervalsToSelect')
+    return fetch('/api/ReminderIntervals/GetIntervalsToSelect')
         .then(response => response.json())
         .then(reminderIntervals => {
             available_reminder_intervals = reminderIntervals;
@@ -495,7 +495,7 @@ function SubmitConfigurationForm() {
     if ($(form).valid()) {
         $.ajax({
             type: "post",
-            url: '/api/RemindersApi/CreateConfiguration',
+            url: '/api/Reminders/CreateConfiguration',
             data: JSON.stringify(data),
             traditional: true,
             dataType: 'json',
