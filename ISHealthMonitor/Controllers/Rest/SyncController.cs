@@ -31,13 +31,15 @@ namespace ISHealthMonitor.UI.Controllers.Rest
             _healthModel = healthModel;
         }
 
-        [HttpGet(Name = "Test")]
+        [HttpGet]
+        [Route("Test")]
         public async Task<IActionResult> Test()
 		{
 			return Ok("Hello Nick");
 		}
 
-        [HttpGet(Name = "SyncSites")]
+        [HttpGet]
+		[Route("Start")]
 		public async Task<IActionResult> Get()
 		{
 			var responseModel = new ApiResponseModel

@@ -19,7 +19,6 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-    
     public class RemindersController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
