@@ -14,7 +14,7 @@ def getConfigurationByBranch() {
 def getDeploymentChannelByBranch() {
 	switch (GIT_BRANCH) {
 		//case ["master"]:
-		//	return "Production"
+		//	return "Production" :)
 		default:
 			return "Development"
 	}
