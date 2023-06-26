@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using ISHealthMonitor.Core.Models;
 
 namespace ISHealthMonitor.Core.Contracts
 {
@@ -55,9 +57,6 @@ namespace ISHealthMonitor.Core.Contracts
 		void DeleteUser(int id);
 		bool UserIsAdmin(Guid guid);
 		bool UserExists(Guid guid);
-
-
-
 		Task<bool> UserHasReminders(Guid guid);
 
 
@@ -67,8 +66,35 @@ namespace ISHealthMonitor.Core.Contracts
 		List<ReminderConfigurationData> GetReminderConfigurationsData(Guid guid, int siteID);
 
 
+		// Boomi functions
 
-		CertificateDTO GetCertificate(string url);
-		
+		Task<(string Message, Dictionary<string, string> FailedSiteUrls)> UpdateCerts();
+		Task<(string Message, Dictionary<string, string> responseData)> UpdateConfluencePage();
+		Task<(string Message, Dictionary<string, Dictionary<string, List<string>>> remindersSent)> FireReminders();
+
+		// Helpers for FireReminders()
+
+		Task<List<RemindersToSendForSite>> GetRemindersForNearExpiredSites(NearExpiredSites nearExpiredSites);
+		Task<NearExpiredSites> GetNearExpiredSites();
+		List<RemindersToSendForSite> RemoveDuplicates(List<RemindersToSendForSite> siteRemindersList);
+
+
+
+
+
+
+
+	}
+
+	public class NearExpiredSites
+	{
+		public Dictionary<ReminderIntervalDTO, List<SiteDTO>> SitesByIntervalDict { get; set; }
+	}
+
+	public class RemindersToSendForSite
+	{
+		public ReminderIntervalDTO ReminderInterval { get; set; }
+		public SiteDTO Site { get; set; }
+		public List<UserReminderDTO> Reminders { get; set; }
 	}
 }

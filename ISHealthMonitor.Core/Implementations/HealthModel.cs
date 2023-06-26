@@ -1,33 +1,34 @@
-﻿using ISHealthMonitor.Core.Contracts;
+﻿using Microsoft.AspNetCore.Mvc;
+using ISHealthMonitor.Core.Contracts;
 using ISHealthMonitor.Core.Data.Contexts;
 using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
 using ISHealthMonitor.Core.Data.Models;
 using ISHealthMonitor.Core.Models.DTO;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using ISHealthMonitor.Core.Common;
 using ISHealthMonitor.Core.DataAccess;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Numerics;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using ISHealthMonitor.Core.Helpers.Confluence;
 using ISHealthMonitor.Core.Helpers.Email;
-using ISHealthMonitor.Core.Implementations;
 
 namespace ISHealthMonitor.Core.Models
 {
-    public class HealthModel : IHealthModel
-    {
+	public class HealthModel : IHealthModel
+	{
 		private readonly IACMSEntityContext _IACMSEntityContext;
 		private readonly IEmployee _employee;
+		private readonly IRest _restModel;
+		private readonly IConfiguration _configuration;
 
-		public HealthModel(IACMSEntityContext context,IEmployee employee)
-        {
-            _IACMSEntityContext = context;
+		public HealthModel(IACMSEntityContext context, IEmployee employee, IRest rest, IConfiguration configuration)
+		{
+			_IACMSEntityContext = context;
 			_employee = employee;
-        }
+			_restModel = rest;
+			_configuration = configuration;
+		}
+
 
 
 		public List<SiteDTO> GetSites()
@@ -47,10 +48,10 @@ namespace ISHealthMonitor.Core.Models
 							  SSLSubject = d.SSLSubject,
 							  SSLCommonName = d.SSLCommonName,
 							  SSLThumbprint = d.SSLThumbprint,
-							  Action =	"<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' " +
+							  Action = "<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' " +
 										"onclick=showSiteAddEditModal(" + d.ID + ")></i><i style='cursor: pointer;' class='fa fa-trash fa-lg " +
 										" text-danger' onclick=showSiteDeleteModal(" + d.ID + ")></i></div>"
-					})
+						  })
 				  .ToList();
 
 			return result;
@@ -58,7 +59,7 @@ namespace ISHealthMonitor.Core.Models
 
 		public ISHealthMonitorSiteDbSet GetSite(int id)
 		{
-            ISHealthMonitorSiteDbSet? site = _IACMSEntityContext.ISHealthMonitorSites.FirstOrDefault(x => x.ID == id);
+			ISHealthMonitorSiteDbSet? site = _IACMSEntityContext.ISHealthMonitorSites.FirstOrDefault(x => x.ID == id);
 			return site;
 		}
 
@@ -73,11 +74,11 @@ namespace ISHealthMonitor.Core.Models
 			{
 				ID = site.ID,
 				SiteURL = site.URL,
-				SiteName= site.DisplayName,
+				SiteName = site.DisplayName,
 				SiteCategory = site.SiteCategory,
 				SSLEffectiveDate = site.SSLEffectiveDate.ToString("yyyy-MM-dd"),
 				SSLExpirationDate = site.SSLExpirationDate.ToString("yyyy-MM-dd"),
-				SSLIssuer = site.SSLIssuer, 
+				SSLIssuer = site.SSLIssuer,
 				SSLSubject = site.SSLSubject,
 				SSLCommonName = site.SSLCommonName,
 				SSLThumbprint = site.SSLThumbprint
@@ -137,8 +138,8 @@ namespace ISHealthMonitor.Core.Models
 										"onclick=showReminderAddEditModal(" + d.ID + ")></i><i style='cursor: pointer;' class='fa fa-trash fa-lg " +
 										" text-danger' onclick=showReminderDeleteModal(" + d.ID + ")></i></div>"
 						  })
-						  .ToList(); 
-			
+						  .ToList();
+
 			return result;
 		}
 
@@ -190,19 +191,19 @@ namespace ISHealthMonitor.Core.Models
 			return interval;
 		}
 
-        public ReminderIntervalDTO GetReminderIntervalDTO(int id)
-        {
+		public ReminderIntervalDTO GetReminderIntervalDTO(int id)
+		{
 			ISHealthMonitorIntervalDbSet interval = GetReminderInterval(id);
-            return new ReminderIntervalDTO()
-            {
-                ID= interval.ID,
+			return new ReminderIntervalDTO()
+			{
+				ID = interval.ID,
 				DurationInMinutes = interval.DurationInMinutes,
 				Type = interval.Type,
 				DisplayName = interval.DisplayName,
-            };
-        }
+			};
+		}
 
-        public void AddReminderInterval(ISHealthMonitorIntervalDbSet reminderInterval)
+		public void AddReminderInterval(ISHealthMonitorIntervalDbSet reminderInterval)
 		{
 			_IACMSEntityContext.ISHealthMonitorReminderIntervals.Add(reminderInterval);
 			_IACMSEntityContext.SaveChanges();
@@ -243,26 +244,26 @@ namespace ISHealthMonitor.Core.Models
 			return user;
 		}
 
-        public bool AddUser(ISHealthMonitorUserDbSet user)
-        {
-            if (UserExists(user.Guid))
+		public bool AddUser(ISHealthMonitorUserDbSet user)
+		{
+			if (UserExists(user.Guid))
 			{
 				return false;
 			}
 
-            _IACMSEntityContext.ISHealthMonitorUsers.Add(user);
-            _IACMSEntityContext.SaveChanges();
+			_IACMSEntityContext.ISHealthMonitorUsers.Add(user);
+			_IACMSEntityContext.SaveChanges();
 
-            return true;
-        }
+			return true;
+		}
 
 		public bool UserExists(Guid guid)
 		{
-            var existingUser = _IACMSEntityContext.ISHealthMonitorUsers.Where(r => !r.Deleted).FirstOrDefault(u => u.Guid == guid);
+			var existingUser = _IACMSEntityContext.ISHealthMonitorUsers.Where(r => !r.Deleted).FirstOrDefault(u => u.Guid == guid);
 			return existingUser != null;
-        }
+		}
 
-        public void UpdateUser(ISHealthMonitorUserDbSet user)
+		public void UpdateUser(ISHealthMonitorUserDbSet user)
 		{
 			_IACMSEntityContext.Entry(user).State = EntityState.Modified;
 			_IACMSEntityContext.SaveChanges();
@@ -276,18 +277,18 @@ namespace ISHealthMonitor.Core.Models
 			_IACMSEntityContext.SaveChanges();
 		}
 
-        public bool UserIsAdmin(Guid guid)
-        {
-            ISHealthMonitorUserDbSet? existingUser = _IACMSEntityContext.ISHealthMonitorUsers.Where(r => !r.Deleted).FirstOrDefault(u => u.Guid == guid);
+		public bool UserIsAdmin(Guid guid)
+		{
+			ISHealthMonitorUserDbSet? existingUser = _IACMSEntityContext.ISHealthMonitorUsers.Where(r => !r.Deleted).FirstOrDefault(u => u.Guid == guid);
 
 			if (existingUser == null) { return false; }
 
 			return existingUser.IsAdmin;
-        }
+		}
 
 
 
-        public int GetNextReminderGroupID()
+		public int GetNextReminderGroupID()
 		{
 			var highestGroupId = _IACMSEntityContext.ISHealthMonitorUserReminders
 				.Where(r => !r.Deleted)
@@ -304,7 +305,7 @@ namespace ISHealthMonitor.Core.Models
 			}
 		}
 
-		
+
 
 		public List<SiteReminderConfiguration> GetSiteReminderConfigurations(Guid user_guid)
 		{
@@ -343,7 +344,7 @@ namespace ISHealthMonitor.Core.Models
 					$"onclick='redirectToConfigurationHistory({site.ID})'></i><i style='cursor: pointer;' class='fa fa-trash fa-lg " +
 					$"text-danger' onclick='showSiteConfigurationDeleteModal({site.ID})'></i></div>"
 
-			};
+				};
 
 				siteReminders.Add(siteReminder);
 			}
@@ -398,12 +399,12 @@ namespace ISHealthMonitor.Core.Models
 
 			_IACMSEntityContext.SaveChanges();
 		}
-	
-	
 
 
 
-		
+
+
+
 		public void DeleteRemindersBySite(Guid user, int id)
 		{
 			var remindersForSite = _IACMSEntityContext.ISHealthMonitorUserReminders
@@ -430,32 +431,29 @@ namespace ISHealthMonitor.Core.Models
 			return userNameList;
 		}
 
-		public CertificateDTO GetCertificate(string url)
-		{
-			throw new NotImplementedException();
-		}
 
-        public async Task<List<ISHealthMonitorSiteDbSet>> GetSiteDbSets()
-        {
+
+		public async Task<List<ISHealthMonitorSiteDbSet>> GetSiteDbSets()
+		{
 			List<ISHealthMonitorSiteDbSet> sites = await _IACMSEntityContext.ISHealthMonitorSites.Where(r => !r.Deleted && !r.Disabled).ToListAsync();
 
 			return sites;
 
-        }
+		}
 
-        public async Task<List<ISHealthMonitorUserReminderDbSet>> GetReminderDbSets()
-        {
-            var reminders = await _IACMSEntityContext.ISHealthMonitorUserReminders.Where(r => !r.Deleted).ToListAsync();
-			
+		public async Task<List<ISHealthMonitorUserReminderDbSet>> GetReminderDbSets()
+		{
+			var reminders = await _IACMSEntityContext.ISHealthMonitorUserReminders.Where(r => !r.Deleted).ToListAsync();
+
 			return reminders;
-        }
+		}
 
-        public async Task<List<ISHealthMonitorIntervalDbSet>> GetReminderIntervalDbSets()
-        {
-            List<ISHealthMonitorIntervalDbSet> intervals = await _IACMSEntityContext.ISHealthMonitorReminderIntervals.Where(r => !r.Deleted).ToListAsync();
+		public async Task<List<ISHealthMonitorIntervalDbSet>> GetReminderIntervalDbSets()
+		{
+			List<ISHealthMonitorIntervalDbSet> intervals = await _IACMSEntityContext.ISHealthMonitorReminderIntervals.Where(r => !r.Deleted).ToListAsync();
 
 			return intervals;
-        }
+		}
 
 		public async Task<bool> UserHasReminders(Guid guid)
 		{
@@ -466,6 +464,342 @@ namespace ISHealthMonitor.Core.Models
 
 			return reminders.Count > 0;
 		}
+
+		public async Task<(string Message, Dictionary<string, string> FailedSiteUrls)> UpdateCerts()
+		{
+			List<ISHealthMonitorSiteDbSet> sites = await GetSiteDbSets();
+
+			sites.RemoveAll(site => site.ID == 1); // Disregard the row for 'All Sites'
+
+			var certHandlers = new CertificateHandlers();
+
+			var failedSiteUrls = new Dictionary<string, string>();
+
+			foreach (var site in sites)
+			{
+				try
+				{
+					CertificateDTO cert = await certHandlers.CheckSSLSiteAsync(site.URL);
+
+					site.SSLEffectiveDate = DateTime.Parse(cert.EffectiveDate);
+					site.SSLExpirationDate = DateTime.Parse(cert.ExpDate);
+					site.SSLIssuer = cert.Issuer;
+					site.SSLSubject = cert.Subject;
+					site.SSLCommonName = cert.CommonName;
+					site.SSLThumbprint = cert.Thumbprint;
+
+					if (cert.ErrorCommonName)
+					{
+						site.SSLCommonName = "INVALID (" + cert.CommonName + ")";
+						UpdateSite(site);
+						throw new Exception("Invalid SSL Common Name for the site.");
+
+					}
+					else
+					{
+						UpdateSite(site);
+					}
+
+
+				}
+				catch (Exception ex)
+				{
+					failedSiteUrls.Add(site.URL, ex.Message);
+				}
+
+			}
+
+			if (failedSiteUrls.Count > 0)
+			{
+				return ("Success", failedSiteUrls); // Still success, even if some sites dont have certs 
+			}
+			else
+			{
+				return ("Success", new Dictionary<string, string>());
+			}
+		}
+
+		public async Task<(string Message, Dictionary<string, string> responseData)> UpdateConfluencePage()
+		{
+			List<SiteDTO> sites = GetSites()
+				.Where(site => site.SiteCategory != "All" && site.SiteCategory != "Test")
+				.OrderBy(site => site.SiteName).ToList();
+
+			ConfluenceTableModel model = new ConfluenceTableModel()
+			{
+				sites = sites
+			};
+
+
+			string rootDir = _configuration.GetSection("TemplatePaths")["ConfluenceTable"];
+
+
+			var tableStr = ConfluenceTableHelper.GetSiteTableHTML(model, rootDir);
+
+
+			//example to get Page Source
+			var action = "/wiki/api/v2/pages/300580865?body-format=storage";
+			var rek = await _restModel.GetHttpContent(action);
+
+			var confluencePage = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfluencePageInfo>(rek);
+
+			int curVersion = confluencePage.version.number;
+
+
+			//example to Update Page
+			var pp = new ConfluenceAPIPage()
+			{
+				id = 300580865,
+				spaceId = 300482563,
+				title = "IS Health Monitor Resource",
+				status = "current",
+				version = new ISHealthMonitor.Core.DataAccess.Version()
+				{
+					number = curVersion + 1
+				},
+				body = new ISHealthMonitor.Core.DataAccess.Body()
+				{
+					representation = "storage",
+					value = tableStr
+				},
+			};
+
+			try
+			{
+				var rekt = await _restModel.PutHttpContent("/wiki/api/v2/pages/300580865", Newtonsoft.Json.JsonConvert.SerializeObject(pp), HttpContentTypes.String);
+
+				return ("Success", new Dictionary<string, string>
+				{
+					{"version", (curVersion + 1).ToString() },
+					{"numSites", sites.Count.ToString() }
+				});
+			}
+			catch (Exception ex)
+			{
+				return ("Failure", new Dictionary<string, string>
+				{
+					{"errorMsg", ex.ToString() },
+				});
+			}
+		}
+
+		public async Task<(string Message, Dictionary<string, Dictionary<string, List<string>>> remindersSent)> FireReminders()
+		{
+			string rootDir = _configuration.GetSection("TemplatePaths")["EmailReminder"];
+
+			List<EmailReminderModel> emailModels = new List<EmailReminderModel>() { };
+
+			var nearExpiredSites = await GetNearExpiredSites();
+			var remindersList = await GetRemindersForNearExpiredSites(nearExpiredSites);
+			List<RemindersToSendForSite> filteredReminderList = RemoveDuplicates(remindersList);
+
+			foreach (var siteReminders in filteredReminderList)
+			{
+				var emailList = new List<string>() { };
+
+				foreach (var reminder in siteReminders.Reminders)
+				{
+					if (reminder.CreatedBy.HasValue)
+					{
+						var email = _employee.GetEmailByGuid(reminder.CreatedBy.Value);
+
+						if (!string.IsNullOrEmpty(email))
+							emailList.Add(email);
+					}
+				}
+
+				if (emailList.Count > 0)
+				{
+					var model = new EmailReminderModel
+					{
+						Emails = emailList,
+						SiteURL = siteReminders.Site.SiteURL,
+						SiteName = siteReminders.Site.SiteName,
+						SSLEffectiveDate = siteReminders.Site.SSLEffectiveDate,
+						SSLExpirationDate = siteReminders.Site.SSLExpirationDate,
+						SSLIssuer = siteReminders.Site.SSLIssuer,
+						SSLSubject = siteReminders.Site.SSLSubject,
+						SSLCommonName = siteReminders.Site.SSLCommonName,
+						SSLThumbprint = siteReminders.Site.SSLThumbprint,
+						IntervalDisplayName = siteReminders.ReminderInterval.DisplayName
+					};
+
+					emailModels.Add(model);
+				}
+
+			}
+
+			int key = 0;
+
+			foreach (var emailModel in emailModels)
+			{
+				EmailHelper.SendEmail(emailModel, rootDir, key);
+				key += 1;
+			}
+
+			var remindersSent = new Dictionary<string, Dictionary<string, List<string>>>();
+
+			foreach (var reminder in remindersList)
+			{
+				string siteUrl = reminder.Site.SiteURL;
+				string intervalDisplayName = reminder.ReminderInterval.DisplayName;
+
+				if (!remindersSent.ContainsKey(siteUrl))
+				{
+					remindersSent[siteUrl] = new Dictionary<string, List<string>>();
+				}
+
+				if (!remindersSent[siteUrl].ContainsKey(intervalDisplayName))
+				{
+					remindersSent[siteUrl][intervalDisplayName] = new List<string>();
+				}
+
+				foreach (var userReminder in reminder.Reminders)
+				{
+					remindersSent[siteUrl][intervalDisplayName].Add(userReminder.CreatedBy.ToString());
+				}
+			}
+
+			return ("Success", remindersSent);
+		}
+
+
+
+
+
+		public async Task<NearExpiredSites> GetNearExpiredSites()
+		{
+			var nearExpiredSites = new NearExpiredSites
+			{
+				SitesByIntervalDict = new Dictionary<ReminderIntervalDTO, List<SiteDTO>>()
+			};
+
+			var now = DateTime.Now;
+			List<ISHealthMonitorSiteDbSet> sites = await GetSiteDbSets();
+			List<ISHealthMonitorIntervalDbSet> intervals = await GetReminderIntervalDbSets();
+
+			foreach (var interval in intervals)
+			{
+				var minutes = interval.DurationInMinutes;
+				var timeSpan = TimeSpan.FromMinutes(minutes);
+				var lowerBound = now.Date + timeSpan;
+				var upperBound = lowerBound + TimeSpan.FromDays(1);
+
+				// Get all sites that are within the interval (need a reminder sent)
+				var sitesWithinInterval = sites.Where(site =>
+				{
+					var expiryDate = site.SSLExpirationDate;
+					return expiryDate >= lowerBound && expiryDate < upperBound;
+				})
+				.Select(site => new SiteDTO
+				{
+					ID = site.ID,
+					SiteURL = site.URL,
+					SiteName = site.DisplayName,
+					SSLEffectiveDate = site.SSLEffectiveDate.ToString("yyyy-MM-dd"),
+					SSLExpirationDate = site.SSLExpirationDate.ToString("yyyy-MM-dd"),
+					SSLIssuer = site.SSLIssuer,
+					SSLSubject = site.SSLSubject,
+					SSLCommonName = site.SSLCommonName,
+					SSLThumbprint = site.SSLThumbprint
+				})
+				.ToList();
+
+				if (sitesWithinInterval.Any())
+				{
+					// If any reminders needed for tat interval, add a new entry to the SitesByInterval dictionary
+					var intervalDto = new ReminderIntervalDTO
+					{
+						ID = interval.ID,
+						DurationInMinutes = interval.DurationInMinutes,
+						DisplayName = interval.DisplayName,
+					};
+
+					nearExpiredSites.SitesByIntervalDict[intervalDto] = sitesWithinInterval;
+				}
+			}
+
+			return nearExpiredSites;
+		}
+
+
+		public async Task<List<RemindersToSendForSite>> GetRemindersForNearExpiredSites(NearExpiredSites nearExpiredSites)
+		{
+			var remindersList = new List<RemindersToSendForSite>();
+
+			var reminders = await GetReminderDbSets();
+
+			foreach (var intervalSitePair in nearExpiredSites.SitesByIntervalDict)
+			{
+				ReminderIntervalDTO interval = intervalSitePair.Key;
+				List<SiteDTO> sitesForInterval = intervalSitePair.Value;
+
+				foreach (var site in sitesForInterval)
+				{
+					// For each site that needs a reminder in that interval, collect any user-configured reminders that exist
+					var siteReminders = reminders
+						.Where(r => r.ISHealthMonitorSiteID == site.ID || r.ISHealthMonitorSiteID == 1) // SiteID = 1 means All Sites
+						.Where(r => r.ISHealthMonitorIntervalID == interval.ID)
+
+						.Select(r => new UserReminderDTO
+						{
+							ID = r.ID,
+							ISHealthMonitorSiteID = r.ISHealthMonitorSiteID,
+							ISHealthMonitorIntervalID = r.ISHealthMonitorIntervalID,
+							ISHealthMonitorGroupSubmissionID = r.ISHealthMonitorGroupSubmissionID,
+							CreatedBy = r.CreatedBy,
+						})
+						.ToList();
+
+					if (siteReminders.Any())
+					{
+						// If there happen to be any user reminders configured, package them for sending
+						remindersList.Add(new RemindersToSendForSite
+						{
+							ReminderInterval = intervalSitePair.Key,
+							Site = site,
+							Reminders = siteReminders
+						});
+					}
+				}
+			}
+
+			return remindersList;
+		}
+
+
+		public List<RemindersToSendForSite> RemoveDuplicates(List<RemindersToSendForSite> siteRemindersList)
+		{
+			// First, flatten out all the reminders
+			var flatReminders = siteRemindersList.SelectMany(sr => sr.Reminders
+				.Select(r => new { SiteReminder = sr, UserReminder = r }));
+
+			// Remove duplicates
+			flatReminders = flatReminders.Distinct();
+
+			// For each user/site pair, keep the one with the smallest interval
+			var filteredReminders = flatReminders
+				.GroupBy(x => (x.UserReminder.CreatedBy, x.SiteReminder.Site.ID))
+				.Select(g => g.OrderBy(x => x.SiteReminder.ReminderInterval.DurationInMinutes).First())
+				.ToList();
+
+			// Group them back into the SiteReminder structure
+			var filteredSiteReminders = filteredReminders
+				.GroupBy(x => (x.SiteReminder.ReminderInterval, x.SiteReminder.Site))
+				.Select(g => new RemindersToSendForSite
+				{
+					ReminderInterval = g.Key.ReminderInterval,
+					Site = g.Key.Site,
+					Reminders = g.Select(x => x.UserReminder).ToList()
+				})
+				.ToList();
+
+			return filteredSiteReminders;
+		}
 	}
+
+
+
 }
+
 

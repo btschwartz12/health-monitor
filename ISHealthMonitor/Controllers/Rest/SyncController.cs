@@ -19,7 +19,7 @@ namespace ISHealthMonitor.UI.Controllers.Rest
 {
     [Route("rest/api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class SyncController : ControllerBase
     {
         
@@ -31,22 +31,155 @@ namespace ISHealthMonitor.UI.Controllers.Rest
             _healthModel = healthModel;
         }
 
-  //      [HttpGet(Name = "SyncSites")]
-  //      public async Task<IActionResult> Get()
-  //      {
-		//	var failedSiteUrls = await _healthModel.UpdateSiteCerts();
-		//	var fireEmailRemindersCount = await _healthModel.FireEmailReminders();
+        [HttpGet(Name = "SyncSites")]
+		public async Task<IActionResult> Get()
+		{
+			var responseModel = new ApiResponseModel
+			{
+				TaskResults = new List<TaskResult>()
+			};
 
-		//	if (failedSiteUrls.Count > 0)
-		//	{
-		//		return Ok(new { Message = "Failed", FailedSiteUrls = failedSiteUrls });
-		//	}
-		//	else
-		//	{
-		//		return Ok(new { Message = "Success. " + fireEmailRemindersCount + " were sent out." });
-		//	}
+			try
+			{
+				// First update the certs in the DB
+				(string Message, Dictionary<string, string> FailedSiteUrls) = await _healthModel.UpdateCerts();
 
-		//}
+				var updateCertsResult = new UpdateCertsResult
+				{
+					FailedSiteUrls = FailedSiteUrls
+				};
+
+				responseModel.TaskResults.Add(new TaskResult
+				{
+					TaskName = "UpdateCerts",
+					Status = Message,
+					ErrorMessage = Message == "Success" ? null : "UpdateCerts failed",
+					Data = updateCertsResult
+				});
+
+				_logger.LogInformation("UpdateCerts completed with status: {status}", Message);
+			}
+			catch (Exception ex)
+			{
+				responseModel.TaskResults.Add(new TaskResult
+				{
+					TaskName = "UpdateCerts",
+					Status = "Failed",
+					ErrorMessage = ex.Message
+				});
+
+				_logger.LogError("UpdateCerts threw an exception: {exception}", ex);
+			}
+
+			try
+			{
+				// Now update the confluence page
+				(string Message, Dictionary<string, string> responseData) = await _healthModel.UpdateConfluencePage();
+
+				var updateConfluencePageResult = new UpdateConfluencePageResult
+				{
+					ResponseData = responseData
+				};
+
+				responseModel.TaskResults.Add(new TaskResult
+				{
+					TaskName = "UpdateConfluencePage",
+					Status = Message,
+					ErrorMessage = Message == "Success" ? null : "UpdateConfluencePage failed",
+					Data = updateConfluencePageResult
+				});
+
+				_logger.LogInformation("UpdateConfluencePage completed with status: {status}", Message);
+			}
+			catch (Exception ex)
+			{
+				responseModel.TaskResults.Add(new TaskResult
+				{
+					TaskName = "UpdateConfluencePage",
+					Status = "Failed",
+					ErrorMessage = ex.Message
+				});
+
+				_logger.LogError("UpdateConfluencePage threw an exception: {exception}", ex);
+			}
+
+			try
+			{
+				// Now send the email reminders
+				(string Message, Dictionary<string, Dictionary<string, List<string>>> remindersSent) = await _healthModel.FireReminders();
+
+				var fireRemindersResult = new FireRemindersResult
+				{
+					RemindersSent = remindersSent
+				};
+
+				responseModel.TaskResults.Add(new TaskResult
+				{
+					TaskName = "FireReminders",
+					Status = Message,
+					ErrorMessage = Message == "Success" ? null : "FireReminders failed",
+					Data = fireRemindersResult
+				});
+
+				_logger.LogInformation("FireReminders completed with status: {status}", Message);
+			}
+			catch (Exception ex)
+			{
+				responseModel.TaskResults.Add(new TaskResult
+				{
+					TaskName = "FireReminders",
+					Status = "Failed",
+					ErrorMessage = ex.Message
+				});
+
+				_logger.LogError("FireReminders threw an exception: {exception}", ex);
+			}
+
+			if (responseModel.TaskResults.All(r => r.Status == "Success"))
+			{
+				responseModel.Status = "Success";
+				responseModel.Message = "All tasks completed successfully";
+			}
+			else
+			{
+				responseModel.Status = "Failed";
+				responseModel.Message = "One or more tasks failed. Check the TaskResults for more information.";
+			}
+
+			return Ok(responseModel);
+		}
+
 
 	}
+
+	public class ApiResponseModel
+	{
+		public string Status { get; set; }
+		public string Message { get; set; }
+		public List<TaskResult> TaskResults { get; set; }
+	}
+
+	public class TaskResult
+	{
+		public string TaskName { get; set; }
+		public string Status { get; set; }
+		public string ErrorMessage { get; set; }
+		public object Data { get; set; }
+	}
+
+	public class UpdateCertsResult
+	{
+		public Dictionary<string, string> FailedSiteUrls { get; set; }
+	}
+
+	public class UpdateConfluencePageResult
+	{
+		public Dictionary<string, string> ResponseData { get; set; }
+	}
+
+	public class FireRemindersResult
+	{
+		public Dictionary<string, Dictionary<string, List<string>>> RemindersSent { get; set; }
+	}
+
 }
