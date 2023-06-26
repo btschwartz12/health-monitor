@@ -31,6 +31,12 @@ namespace ISHealthMonitor.UI.Controllers.Rest
             _healthModel = healthModel;
         }
 
+        [HttpGet(Name = "Test")]
+        public async Task<IActionResult> Test()
+		{
+			return Ok("Hello Nick");
+		}
+
         [HttpGet(Name = "SyncSites")]
 		public async Task<IActionResult> Get()
 		{
