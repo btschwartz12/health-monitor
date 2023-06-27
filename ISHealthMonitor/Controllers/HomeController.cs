@@ -51,11 +51,14 @@ namespace ISHealthMonitor.Controllers
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
 			bool userHasReminders = await _healthModel.UserHasReminders(new Guid(CurrentEmployee.GUID));
-			ViewBag.UserHasReminders = userHasReminders;
+            ViewBag.UserHasReminders = userHasReminders;
+
+
+            _logger.LogInformation("Visitor: " + CurrentEmployee.DisplayName);
 
 
 
-            
+
             if (ViewBag.UserIsAdmin)
             {
                 string username = _config.GetSection("ApiAuthConfig")["userName"];

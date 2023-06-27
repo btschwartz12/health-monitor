@@ -53,6 +53,12 @@ namespace ISHealthMonitor.UI.Controllers.API
             //	CreateSiteInternal(site);
             //}
 
+            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+            var employee = _employee.GetEmployeeByUserName(username);
+
+			_logger.LogInformation("Showing all sites to: " + employee.DisplayName);
+
 
 
 			List<SiteDTO> retList = _healthModel.GetSites()
