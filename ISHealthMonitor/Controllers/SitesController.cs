@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace ISHealthMonitor.UI.Controllers
@@ -15,22 +16,34 @@ namespace ISHealthMonitor.UI.Controllers
 
         private readonly IHealthModel _healthModel;
         private readonly IEmployee _employee;
+        private readonly IConfiguration _config;
 
 
-        public SitesController(IHealthModel healthModel, IEmployee employee)
+        public SitesController(IHealthModel healthModel, IEmployee employee, IConfiguration config)
         {
             _healthModel = healthModel;
             _employee = employee;
+            _config = config;
         }
 
         public IActionResult Index()
         {
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
-			var employee = _employee.GetEmployeeByUserName(username);
+			var employee = _employee.GetEmployeeByUserName(user);
 
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(employee.GUID));
             ViewBag.UserName = employee.DisplayName;
+
+
+            if (ViewBag.UserIsAdmin)
+            {
+                string username = _config.GetSection("ApiAuthConfig")["userName"];
+                string password = _config.GetSection("ApiAuthConfig")["password"];
+
+                ViewBag.ApiAuthUserName = username;
+                ViewBag.ApiAuthPassword = password;
+            }
 
             return View("~/Views/Home/Sites/Index.cshtml");
         }

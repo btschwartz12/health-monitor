@@ -6,6 +6,7 @@ using ISHealthMonitor.Core.Implementations;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +20,13 @@ namespace ISHealthMonitor.UI.Controllers
 
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
+		private readonly IConfiguration _config;
 
-        public RemindersController(IHealthModel healthModel, IEmployee employee)
+        public RemindersController(IHealthModel healthModel, IEmployee employee, IConfiguration config)
         {
             _healthModel = healthModel;
 			_employee = employee;
+			_config = config;
         }
 		[Authorize(Policy = "Admin")]
 		public IActionResult Index()
@@ -78,7 +81,17 @@ namespace ISHealthMonitor.UI.Controllers
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
             ViewBag.SiteDTO = _healthModel.GetSiteDTO(siteID);
 
-			return View("~/Views/Admin/Reminders/ConfigurationHistory.cshtml");
+
+            if (ViewBag.UserIsAdmin)
+            {
+                string username = _config.GetSection("ApiAuthConfig")["userName"];
+                string password = _config.GetSection("ApiAuthConfig")["password"];
+
+                ViewBag.ApiAuthUserName = username;
+                ViewBag.ApiAuthPassword = password;
+            }
+
+            return View("~/Views/Admin/Reminders/ConfigurationHistory.cshtml");
 		}
 
 		public IActionResult ConfigurationBuilder(int groupID = 0)
@@ -91,7 +104,16 @@ namespace ISHealthMonitor.UI.Controllers
 			ViewBag.UserName = CurrentEmployee.DisplayName;
 			ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-			if (groupID == 0)
+            if (ViewBag.UserIsAdmin)
+            {
+                string username = _config.GetSection("ApiAuthConfig")["userName"];
+                string password = _config.GetSection("ApiAuthConfig")["password"];
+
+                ViewBag.ApiAuthUserName = username;
+                ViewBag.ApiAuthPassword = password;
+            }
+
+            if (groupID == 0)
 			{
 				ReminderConfiguration viewModel = new ReminderConfiguration()
 				{
