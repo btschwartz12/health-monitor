@@ -55,7 +55,20 @@ namespace ISHealthMonitor.Controllers
 
 
 
-			HomeViewModel model = new()
+            
+            if (ViewBag.UserIsAdmin)
+            {
+                string username = _config.GetSection("ApiAuthConfig")["userName"];
+                string password = _config.GetSection("ApiAuthConfig")["password"];
+
+                ViewBag.ApiAuthUserName = username;
+                ViewBag.ApiAuthPassword = password;
+            }
+            
+
+
+
+            HomeViewModel model = new()
             {
                 Username = user,
                 DisplayName = CurrentEmployee.DisplayName,

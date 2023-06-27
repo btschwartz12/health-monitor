@@ -7,6 +7,8 @@ using ISHealthMonitor.Core.Helpers.Confluence;
 using ISHealthMonitor.Core.Helpers.Email;
 using ISHealthMonitor.Core.Models;
 using ISHealthMonitor.Core.Models.DTO;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -19,6 +21,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 	[Route("api/[Controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AdminFunctionsController : ControllerBase
     {
         private readonly IHealthModel _healthModel;
