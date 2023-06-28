@@ -56,17 +56,18 @@ namespace ISHealthMonitor.Controllers
 
             _logger.LogInformation("Visitor: " + CurrentEmployee.DisplayName);
 
+			ViewBag.testAppSetting = _config.GetSection("TemplatePaths")["ConfluenceTable"];
 
-
-
-            if (ViewBag.UserIsAdmin)
+			if (ViewBag.UserIsAdmin)
             {
                 string username = _config.GetSection("ApiAuthConfig")["userName"];
                 string password = _config.GetSection("ApiAuthConfig")["password"];
+				
 
-                ViewBag.ApiAuthUserName = username;
+				ViewBag.ApiAuthUserName = username;
                 ViewBag.ApiAuthPassword = password;
-            }
+				
+			}
             
 
 
