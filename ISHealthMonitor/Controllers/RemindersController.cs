@@ -91,7 +91,7 @@ namespace ISHealthMonitor.UI.Controllers
                 ViewBag.ApiAuthPassword = password;
             }
 
-            return View("~/Views/Admin/Reminders/ConfigurationHistory.cshtml");
+            return View("~/Views/Home/ConfigurationHistory.cshtml");
 		}
 
 		public IActionResult ConfigurationBuilder(int groupID = 0)
@@ -120,7 +120,7 @@ namespace ISHealthMonitor.UI.Controllers
 					GroupID = 0,
 			        UserReminders = new List<UserReminderDTO> { },
 			    };
-			    return View("~/Views/Admin/Reminders/ConfigurationBuilder.cshtml", viewModel);
+			    return View("~/Views/Home/ConfigurationBuilder.cshtml", viewModel);
 			}
 			else
 			{

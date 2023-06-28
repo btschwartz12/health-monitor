@@ -45,7 +45,7 @@ namespace ISHealthMonitor.UI.Controllers
                 ViewBag.ApiAuthPassword = password;
             }
 
-            return View("~/Views/Home/Sites/Index.cshtml");
+            return View("~/Views/Home/Sites.cshtml");
         }
 
         [HttpGet]
@@ -58,7 +58,7 @@ namespace ISHealthMonitor.UI.Controllers
                     SiteName = "New Site",
 
                 };
-                return View("~/Views/Home/Sites/AddEdit.cshtml", newSiteDTO);
+                return View("~/Views/Admin/Sites/AddEdit.cshtml", newSiteDTO);
             }
             else
             {

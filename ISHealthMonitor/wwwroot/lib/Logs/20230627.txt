@@ -54,3 +54,7 @@
 2023-06-27T11:30:08.6124428-04:00  [INF] Hosting environment: "Local" (c3307c92)
 2023-06-27T11:30:08.6146049-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
 2023-06-27T11:30:13.6813342-04:00 800001d2-0007-ff00-b63f-84710c7967bb [INF] Visitor: Ben Schwartz (10820c7d)
+2023-06-27T14:14:36.0943746-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-06-27T14:14:36.1035493-04:00  [INF] Hosting environment: "Development" (c3307c92)
+2023-06-27T14:14:36.1054251-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-06-27T14:17:19.4220865-04:00 8000025e-0006-fa00-b63f-84710c7967bb [INF] Visitor: Ben Schwartz (10820c7d)
