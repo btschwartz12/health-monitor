@@ -8,7 +8,8 @@ namespace ISHealthMonitor.UI.ViewModels
     public class LogViewerModel
     {
 
-        public DateTime Today { get; set; }
+        public string? Today { get; set; }
+        public string? LastWeek { get; set; }
         public List<LogFile> LogFiles { get; set; }
 
         public List<string> IgnorePhrases = new List<string>()

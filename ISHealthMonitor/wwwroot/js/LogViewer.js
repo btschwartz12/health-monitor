@@ -4,22 +4,27 @@ console.log(model);
 
 var GLOBAL_MODEL = model;
 
+var CUR_START_DATE = GLOBAL_MODEL.lastWeek;
+var CUR_END_DATE = GLOBAL_MODEL.today;
+
 $('#demo').daterangepicker({
     "timePicker": true,
     "timePicker": true,
     "timePicker24Hour": true,
     "timePickerIncrement": 30,
-    "startDate": moment("06/22/2023", "MM/DD/YYYY"),
-    "endDate": moment("06/28/2023", "MM/DD/YYYY"),
+    "startDate": moment(CUR_START_DATE, "MM/DD/YYYY"),
+    "endDate": moment(CUR_END_DATE, "MM/DD/YYYY"),
 }, function (start, end, label) {
+    //CUR_START_DATE = start;
+    //CUR_END_DATE = end;
     console.log("New date range selected: " + start.format('YYYY-MM-DD HH:mm') + ' to ' + end.format('YYYY-MM-DD HH:mm'));
-    filterAndRender(start, end); // Call this function when the date range is changed
+    //filterAndRender(start, end); // Call this function when the date range is changed
 });
 
 $("#filterButton").click(function () {
-    var start = $('#demo').data('daterangepicker').startDate;
-    var end = $('#demo').data('daterangepicker').endDate;
-    filterAndRender(start, end); // Call this function when the "Filter" button is clicked
+    CUR_START_DATE = $('#demo').data('daterangepicker').startDate;
+    CUR_END_DATE = $('#demo').data('daterangepicker').endDate;
+    filterAndRender(CUR_START_DATE, CUR_END_DATE); 
 });
 
 function filterAndRender(start, end) {
@@ -29,25 +34,56 @@ function filterAndRender(start, end) {
         checkedTypes.push($(this).attr('id'));
     });
 
-    var filteredModel = filterModel(start, end, isSystemLogChecked, checkedTypes);
-    generateAccordion(filteredModel);
+    $('#submitLogSpinner').removeClass('d-none');
+
+    var formattedStart = start.format('YYYY-MM-DD');
+    var formattedEnd = end.format('YYYY-MM-DD');
+
+    var payload = "?startInclusive=" + formattedStart + "&endInclusive=" + formattedEnd; 
+
+
+    $('#alertLogs').addClass('d-none')
+
+    var accordion = $('#accordion');
+    accordion.empty();
+
+    fetch('/api/Log/GetLogsInRange' + payload)
+        .then(response => response.json())
+        .then(respData => {
+
+            $('#submitLogSpinner').addClass('d-none');
+
+
+            var logViewerModel = respData;
+
+            if (logViewerModel.LogFiles.length == 0) {
+                $('#alertLogs').removeClass('d-none').text('No logs found for specified range');
+                return;
+            }
+
+            var filteredModel = filterModel(logViewerModel, isSystemLogChecked, checkedTypes);
+            generateAccordion(filteredModel);
+
+            
+
+        })
+        .catch(error => console.error('Error:', error));
+
+
+    
 }
 
-function filterModel(start, end, isSystemLogChecked, checkedTypes) {
-    var startDate = moment(start, 'YYYY-MM-DD HH:mm');
-    var endDate = moment(end, 'YYYY-MM-DD HH:mm');
+function filterModel(logViewerModel, isSystemLogChecked, checkedTypes) {
 
-    var filteredModel = JSON.parse(JSON.stringify(GLOBAL_MODEL));
-    filteredModel.logFiles = filteredModel.logFiles.filter(file => {
-        var fileDate = moment(file.date, 'YYYY-MM-DD');
-        return fileDate.isBetween(startDate, endDate, 'day', '[]');
-    });
 
-    filteredModel.logFiles.forEach(file => {
-        file.logEntries = file.logEntries.filter(entry => {
-            var isWantedType = checkedTypes.includes(entry.type);
+    var filteredModel = logViewerModel;
 
-            var isWantedSystemFilter = isSystemLogChecked || !entry.isSystemLog;
+
+    filteredModel.LogFiles.forEach(file => {
+        file.LogEntries = file.LogEntries.filter(entry => {
+            var isWantedType = checkedTypes.includes(entry.Type);
+
+            var isWantedSystemFilter = isSystemLogChecked || !entry.IsSystemLog;
 
             return isWantedType && isWantedSystemFilter;
         });
@@ -64,19 +100,14 @@ function generateAccordion(filteredModel) {
     accordion.empty();
 
 
-    const options = {
-        weekday: 'long',  // Full name of the day of the week (e.g., "Monday")
-        day: 'numeric',   // Numeric day of the month (e.g., 1, 2, 3)
-        month: 'long',    // Full name of the month (e.g., "January")
-        year: 'numeric'   // Full year (e.g., 2023)
-    };
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
 
 
-    for (var i = 0; i < filteredModel.logFiles.length; i++) {
+    for (var i = 0; i < filteredModel.LogFiles.length; i++) {
 
-        var logFile = filteredModel.logFiles[i];
+        var logFile = filteredModel.LogFiles[i];
 
-        const date = new Date(logFile.date);
+        const date = new Date(logFile.Date);
         var dateStr = date.toLocaleDateString('en-US', options);
 
         
@@ -116,17 +147,17 @@ function generateAccordion(filteredModel) {
 
 
         // Add log entries to the table body
-        for (var j = 0; j < logFile.logEntries.length; j++) {
-            var logEntry = logFile.logEntries[j];
+        for (var j = 0; j < logFile.LogEntries.length; j++) {
+            var logEntry = logFile.LogEntries[j];
 
             // Format the timestamp to only include the time
-            var timestamp = moment(logEntry.timestamp).format('HH:mm:ss');
+            var timestamp = moment(logEntry.Timestamp).format('HH:mm:ss');
 
             var row = $('<tr>');
             row.append($('<td>').text(timestamp));
-            row.append($('<td>').text(logEntry.type));
+            row.append($('<td>').text(logEntry.Type));
 
-            var contentCell = $('<td>').text(logEntry.content);
+            var contentCell = $('<td>').text(logEntry.Content);
             contentCell.css("word-wrap", "break-word");
             contentCell.css("white-space", "pre");
             row.append(contentCell);

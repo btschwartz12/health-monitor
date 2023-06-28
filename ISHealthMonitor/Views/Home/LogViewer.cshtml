@@ -8,9 +8,7 @@
     </div>
 
     <div class="row justify-content-center mt-4">
-        <div class="col-12 text-center">
-            <h4>Search range:</h4>
-        </div>
+
         <div class="col-6">
             <input type="text" id="demo" class="form-control">
         </div>
@@ -39,9 +37,11 @@
 
     <div class="row justify-content-center mt-4">
         <div class="col-auto">
-            <button id="filterButton" class="btn btn-primary">Submit</button>
+            <button id="filterButton" class="btn btn-primary">Submit <i id="submitLogSpinner" class="fa fa-spinner fa-spin d-none"></i></button>
         </div>
     </div>
+
+    <div id="alertLogs" class="alert alert-danger d-block d-none my-2" role="alert"></div>
 
     <div class="row mt-4">
         <div id="accordion" class="col-12">
@@ -55,7 +55,6 @@
 @section Scripts{
 
     <script>
-        console.log(6);
         var model = @Html.Raw(Json.Serialize(Model));
 
     </script>
