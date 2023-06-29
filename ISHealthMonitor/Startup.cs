@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.Extensions.Logging;
+using ISHealthMonitor.Core.Helpers.Cache;
 
 namespace ISHealthMonitor
 {
@@ -52,6 +53,8 @@ namespace ISHealthMonitor
 
             services.AddTokenAuthentication(Configuration);
 
+            // Cache
+            services.AddSingleton<LogCache>();
 
             // Confluence
             Configuration.Bind("ConfluenceCloudApp", ConfluenceAPISettingsConfig);

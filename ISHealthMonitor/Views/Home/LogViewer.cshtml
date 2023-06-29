@@ -17,7 +17,7 @@
     <div class="row justify-content-center mt-4">
         @foreach (var type in Model.EntryTypeMap)
         {
-            <div class="col-auto form-check form-switch">
+            <div class="col-auto form-check form-switch rounded border ms-2">
                 <input class="form-check-input" type="checkbox" value="" id="@type.Value.ToString()" checked>
                 <label class="form-check-label" for="@type.Value.ToString()">
                     @type.Value.ToString()

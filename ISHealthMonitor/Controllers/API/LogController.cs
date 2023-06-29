@@ -1,4 +1,5 @@
 ﻿using ISHealthMonitor.UI.ViewModels;
+using ISHealthMonitor.Core.Helpers.Cache;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ISHealthMonitor.UI.Controllers.API
 {
@@ -16,10 +18,12 @@ namespace ISHealthMonitor.UI.Controllers.API
     public class LogController
     {
         private readonly ILogger<LogController> _logger;
+        private readonly LogCache _cache;
 
-        public LogController(ILogger<LogController> logger)
+        public LogController(ILogger<LogController> logger, LogCache cache)
         {
             _logger = logger;
+            _cache = cache;
         }
 
         [HttpGet("GetAllLogs")]
@@ -45,6 +49,12 @@ namespace ISHealthMonitor.UI.Controllers.API
             return JsonConvert.SerializeObject(model);
         }
 
+
+
+
+
+
+
         private async Task<LogViewerModel> GetViewerModel(DateTime startInclusive, DateTime endInclusive)
         {
             var model = new LogViewerModel()
@@ -63,18 +73,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
             foreach (var file in files)
             {
-
                 var tempFilePath = Path.Combine(tempPath, Path.GetFileName(file));
-
-                try
-                {
-                    System.IO.File.Copy(file, tempFilePath, true);
-                }
-                catch (IOException)
-                {
-                    // If the file is being used by another process, skip it.
-                    continue;
-                }
 
                 var logFile = new LogFile()
                 {
@@ -89,64 +88,102 @@ namespace ISHealthMonitor.UI.Controllers.API
                     continue;
                 }
 
-                var lines = System.IO.File.ReadLines(tempFilePath);
-                LogEntry currentLogEntry = null;
-                bool isInExceptionBlock = false;
+                string key = $"LogFile_{logFile.FileName}";
 
-                foreach (var line in lines)
+                bool isToday = logFile.Date == DateTime.Now.Date;
+
+                // Try to get the data from cache
+                if (!isToday && _cache.Cache.TryGetValue(key, out LogFile cachedLogFile))
                 {
-
-                    if (isInExceptionBlock)
-                    {
-
-                        try
-                        {
-                            // Try to parse the log entry, if successful we are not in the exception block anymore
-                            var logEntry = ParseLogEntry(model, line);
-                            isInExceptionBlock = false;
-                            logFile.LogEntries.Add(currentLogEntry);
-
-
-                        }
-                        catch (Exception ex)
-                        {
-                            // If it can't parse, we are still in the block
-                            currentLogEntry.Content += "\n" + line;
-                            continue;
-                        }
-
-                    }
-
-                    try
-                    {
-                        var logEntry = ParseLogEntry(model, line);
-                        if (logEntry != null)
-                        {
-                            if (logEntry.Type == LogEntryType.ERROR.ToString())
-                            {
-                                isInExceptionBlock = true;
-                                currentLogEntry = logEntry;
-                            }
-                            else
-                            {
-                                logFile.LogEntries.Add(logEntry);
-                            }
-                        }
-
-                    }
-                    catch (Exception ex)
-                    {
-                        Directory.Delete(tempPath, true);
-                        throw new Exception("Failed to parse log file: " + ex.Message);
-                    }
+                    model.LogFiles.Add(cachedLogFile);
+                    continue;
                 }
+
+                // If not in cache, parse the file
+                try
+                {
+                    System.IO.File.Copy(file, tempFilePath, true);
+                }
+                catch (IOException ex)
+                {
+                    throw new Exception("Failed to copy log file: " + ex.Message);
+                }
+
+                logFile = ParseLogFile(logFile, model, tempPath, tempFilePath);
+
+                // Set the data in the cache, with some expiration policy
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    // Set cache entry size by extension method.
+                    .SetSize(1);
+
+                _cache.Cache.Set(key, logFile, cacheEntryOptions);
+
                 model.LogFiles.Add(logFile);
             }
+
 
             Directory.Delete(tempPath, true);
 
             return model;
 
+        }
+
+
+        private LogFile ParseLogFile(LogFile logFile, LogViewerModel model, string tempDir, string tempFilePath)
+        {
+            var lines = System.IO.File.ReadLines(tempFilePath);
+            LogEntry currentLogEntry = null;
+            bool isInExceptionBlock = false;
+
+            foreach (var line in lines)
+            {
+
+                if (isInExceptionBlock)
+                {
+
+                    try
+                    {
+                        // Try to parse the log entry, if successful we are not in the exception block anymore
+                        var logEntry = ParseLogEntry(model, line);
+                        isInExceptionBlock = false;
+                        logFile.LogEntries.Add(currentLogEntry);
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        // If it can't parse, we are still in the block
+                        currentLogEntry.Content += "\n" + line;
+                        continue;
+                    }
+
+                }
+
+                try
+                {
+                    var logEntry = ParseLogEntry(model, line);
+                    if (logEntry != null)
+                    {
+                        if (logEntry.Type == LogEntryType.ERROR.ToString())
+                        {
+                            isInExceptionBlock = true;
+                            currentLogEntry = logEntry;
+                        }
+                        else
+                        {
+                            logFile.LogEntries.Add(logEntry);
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Directory.Delete(tempDir, true);
+                    throw new Exception("Failed to parse log file: " + ex.Message);
+                }
+            }
+
+            return logFile;
         }
 
 
