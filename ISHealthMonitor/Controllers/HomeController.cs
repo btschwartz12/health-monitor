@@ -19,6 +19,8 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
+using System.Globalization;
+using System.IO;
 
 namespace ISHealthMonitor.Controllers
 {
@@ -42,7 +44,6 @@ namespace ISHealthMonitor.Controllers
 
         public async Task<IActionResult> Index()
         {
-
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
 			var CurrentEmployee = _employee.GetEmployeeByUserName(user);
@@ -54,10 +55,8 @@ namespace ISHealthMonitor.Controllers
             ViewBag.UserHasReminders = userHasReminders;
 
 
-            _logger.LogInformation("Visitor: " + CurrentEmployee.DisplayName);
-
-
-
+            _logger.LogInformation("Home Page Visitor: " + CurrentEmployee.DisplayName + " (has reminders: " + userHasReminders.ToString() + ")");
+            
 
             if (ViewBag.UserIsAdmin)
             {
@@ -82,6 +81,31 @@ namespace ISHealthMonitor.Controllers
         }
 
 
+
+        public async Task<IActionResult> LogViewer()
+        {
+
+            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+
+            ViewBag.UserName = CurrentEmployee.DisplayName;
+            ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
+
+
+            LogViewerModel model = new LogViewerModel()
+            {
+                Today = DateTime.Now.ToShortDateString(),
+                LastWeek = DateTime.Now.AddDays(-7).ToShortDateString(),
+                LogFiles = new List<LogFile>() { }, // Api will fill this in
+            };
+
+            return View(model);
+        }
+
+
+
+        
 
 
 

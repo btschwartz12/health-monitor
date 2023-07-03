@@ -47,18 +47,27 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("DeleteReminderInterval")]
 		public IActionResult DeleteReminderInterval(int id)
 		{
-			List<string> subscribedUsers = _healthModel.GetSubscribedUsersForInterval(id);
+
+            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var employee = _employee.GetEmployeeByUserName(username);
+
+
+            List<string> subscribedUsers = _healthModel.GetSubscribedUsersForInterval(id);
 
 			if (subscribedUsers.Count > 0)
 			{
-				return BadRequest(new { SubscribedUsers = subscribedUsers });
+                _logger.LogInformation($"Interval ID={id.ToString()} failed to delete (existing users subscribed)");
+                return BadRequest(new { SubscribedUsers = subscribedUsers });
 			}
 			else
 			{
 				_healthModel.DeleteReminderInterval(id);
-				return Ok(id);
+                _logger.LogInformation($"Interval ID={id.ToString()} deleted by {employee.GUID}");
+                return Ok(id);
 			}
-		}
+
+   
+        }
 
 
 
@@ -87,7 +96,10 @@ namespace ISHealthMonitor.UI.Controllers.API
 				};
 
 				_healthModel.AddReminderInterval(newReminderInterval);
-				return Ok(newReminderInterval);
+
+                _logger.LogInformation($"Interval created by {employee.GUID}: ({reminderIntervalDTO.DisplayName} = {reminderIntervalDTO.DurationInMinutes} minutes)");
+
+                return Ok(newReminderInterval);
 			}
 			else
 			{
@@ -100,7 +112,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 					existingReminderInterval.DisplayName = reminderIntervalDTO.DisplayName;
 
 					_healthModel.UpdateReminderInterval(existingReminderInterval);
-					return Ok(existingReminderInterval);
+
+                    _logger.LogInformation($"Interval ID={reminderIntervalDTO.ID} updated by {employee.GUID} to: ({reminderIntervalDTO.DisplayName} = {reminderIntervalDTO.DurationInMinutes} minutes) and possibly other fields");
+                    return Ok(existingReminderInterval);
 				}
 				else
 				{

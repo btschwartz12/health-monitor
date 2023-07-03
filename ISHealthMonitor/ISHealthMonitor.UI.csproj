@@ -43,7 +43,12 @@
   </ItemGroup>
 	
 <ItemGroup>
+    <Folder Include="wwwroot\lib\daterangepicker\" />
     <Folder Include="wwwroot\lib\templates\" />
   </ItemGroup>
+	
+<ItemGroup>
+  <None Include="wwwroot\lib\Logs\20230627.txt" />
+</ItemGroup>
 
 </Project>

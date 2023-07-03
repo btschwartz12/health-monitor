@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="~/css/selectize.bootstrap2.css" />
     <link rel="stylesheet" href="~/css/animate.min.css"  />
     <link rel="stylesheet" href="~/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/lib/daterangepicker/daterangepicker.css" />
+
      
     <script src="https://kit.fontawesome.com/b38e3673b1.js" crossorigin="anonymous"></script>
 </head>
@@ -78,22 +80,30 @@
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
                                 <button onclick="FireReminders()" type="button" class="btn btn-danger btn-block mt-3">
-                                    <i id="spinnerFireReminders" class="fa fa-spinner fa-spin d-none"></i> Fire Reminders
+                                    Fire Reminders  <i id="spinnerFireReminders" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
-                                <button onclick="RefreshCerts()" type="button" class="btn btn-info btn-block mt-3">
-                                    <i id="spinnerRefreshCerts" class="fa fa-spinner fa-spin d-none"></i> Update Certs
+                                <button onclick="RefreshCerts()" type="button" class="btn btn-warning btn-block mt-3">
+                                    Update Certs <i id="spinnerRefreshCerts" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
-                                <button onclick="UpdateConfluence()" type="button" class="btn btn-warning btn-block mt-3">
-                                    <i id="spinnerUpdateConfluence" class="fa fa-spinner fa-spin d-none"></i> Update Confluence
+                                <button onclick="UpdateConfluence()" type="button" class="btn btn-info btn-block mt-3">
+                                    Update Confluence <i id="spinnerUpdateConfluence" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-8">
+                                <a class="btn btn-dark btn-block mt-3" sp-area="" asp-controller="Home" asp-action="LogViewer"
+                                   onclick="$('#spinnerViewLog').removeClass('d-none');">
+                                    View Logs <i id="spinnerViewLog" class="fa fa-spinner fa-spin d-none"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -123,17 +133,23 @@
             &copy; 2023 - ISHealthMonitor - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+    
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/ConfigurationForm.js" asp-append-version="true"></script>
+    <script src="~/js/AddEditForms.js" asp-append-version="true"></script>
+    <script src="~/js/AdminFunctions.js" asp-append-version="true"></script>
+
+
+
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrapV5/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/js/selectize.js" asp-append-version="true"></script>
-    <script src="~/js/ConfigurationForm.js" asp-append-version="true"></script>
     <script src="~/lib/datatables/jquery.dataTables.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet" type="text/css" />
-
     <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/dataTables.buttons.min.js"></script>
@@ -143,11 +159,12 @@
     <script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/buttons.html5.min.js"></script>
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/buttons.print.min.js"></script>
-    <script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    @*<script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>*@
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
     <script type="text/javascript" language="javascript" src="//cdn.datatables.net/plug-ins/1.13.4/sorting/datetime-moment.js"></script>
 
 
-    <script src="~/js/AddEditForms.js" asp-append-version="true"></script>
+    
 
     @RenderSection("Scripts", required: false)
 </body>
@@ -171,167 +188,8 @@
 
         if (userIsAdmin) {
             apiAuthUsername = @Html.Raw(Json.Serialize(ViewBag.ApiAuthUsername));
-            apiAuthPassword = @Html.Raw(Json.Serialize(ViewBag.ApiAuthPassword));
-
-            
+            apiAuthPassword = @Html.Raw(Json.Serialize(ViewBag.ApiAuthPassword)); 
         }
 
     });
-</script>
-
-<script>
-    function showAdminModal(id) {
-        $('#adminModal').modal('show');
-    }
-
-    
-
-    function FireReminders() {
-        $('#spinnerFireReminders').removeClass('d-none');
-        $.ajax({
-            type: "POST",
-            url: `/rest/api/jwToken?grant_type=token&userName=${apiAuthUsername}&password=${apiAuthPassword}`,
-            async: true,
-            cache: false
-        })
-            .done(function (tokenData) {
-
-                var token = 'invalid'
-
-                try {
-                    tokenData = JSON.parse(tokenData);
-                    token = tokenData.access_token;
-                }
-                catch {}
-
-
-                // The second request to fire reminders
-                $.ajax({
-                    type: "GET",
-                    url: '/api/adminfunctions/firereminders',
-                    async: true,
-                    cache: false,
-                    contentType: false,
-                    enctype: 'multipart/form-data',
-                    processData: false,
-                    beforeSend: function (xhr) {
-                        // Include the bearer token in the header
-                        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                    }
-                }).done(function (data) {
-                    console.log(data);
-                    $('#alertFireReminders').removeClass('d-none').text('Successfully sent reminders!');
-                }).fail(function (error) {
-                    console.log('Error:', error);
-                    $('#alertFireReminders').removeClass('d-none').text('Failed to send reminders :(');
-                }).always(function () {
-                    $('#spinnerFireReminders').addClass('d-none');
-                });
-            })
-            .fail(function (error) {
-                console.log('Failed to get token:', error);
-            });
-    }
-
-    function RefreshCerts() {
-        $('#spinnerRefreshCerts').removeClass('d-none');
-
-        $.ajax({
-            type: "POST",
-            url: `/rest/api/jwToken?grant_type=token&userName=${apiAuthUsername}&password=${apiAuthPassword}`,
-            async: true,
-            cache: false
-        })
-            .done(function (tokenData) {
-
-                var token = 'invalid'
-
-                try {
-                    tokenData = JSON.parse(tokenData);
-                    token = tokenData.access_token;
-                }
-                catch { }
-
-                // The second request to refresh certificates
-                $.ajax({
-                    type: "GET",
-                    url: '/api/adminfunctions/refreshcerts',
-                    async: true,
-                    cache: false,
-                    contentType: 'application/json',
-                    processData: false,
-                    beforeSend: function (xhr) {
-                        // Include the bearer token in the header
-                        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                    }
-                }).done(function (data) {
-                    console.log(data);
-                    if (data.message === "Success") {
-                        $('#alertRefreshCerts').removeClass('d-none').text('Successfully refreshed certificates!');
-                    }
-                    else if (data.message === "Failed") {
-                        var failedUrlCount = Object.keys(data.failedSiteUrls).length;
-
-                        $('#alertRefreshCerts').removeClass('d-none').text('Successfully refreshed some certificates (' + failedUrlCount + ' failed)');
-                    }
-
-                }).fail(function (error) {
-                    console.log('Error:', error);
-                    $('#alertRefreshCerts').removeClass('d-none').text('Failed to refresh certificates :(');
-                }).always(function () {
-                    $('#spinnerRefreshCerts').addClass('d-none');
-                });
-            })
-            .fail(function (error) {
-                console.log('Failed to get token:', error);
-            });
-    }
-
-    function UpdateConfluence() {
-        $('#spinnerUpdateConfluence').removeClass('d-none');
-
-        $.ajax({
-            type: "POST",
-            url: `/rest/api/jwToken?grant_type=token&userName=${apiAuthUsername}&password=${apiAuthPassword}`,
-            async: true,
-            cache: false
-        })
-            .done(function (tokenData) {
-
-                var token = 'invalid'
-
-                try {
-                    tokenData = JSON.parse(tokenData);
-                    token = tokenData.access_token;
-                }
-                catch { }
-
-                // The second request to update confluence
-                $.ajax({
-                    type: "GET",
-                    url: '/api/adminfunctions/updateconfluence',
-                    async: true,
-                    cache: false,
-                    contentType: 'application/json',
-                    processData: false,
-                    beforeSend: function (xhr) {
-                        // Include the bearer token in the header
-                        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                    }
-                }).done(function (data) {
-                    console.log(data);
-                    $('#alertUpdateConfluence').removeClass('d-none').text('Successfully updated the Confluence page!');
-                }).fail(function (error) {
-                    console.log('Error:', error);
-                    $('#alertUpdateConfluence').removeClass('d-none').text('Failed to update the Confluence page :(');
-                }).always(function () {
-                    $('#spinnerUpdateConfluence').addClass('d-none');
-                });
-            })
-            .fail(function (error) {
-                console.log('Failed to get token:', error);
-            });
-    }
-
-
 </script>

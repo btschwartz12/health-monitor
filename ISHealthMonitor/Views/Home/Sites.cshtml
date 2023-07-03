@@ -92,6 +92,7 @@
 			var userIsAdmin = @Html.Raw(Json.Serialize(ViewBag.UserIsAdmin));
 
 			if (userIsAdmin) {
+				columns.unshift({ "sTitle": "ID", "data": "ID" })
 				columns.push({ "sTitle": "Action", "data": "Action" });
 			}
 

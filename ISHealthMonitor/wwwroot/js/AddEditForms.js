@@ -154,7 +154,9 @@ function FetchSSLCertificate() {
 
 			if (data.ErrorCommonName) {
 				$('#errorMessage').text('Invalid Common Name');
+				$('#SSLCommonName').val("INVALID ("+data.CommonName+")");
 				$('#errorMessage').removeClass('d-none');
+				$('#submitButton').prop('disabled', false);
 			}
 			else {
 				$('#submitButton').prop('disabled', false);

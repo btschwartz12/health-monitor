@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.Extensions.Logging;
+using ISHealthMonitor.Core.Helpers.Cache;
 
 namespace ISHealthMonitor
 {
@@ -52,6 +53,8 @@ namespace ISHealthMonitor
 
             services.AddTokenAuthentication(Configuration);
 
+            // Cache
+            services.AddSingleton<LogCache>();
 
             // Confluence
             Configuration.Bind("ConfluenceCloudApp", ConfluenceAPISettingsConfig);
@@ -73,7 +76,7 @@ namespace ISHealthMonitor
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddFile("Logs/{Date}.txt");
+            loggerFactory.AddFile("wwwroot/lib/Logs/{Date}.txt");
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

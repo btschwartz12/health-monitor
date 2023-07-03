@@ -11,6 +11,8 @@ using ISHealthMonitor.Core.Common;
 using ISHealthMonitor.Core.DataAccess;
 using ISHealthMonitor.Core.Helpers.Confluence;
 using ISHealthMonitor.Core.Helpers.Email;
+using Microsoft.Extensions.Logging;
+using ISHealthMonitor.Core.Implementations;
 
 namespace ISHealthMonitor.Core.Models
 {
@@ -20,13 +22,15 @@ namespace ISHealthMonitor.Core.Models
 		private readonly IEmployee _employee;
 		private readonly IRest _restModel;
 		private readonly IConfiguration _configuration;
+		private readonly ILogger<HealthModel> _logger;
 
-		public HealthModel(IACMSEntityContext context, IEmployee employee, IRest rest, IConfiguration configuration)
+		public HealthModel(IACMSEntityContext context, IEmployee employee, IRest rest, IConfiguration configuration, ILogger<HealthModel> logger)
 		{
 			_IACMSEntityContext = context;
 			_employee = employee;
 			_restModel = rest;
 			_configuration = configuration;
+			_logger = logger;
 		}
 
 
@@ -488,28 +492,32 @@ namespace ISHealthMonitor.Core.Models
 					site.SSLCommonName = cert.CommonName;
 					site.SSLThumbprint = cert.Thumbprint;
 
-					if (cert.ErrorCommonName)
+
+                    if (cert.ErrorCommonName)
 					{
 						site.SSLCommonName = "INVALID (" + cert.CommonName + ")";
-						UpdateSite(site);
-						throw new Exception("Invalid SSL Common Name for the site.");
+                        throw new Exception("Invalid SSL Common Name for the site.");
 
 					}
-					else
-					{
-						UpdateSite(site);
-					}
 
+                    // Mark as modified so we can save later
+                    _IACMSEntityContext.Entry(site).State = EntityState.Modified;
 
-				}
+                }
 				catch (Exception ex)
 				{
-					failedSiteUrls.Add(site.URL, ex.Message);
+                    // Mark as modified so we can save later
+                    _IACMSEntityContext.Entry(site).State = EntityState.Modified;
+
+                    failedSiteUrls.Add(site.URL, ex.Message);
 				}
 
 			}
 
-			if (failedSiteUrls.Count > 0)
+			// Save all changes to the db
+            _IACMSEntityContext.SaveChanges();
+
+            if (failedSiteUrls.Count > 0)
 			{
 				return ("Success", failedSiteUrls); // Still success, even if some sites dont have certs 
 			}
@@ -657,10 +665,11 @@ namespace ISHealthMonitor.Core.Models
 				foreach (var userReminder in reminder.Reminders)
 				{
 					remindersSent[siteUrl][intervalDisplayName].Add(userReminder.CreatedBy.ToString());
-				}
-			}
+                }
+            }
 
-			return ("Success", remindersSent);
+
+            return ("Success", remindersSent);
 		}
 
 

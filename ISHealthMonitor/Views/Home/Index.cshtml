@@ -127,44 +127,6 @@
 @section Scripts{
 
 
-	<script>
-		function FireReminders() {
-			$.ajax({
-				type: "GET",
-				url: '/api/adminfunctions/firereminders',
-				async: false,
-				cache: false,
-				contentType: false,
-				enctype: 'multipart/form-data',
-				processData: false
-			}).done(function (data) {
-				var json = JSON.parse(data);
-				console.log('YEAAAA')
-				console.log(json);
-				alert('Done!')
-			});
-		}
-
-		function RefreshCerts() {
-			$.ajax({
-				type: "GET",
-				url: '/api/adminfunctions/refreshcerts',
-				async: false,
-				cache: false,
-				contentType: 'application/json',  // Set the content type to JSON
-				processData: false
-			}).done(function (data) {
-				console.log('YEAAAA');
-				console.log(data);
-				alert('Done!');
-			}).fail(function (error) {
-				console.log('Error:', error);
-				alert('Failed!');
-			});
-		}
-
-	</script>
-
     <script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
     
 
