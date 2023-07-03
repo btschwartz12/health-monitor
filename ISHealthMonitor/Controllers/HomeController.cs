@@ -44,7 +44,6 @@ namespace ISHealthMonitor.Controllers
 
         public async Task<IActionResult> Index()
         {
-
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
 			var CurrentEmployee = _employee.GetEmployeeByUserName(user);
@@ -56,10 +55,8 @@ namespace ISHealthMonitor.Controllers
             ViewBag.UserHasReminders = userHasReminders;
 
 
-            _logger.LogInformation("Visitor: " + CurrentEmployee.DisplayName);
-
-
-
+            _logger.LogInformation("Home Page Visitor: " + CurrentEmployee.DisplayName + " (has reminders: " + userHasReminders.ToString() + ")");
+            
 
             if (ViewBag.UserIsAdmin)
             {

@@ -133,20 +133,21 @@ namespace ISHealthMonitor.UI.Controllers.API
         {
             var lines = System.IO.File.ReadLines(tempFilePath);
             LogEntry currentLogEntry = null;
-            bool isInExceptionBlock = false;
+            bool isInBlock = false;
 
             foreach (var line in lines)
             {
 
-                if (isInExceptionBlock)
+                if (isInBlock)
                 {
 
                     try
                     {
                         // Try to parse the log entry, if successful we are not in the exception block anymore
                         var logEntry = ParseLogEntry(model, line);
-                        isInExceptionBlock = false;
+                        isInBlock = false;
                         logFile.LogEntries.Add(currentLogEntry);
+                        currentLogEntry = null;
 
 
                     }
@@ -166,9 +167,15 @@ namespace ISHealthMonitor.UI.Controllers.API
                     {
                         if (logEntry.Type == LogEntryType.ERROR.ToString())
                         {
-                            isInExceptionBlock = true;
+                            isInBlock = true;
                             currentLogEntry = logEntry;
                         }
+                        // Other condition for if it is in a block
+                        else if (model.BlockPhrases.Any(phrase => line.Contains(phrase)))
+                        {
+							isInBlock = true;
+							currentLogEntry = logEntry;
+						}
                         else
                         {
                             logFile.LogEntries.Add(logEntry);
@@ -182,6 +189,11 @@ namespace ISHealthMonitor.UI.Controllers.API
                     throw new Exception("Failed to parse log file: " + ex.Message);
                 }
             }
+
+            if (currentLogEntry != null)
+            {
+				logFile.LogEntries.Add(currentLogEntry);
+			}
 
             return logFile;
         }

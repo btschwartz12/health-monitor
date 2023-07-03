@@ -18,12 +18,19 @@ namespace ISHealthMonitor.UI.ViewModels
             "Content root path:"
         };
 
-        public Dictionary<string, LogEntryType> EntryTypeMap = new Dictionary<string, LogEntryType>
+		public List<string> BlockPhrases = new List<string>()
+		{
+			"Reminder Data:",
+			"Workflow completed. Results:"
+		};
+
+		public Dictionary<string, LogEntryType> EntryTypeMap = new Dictionary<string, LogEntryType>
         {
             { "INF", LogEntryType.INFO },
             { "WRN", LogEntryType.WARNING },
             { "ERR", LogEntryType.ERROR },
-            { "DBG", LogEntryType.DEBUG }
+            { "DBG", LogEntryType.DEBUG },
+            { "FTL", LogEntryType.CRITICAL },
         };
     }
 
@@ -51,7 +58,8 @@ namespace ISHealthMonitor.UI.ViewModels
         INFO,
         WARNING,
         ERROR,
-        DEBUG
+        DEBUG,
+        CRITICAL
     }
 
 

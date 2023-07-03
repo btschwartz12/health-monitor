@@ -57,7 +57,6 @@ namespace ISHealthMonitor.UI.Controllers.API
 
             var employee = _employee.GetEmployeeByUserName(username);
 
-			_logger.LogInformation("Showing all sites to: " + employee.DisplayName);
 
 
 
@@ -82,16 +81,24 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("DeleteSite")]
 		public IActionResult DeleteSite(int id)
 		{
-			List<string> subscribedUsers = _healthModel.GetSubscribedUsersForSite(id);
+
+            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+            var employee = _employee.GetEmployeeByUserName(username);
+
+
+            List<string> subscribedUsers = _healthModel.GetSubscribedUsersForSite(id);
 
 			if (subscribedUsers.Count > 0)
 			{
-				return BadRequest(new { SubscribedUsers = subscribedUsers });
+                _logger.LogInformation($"Site ID={id.ToString()} failed to delete (existing users subscribed)");
+                return BadRequest(new { SubscribedUsers = subscribedUsers });
 			}
 			else
 			{
-				_healthModel.DeleteSite(id);
-				return Ok(id);
+                _healthModel.DeleteSite(id);
+                _logger.LogInformation($"Site ID={id.ToString()} deleted by {employee.GUID}");
+                return Ok(id);
 			}
 		}
 
@@ -126,7 +133,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 					Disabled = false
 				};
 
-				_healthModel.AddSite(newSite);
+                _logger.LogInformation($"Site created by {employee.GUID}: ({siteDTO.SiteName} = {siteDTO.SiteURL})");
+
+                _healthModel.AddSite(newSite);
 				return Ok(newSite);
 			}
 			else
@@ -145,7 +154,10 @@ namespace ISHealthMonitor.UI.Controllers.API
 					existingSite.SSLThumbprint = siteDTO.SSLThumbprint;
 
 					_healthModel.UpdateSite(existingSite);
-					return Ok(existingSite);
+
+                    _logger.LogInformation($"Site ID={siteDTO.ID.ToString()} updated by {employee.GUID} to: ({siteDTO.SiteName} = {siteDTO.SiteURL}, and possibly other fields) ");
+
+                    return Ok(existingSite);
 				}
 				else
 				{
@@ -208,136 +220,6 @@ namespace ISHealthMonitor.UI.Controllers.API
 				return BadRequest(ex.Message);
 			}
 		}
-
-
-		private async Task<SiteDTO> GetSiteDTO(string name, string category, string url, CertificateHandlers certHandlers)
-		{
-			try
-			{
-				CertificateDTO res = await certHandlers.CheckSSLSiteAsync(url);
-				if (res.Issuer == null || res.Subject == null || res.EffectiveDate == null || res.ExpDate == null)
-				{
-					throw new Exception("null value in cert");
-				}
-				return new SiteDTO()
-				{
-					SiteURL = url,
-					SiteName = name,
-					SiteCategory = category,
-					SSLEffectiveDate = res.EffectiveDate,
-					SSLExpirationDate = res.ExpDate,
-					SSLIssuer = res.Issuer,
-					SSLSubject = res.Subject,
-					SSLCommonName = res.CommonName,
-					SSLThumbprint = res.Thumbprint
-				};
-
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
-			}
-		}
-
-        private async Task<List<SiteDTO>> ProcessJsonFileAsync(string filePath, string category)
-		{
-			// Prepare the result list
-			List<SiteDTO> result = new List<SiteDTO>();
-
-			// Initialize certificate handler
-			var certHandlers = new CertificateHandlers();
-
-			// Load json file
-			string json = await System.IO.File.ReadAllTextAsync(filePath);
-
-			// Parse json file
-			var sites = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
-
-
-			List<string> failedUrls = new List<string>();
-
-			// Iterate through each key-value pair
-			foreach (var site in sites)
-			{
-				string name = site.Key;
-				var urls = site.Value;
-
-
-
-
-				// Check if urls list is empty
-				if (urls.Count == 0) continue;
-
-				for (int i = 0; i < urls.Count; i++)
-				{
-					string url = urls[i];
-					string finalName = name;
-
-					// Check if url contains 'dev' and is the second url
-					if (url.Contains("dev") && urls.Count == 2)
-					{
-						finalName += " Dev";
-					}
-					// If there are more than two urls, append the URL to the end of the name
-					else if (urls.Count > 2)
-					{
-						finalName += " " + url;
-					}
-
-					// Call GetSiteDTO function and add the result to the list
-					try
-					{
-						SiteDTO siteDto = await GetSiteDTO(finalName, category, url, certHandlers);
-						result.Add(siteDto);
-					}
-					catch (Exception ex)
-					{
-						failedUrls.Add(url);
-						Console.WriteLine(ex);
-					}
-					
-				}
-			}
-
-			return result;
-		}
-
-
-        private void CreateSiteInternal(SiteDTO siteDTO)
-		{
-
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-
-			var employee = _employee.GetEmployeeByUserName(username);
-
-
-			var newSite = new ISHealthMonitorSiteDbSet()
-			{
-				URL = siteDTO.SiteURL,
-				DisplayName = siteDTO.SiteName,
-				SiteCategory = siteDTO.SiteCategory,
-				SSLEffectiveDate = DateTime.Parse(siteDTO.SSLEffectiveDate),
-				SSLExpirationDate = DateTime.Parse(siteDTO.SSLExpirationDate),
-				SSLIssuer = siteDTO.SSLIssuer,
-				SSLSubject = siteDTO.SSLSubject,
-				SSLCommonName = siteDTO.SSLCommonName,
-				SSLThumbprint = siteDTO.SSLThumbprint,
-				CreatedBy = new Guid(employee.GUID),
-				DateCreated = DateTime.Now,
-				Active = true,
-				Deleted = false,
-				Disabled = false
-			};
-
-			_healthModel.AddSite(newSite);
-		}
-
-
-
-
-
-
-
 
 
 

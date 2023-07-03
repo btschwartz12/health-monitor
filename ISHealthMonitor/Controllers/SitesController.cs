@@ -80,7 +80,7 @@ namespace ISHealthMonitor.UI.Controllers
 
 
 
-                return View("~/Views/Home/Sites/AddEdit.cshtml", siteDTO);
+                return View("~/Views/Admin/Sites/AddEdit.cshtml", siteDTO);
             }
         }
     }

@@ -14,6 +14,7 @@ using ISHealthMonitor.Core.Contracts;
 using System.Net.Http;
 using System.Security.Policy;
 using System.Text;
+using System.Text.Json;
 
 namespace ISHealthMonitor.UI.Controllers.Rest
 {
@@ -154,7 +155,13 @@ namespace ISHealthMonitor.UI.Controllers.Rest
 				responseModel.Message = "One or more tasks failed. Check the TaskResults for more information.";
 			}
 
-			return Ok(responseModel);
+
+            string jsonString = JsonSerializer.Serialize(responseModel, new JsonSerializerOptions { WriteIndented = true });
+
+			_logger.LogInformation($"Workflow completed. Results:");
+			_logger.LogInformation($"{jsonString}");
+
+            return Ok(responseModel);
 		}
 
 
