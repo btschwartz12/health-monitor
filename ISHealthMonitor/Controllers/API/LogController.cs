@@ -62,7 +62,7 @@ namespace ISHealthMonitor.UI.Controllers.API
                 LogFiles = new List<LogFile>()
             };
 
-            var logPath = Path.Combine(Environment.CurrentDirectory, "wwwroot\\lib\\Logs");
+            var logPath = Path.Combine(Environment.CurrentDirectory, "Logs");
 
             var tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
