@@ -44,15 +44,10 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 		[HttpGet]
 		[Route("updateconfluence")]
-		public async Task<IActionResult> UpdateConfluence()
+		public async Task<IActionResult> UpdateConfluence(string username)
 		{
-			_logger.LogInformation("Trying to get username from http context...");
 
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
             var employee = _employee.GetEmployeeByUserName(username);
-
-			_logger.LogInformation("Received, username is: " + username);
-
 
             try
 			{
@@ -81,9 +76,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 		[HttpGet]
 		[Route("refreshcerts")]
-		public async Task<IActionResult> RefreshCerts()
+		public async Task<IActionResult> RefreshCerts(string username)
 		{
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
             var employee = _employee.GetEmployeeByUserName(username);
 
             try
@@ -112,10 +106,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 		[HttpGet]
 		[Route("firereminders")]
-		public async Task<IActionResult> FireReminders()
+		public async Task<IActionResult> FireReminders(string username)
 		{
 
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
             var employee = _employee.GetEmployeeByUserName(username);
 
             try

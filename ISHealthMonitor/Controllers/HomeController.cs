@@ -92,6 +92,15 @@ namespace ISHealthMonitor.Controllers
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
+            if (ViewBag.UserIsAdmin)
+            {
+                string username = _config.GetSection("ApiAuthConfig")["userName"];
+                string password = _config.GetSection("ApiAuthConfig")["password"];
+
+                ViewBag.ApiAuthUserName = username;
+                ViewBag.ApiAuthPassword = password;
+            }
+
 
             LogViewerModel model = new LogViewerModel()
             {

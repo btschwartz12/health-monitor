@@ -39,6 +39,14 @@ namespace ISHealthMonitor.UI.Controllers.API
 			return JsonConvert.SerializeObject(retList);
 		}
 
+        [HttpGet("GetLoggedInUser")]
+        public string GetLoggedInUser()
+        {
+            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+            return JsonConvert.SerializeObject(username);
+        }
+
 		[HttpPut]
 		[Route("DeleteUser")]
 		public IActionResult DeleteUser(int id)
