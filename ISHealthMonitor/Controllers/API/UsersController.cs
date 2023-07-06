@@ -44,7 +44,7 @@ namespace ISHealthMonitor.UI.Controllers.API
         {
             var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
-            return JsonConvert.SerializeObject(username);
+            return username;
         }
 
 		[HttpPut]
