@@ -32,10 +32,10 @@ function FireReminders() {
                 contentType: false,
                 enctype: 'multipart/form-data',
                 processData: false,
-                //beforeSend: function (xhr) {
-                //    // Include the bearer token in the header
-                //    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                //}
+                beforeSend: function (xhr) {
+                    // Include the bearer token in the header
+                    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                }
             }).done(function (data) {
                 console.log(data);
                 $('#alertFireReminders').removeClass('d-none').text('Successfully sent reminders!');
@@ -78,10 +78,11 @@ function RefreshCerts() {
                 cache: false,
                 contentType: 'application/json',
                 processData: false,
-                //beforeSend: function (xhr) {
-                //    // Include the bearer token in the header
-                //    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                //}
+                beforeSend: function (xhr) {
+                    // Include the bearer token in the header
+                    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                    console.log(xhr);
+                }
             }).done(function (data) {
                 console.log(data);
                 if (data.message === "Success") {
@@ -132,10 +133,10 @@ function UpdateConfluence() {
                 cache: false,
                 contentType: 'application/json',
                 processData: false,
-                //beforeSend: function (xhr) {
-                //    // Include the bearer token in the header
-                //    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                //}
+                beforeSend: function (xhr) {
+                    // Include the bearer token in the header
+                    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                }
             }).done(function (data) {
                 console.log(data);
                 $('#alertUpdateConfluence').removeClass('d-none').text('Successfully updated the Confluence page!');

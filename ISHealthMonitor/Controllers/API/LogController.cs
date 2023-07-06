@@ -162,24 +162,18 @@ namespace ISHealthMonitor.UI.Controllers.API
 
                 try
                 {
-                    var logEntry = ParseLogEntry(model, line);
+                    LogEntry logEntry = ParseLogEntry(model, line);
                     if (logEntry != null)
                     {
-                        if (logEntry.Type == LogEntryType.ERROR.ToString())
-                        {
-                            isInBlock = true;
-                            currentLogEntry = logEntry;
-                        }
-                        // Other condition for if it is in a block
-                        else if (model.BlockPhrases.Any(phrase => line.Contains(phrase)))
-                        {
-							isInBlock = true;
-							currentLogEntry = logEntry;
-						}
-                        else
-                        {
-                            logFile.LogEntries.Add(logEntry);
-                        }
+                        // Instead of finding every case of where a log entry should have multiple 
+                        // lines and set isInBlock=true, we can just treat every entry as a block
+                        // and it will still get handled fine if it is one line
+
+                        // This means the code should be refactored, but.....it's fine
+
+						isInBlock = true;
+						currentLogEntry = logEntry;
+
                     }
 
                 }

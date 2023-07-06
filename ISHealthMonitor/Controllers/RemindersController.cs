@@ -128,6 +128,10 @@ namespace ISHealthMonitor.UI.Controllers
 			    .Where(r => r.ISHealthMonitorGroupSubmissionID == groupID)
 			    .ToList();
 
+				
+
+				
+
 				if (remindersByGroup.Count == 0) 
 				{
 					return RedirectToAction("Index", "Home");
@@ -145,13 +149,17 @@ namespace ISHealthMonitor.UI.Controllers
 					}
 				}
 
-			    ReminderConfiguration viewModel = new ReminderConfiguration()
+                DateTime groupCreatedDate = _healthModel.GetCreatedDateForGroup(groupID);
+                ViewBag.GroupUserName = remindersByGroup[0].UserName;
+
+                ReminderConfiguration viewModel = new ReminderConfiguration()
 			    {
 					GroupID = groupID,
-			        UserReminders = remindersByGroup
-			    };
+			        UserReminders = remindersByGroup,
+					DateCreated = groupCreatedDate.ToString("dddd, MMMM d, yyyy, HH:mm:ss")
+			};
 
-			    return View("~/Views/Admin/Reminders/ConfigurationBuilder.cshtml", viewModel);
+			    return View("~/Views/Home/ConfigurationBuilder.cshtml", viewModel);
 			}
 
 

@@ -26,9 +26,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 	[Route("api/[Controller]")]
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-    public class AdminFunctionsController : ControllerBase
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+	//[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+	public class AdminFunctionsController : ControllerBase
     {
         private readonly IHealthModel _healthModel;
         private readonly IEmployee _employee;

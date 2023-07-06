@@ -60,6 +60,7 @@ namespace ISHealthMonitor.Core.Contracts
 		Task<bool> UserHasReminders(Guid guid);
 
 
+		DateTime GetCreatedDateForGroup(int groupId);
 
 
 		List<SiteReminderConfiguration> GetSiteReminderConfigurations(Guid guid);

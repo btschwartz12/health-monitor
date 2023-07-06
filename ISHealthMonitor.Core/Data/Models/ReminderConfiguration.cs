@@ -8,5 +8,6 @@ namespace ISHealthMonitor.Core.Data.Models
     {
         public int GroupID { get; set; }
         public List<UserReminderDTO> UserReminders { get; set; }
+        public string? DateCreated { get; set; }
     }
 }

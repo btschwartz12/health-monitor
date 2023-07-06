@@ -13,6 +13,7 @@ using ISHealthMonitor.Core.Helpers.Confluence;
 using ISHealthMonitor.Core.Helpers.Email;
 using Microsoft.Extensions.Logging;
 using ISHealthMonitor.Core.Implementations;
+using System.Security.Policy;
 
 namespace ISHealthMonitor.Core.Models
 {
@@ -136,6 +137,7 @@ namespace ISHealthMonitor.Core.Models
 							  ISHealthMonitorSiteID = d.ISHealthMonitorSiteID,
 							  ISHealthMonitorIntervalID = d.ISHealthMonitorIntervalID,
 							  ISHealthMonitorGroupSubmissionID = d.ISHealthMonitorGroupSubmissionID,
+							  
 							  Site = GetSiteDTO(d.ISHealthMonitorSiteID),
 							  ReminderInterval = GetReminderIntervalDTO(d.ISHealthMonitorIntervalID),
 							  Action = "<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' " +
@@ -804,6 +806,18 @@ namespace ISHealthMonitor.Core.Models
 				.ToList();
 
 			return filteredSiteReminders;
+		}
+
+		public DateTime GetCreatedDateForGroup(int groupId)
+		{
+			var reminderGroup = _IACMSEntityContext.ISHealthMonitorUserReminders
+								.Where(r => !r.Deleted)
+								.Where(r => r.ISHealthMonitorGroupSubmissionID == groupId)
+								.ToList();
+
+			var minTime = reminderGroup.Min(r => r.CreatedDate);
+
+			return minTime;
 		}
 	}
 
