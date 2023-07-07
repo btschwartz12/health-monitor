@@ -643,13 +643,13 @@ namespace ISHealthMonitor.Core.Models
 
 			foreach (var emailModel in emailModels)
 			{
-				EmailHelper.SendEmail(emailModel, rootDir, key);
+				//EmailHelper.SendEmail(emailModel, rootDir, key);
 				key += 1;
 			}
 
 			var remindersSent = new Dictionary<string, Dictionary<string, List<string>>>();
 
-			foreach (var reminder in remindersList)
+			foreach (var reminder in filteredReminderList)
 			{
 				string siteUrl = reminder.Site.SiteURL;
 				string intervalDisplayName = reminder.ReminderInterval.DisplayName;
