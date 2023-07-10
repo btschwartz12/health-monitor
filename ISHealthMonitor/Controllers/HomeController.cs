@@ -1,5 +1,4 @@
 ﻿using ISHealthMonitor.Core.Contracts;
-using ISHealthMonitor.Models;
 using ISHealthMonitor.Core.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -9,10 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ISHealthMonitor.Core.Models;
 using ISHealthMonitor.UI.ViewModels;
-using ISHealthMonitor.Core.Helpers;
-using ISHealthMonitor.Core.Common;
 using ISHealthMonitor.Core.DataAccess;
 using ISHealthMonitor.Core.Implementations;
 using System.IdentityModel.Tokens.Jwt;

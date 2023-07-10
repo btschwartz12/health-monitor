@@ -3,6 +3,23 @@
     $('#alertFireReminders').addClass('d-none');
     $('#alertRefreshCerts').addClass('d-none');
     $('#alertUpdateConfluence').addClass('d-none');
+
+
+    $('#fireRemindersBtn').tooltip({
+        title: "Send out certificate renewal reminders to all applicable subscribed users",
+        placement: 'right'
+    });
+
+    $('#refreshCertsBtn').tooltip({
+        title: "Fetch each site's certificate information from the CA and update it in the database (this may take a while)",
+        placement: 'right'
+    });
+
+    $('#updateConfluenceBtn').tooltip({
+        title: "Fetch each site's certificate information from the database and update it in the Confluence site",
+        placement: 'right'
+    });
+
 }
 
 
@@ -102,11 +119,11 @@ function RefreshCerts() {
                         cache: false,
                         contentType: 'application/json',
                         processData: false,
-                        beforeSend: function (xhr) {
-                            // Include the bearer token in the header
-                            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                            console.log(xhr);
-                        }
+                        //beforeSend: function (xhr) {
+                        //    // Include the bearer token in the header
+                        //    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                        //    console.log(xhr);
+                        //}
                     }).done(function (data) {
                         console.log(data);
                         if (data.message === "Success") {

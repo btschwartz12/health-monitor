@@ -93,7 +93,7 @@ namespace ISHealthMonitor.Core.Models
 		public void AddSite(ISHealthMonitorSiteDbSet site)
 		{
 			_IACMSEntityContext.Add(site);
-			_IACMSEntityContext.SaveChanges();
+            _IACMSEntityContext.SaveChanges();
 		}
 
 		public void UpdateSite(ISHealthMonitorSiteDbSet site)
@@ -493,6 +493,7 @@ namespace ISHealthMonitor.Core.Models
 					site.SSLSubject = cert.Subject;
 					site.SSLCommonName = cert.CommonName;
 					site.SSLThumbprint = cert.Thumbprint;
+					site.LastUpdated = DateTime.Now;
 
 
                     if (cert.ErrorCommonName)
@@ -643,7 +644,7 @@ namespace ISHealthMonitor.Core.Models
 
 			foreach (var emailModel in emailModels)
 			{
-				//EmailHelper.SendEmail(emailModel, rootDir, key);
+				EmailHelper.SendEmail(emailModel, rootDir, key);
 				key += 1;
 			}
 

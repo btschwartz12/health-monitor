@@ -1,6 +1,7 @@
 ﻿using ISHealthMonitor.Core.Contracts;
 using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
+using ISHealthMonitor.Core.Data.Models;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -83,5 +84,28 @@ namespace ISHealthMonitor.UI.Controllers
                 return View("~/Views/Admin/Sites/AddEdit.cshtml", siteDTO);
             }
         }
+
+        public IActionResult SiteStatusViewer()
+        {
+			var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+			var employee = _employee.GetEmployeeByUserName(user);
+
+			ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(employee.GUID));
+			ViewBag.UserName = employee.DisplayName;
+
+
+			if (ViewBag.UserIsAdmin)
+			{
+				string username = _config.GetSection("ApiAuthConfig")["userName"];
+				string password = _config.GetSection("ApiAuthConfig")["password"];
+
+				ViewBag.ApiAuthUserName = username;
+				ViewBag.ApiAuthPassword = password;
+			}
+
+
+            return View("~/Views/Home/SiteStatusViewer.cshtml");
+		}
     }
 }

@@ -31,6 +31,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="Index">Sites</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="SiteStatusViewer">Status</a>
+                        </li>
 
                         @{
                             bool isAdmin = ViewData.ContainsKey("UserIsAdmin") && bool.TryParse(ViewData["UserIsAdmin"].ToString(), out bool isAdmin2) && isAdmin2;
@@ -79,21 +82,21 @@
                     <div class="modal-body">
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
-                                <button onclick="FireReminders()" type="button" class="btn btn-danger btn-block mt-3">
+                                <button onclick="FireReminders()" type="button" id="fireRemindersBtn" class="btn btn-danger btn-block mt-3">
                                     Fire Reminders  <i id="spinnerFireReminders" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
-                                <button onclick="RefreshCerts()" type="button" class="btn btn-warning btn-block mt-3">
+                                <button onclick="RefreshCerts()" type="button" id="refreshCertsBtn" class="btn btn-warning btn-block mt-3">
                                     Update Certs <i id="spinnerRefreshCerts" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
-                                <button onclick="UpdateConfluence()" type="button" class="btn btn-info btn-block mt-3">
+                                <button onclick="UpdateConfluence()" type="button" id="updateConfluenceBtn" class="btn btn-info btn-block mt-3">
                                     Update Confluence <i id="spinnerUpdateConfluence" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
                             </div>
@@ -190,6 +193,8 @@
             apiAuthUsername = @Html.Raw(Json.Serialize(ViewBag.ApiAuthUsername));
             apiAuthPassword = @Html.Raw(Json.Serialize(ViewBag.ApiAuthPassword)); 
         }
+
+        
 
     });
 </script>

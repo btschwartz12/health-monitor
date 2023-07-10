@@ -128,6 +128,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 					SSLThumbprint = siteDTO.SSLThumbprint,
 					CreatedBy = new Guid(employee.GUID),
 					DateCreated = DateTime.Now,
+					LastUpdated = DateTime.Now,
 					Active = true,
 					Deleted = false,
 					Disabled = false
@@ -152,6 +153,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 					existingSite.SSLSubject = siteDTO.SSLSubject;
 					existingSite.SSLCommonName = siteDTO.SSLCommonName;
 					existingSite.SSLThumbprint = siteDTO.SSLThumbprint;
+					existingSite.LastUpdated = DateTime.Now;
 
 					_healthModel.UpdateSite(existingSite);
 
@@ -222,9 +224,132 @@ namespace ISHealthMonitor.UI.Controllers.API
 		}
 
 
+		[HttpGet("GetSiteStatusData")]
+		public async Task<IActionResult> GetSiteStatusData()
+		{
+			SiteStatusData model = new SiteStatusData()
+			{
+				SiteStatusList = new List<SiteStatus>() { }
+			};
+
+			List<SiteDTO> allSites = _healthModel.GetSites();
+
+			List<SiteDTO> uniqueSiteDTOs = allSites
+				.Where(s => s.ID != 1) // Filter out all sites
+				.ToList();
+
+			List<UserReminderDTO> allReminders = _healthModel.GetReminders();
+
+			List<UserReminderDTO> remindersForAllSites = allReminders
+				.Where(s => s.ISHealthMonitorSiteID == 1)
+				.ToList();
+
+			List<ReminderIntervalDTO> allReminderIntervals = _healthModel.GetReminderIntervals();
+			Dictionary<int, (int, string)> reminderIntervalDictionary = allReminderIntervals.ToDictionary(x => x.ID, x => (x.DurationInMinutes, x.DisplayName));
+			
+
+
+			foreach (SiteDTO site in uniqueSiteDTOs)
+			{
+				SiteStatus siteStatus = new SiteStatus();
+
+				siteStatus.SiteID = site.ID;
+				siteStatus.SiteURL = site.SiteURL;
+				siteStatus.SiteName = site.SiteName;
+				siteStatus.SSLExpirationDate = site.SSLExpirationDate;
+				siteStatus.TimeUntilExpiration = GetTimeDiffString(DateTime.Parse(site.SSLExpirationDate));
+
+
+				List<UserReminderDTO> remindersForSite = allReminders
+					.Where(r => r.ISHealthMonitorSiteID == site.ID)
+					.ToList();
+
+				Dictionary<string, List<string>> usersSubscribed = new Dictionary<string, List<string>>();
+
+				Dictionary<string, List<(int, string)>> usersSubscribedTemp = new Dictionary<string, List<(int, string)>>();
+
+				foreach (var reminder in remindersForSite)
+				{
+					int duration = reminderIntervalDictionary[reminder.ISHealthMonitorIntervalID].Item1;
+					string displayName = reminderIntervalDictionary[reminder.ISHealthMonitorIntervalID].Item2;
+
+					// If the user already has reminders, add to their list. Otherwise, create a new list.
+					if (usersSubscribedTemp.ContainsKey(reminder.UserName))
+					{
+						usersSubscribedTemp[reminder.UserName].Add((duration, displayName));
+					}
+					else
+					{
+						usersSubscribedTemp[reminder.UserName] = new List<(int, string)> { (duration, displayName) };
+					}
+					
+				}
+
+				// Do seperate stuff for all sites so that it is differentiable
+				foreach (var allSiteReminder in remindersForAllSites)
+				{
+                    int duration = reminderIntervalDictionary[allSiteReminder.ISHealthMonitorIntervalID].Item1;
+                    string displayName = reminderIntervalDictionary[allSiteReminder.ISHealthMonitorIntervalID].Item2;
+
+                    if (usersSubscribedTemp.ContainsKey(allSiteReminder.UserName))
+                    {
+                        usersSubscribedTemp[allSiteReminder.UserName].Add((duration, displayName + " (All Sites)"));
+                    }
+                    else
+                    {
+                        usersSubscribedTemp[allSiteReminder.UserName] = new List<(int, string)> { (duration, displayName + " (All Sites)") };
+                    }
+				}
+
+				// Sort the lists by duration and convert to lists of display names.
+				foreach (var userName in usersSubscribedTemp.Keys)
+				{
+					List<string> sortedDisplayNames = usersSubscribedTemp[userName]
+						.OrderBy(x => x.Item1)
+						.Select(x => x.Item2)
+						.ToList();
+
+					usersSubscribed[userName] = sortedDisplayNames;
+				}
+
+				siteStatus.UsersSubscribed = usersSubscribed;
+				siteStatus.NumSubscribedUsers = usersSubscribed.Count;
+
+				model.SiteStatusList.Add(siteStatus);
+
+			}
+
+			return Ok(JsonConvert.SerializeObject(model));
+		}
 
 
 
+		private string GetTimeDiffString(DateTime expDate)
+		{
+			TimeSpan timeDiff = expDate - DateTime.Now;
 
+			string timeDiffReadable = "";
+			if (timeDiff.TotalSeconds < 0)
+			{
+				timeDiffReadable = "Expired";
+			}
+			else
+			{
+				int years = timeDiff.Days / 365; // get the number of years
+				int months = (timeDiff.Days % 365) / 30; // get the number of remaining months
+				int days = (timeDiff.Days % 365) % 30; // get the number of remaining days
+
+				if (years > 0)
+				{
+					timeDiffReadable += $"{(years > 0 ? $"{years} year{(years > 1 ? "s" : "")}, " : "")}";
+				}
+				if (months > 0)
+				{
+					timeDiffReadable += $"{(months > 0 ? $"{months} month{(months > 1 ? "s" : "")}, " : "")}";
+				}
+				timeDiffReadable += $"{days} day{(days > 1 ? "s" : "")}";
+			}
+			return timeDiffReadable;
+		}
 	}
 }

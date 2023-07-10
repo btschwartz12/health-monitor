@@ -12,6 +12,8 @@ var siteConfigurationDataTable;
 
 var configurationHistoryDataTable;
 
+var siteStatusDataTable;
+
 
 DATATABLE_REQUESTS.LoadSiteTable = function () {
 
@@ -203,6 +205,40 @@ DATATABLE_REQUESTS.LoadConfigurationHistoryTable = function (siteID) {
 DATATABLE_REQUESTS.ClearConfigurationHistoryTable = function () {
     //var table = $('configurationHistoryTable').DataTable();
     var table = configurationHistoryDataTable;
+    table
+        .search('')
+        .columns().search('')
+        .draw();
+
+    table.clear();
+}
+
+DATATABLE_REQUESTS.LoadSiteStatusTable = function () {
+
+
+    DATATABLE_REQUESTS.ClearSiteStatusTable();
+    var sitelocation = "/api/Sites/GetSiteStatusData";
+
+    $.ajax({
+        type: "GET",
+        url: sitelocation,
+        async: false,
+        cache: false,
+        contentType: false,
+        enctype: 'multipart/form-data',
+        processData: false
+    }).done(function (data) {
+        var json = JSON.parse(data);
+
+        var data = json.SiteStatusList;
+
+        siteStatusDataTable.rows.add(data).draw();
+        $("#divLoading").hide();
+    });
+}
+
+DATATABLE_REQUESTS.ClearSiteStatusTable = function () {
+    var table = siteStatusDataTable;
     table
         .search('')
         .columns().search('')

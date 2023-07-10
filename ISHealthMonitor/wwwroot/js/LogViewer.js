@@ -12,7 +12,8 @@ $('#demo').daterangepicker({
     "timePicker": true,
     "timePicker24Hour": true,
     "timePickerIncrement": 30,
-    "startDate": moment(CUR_START_DATE, "MM/DD/YYYY"),
+    //"startDate": moment(CUR_START_DATE, "MM/DD/YYYY"),
+    "startDate": moment(CUR_END_DATE, "MM/DD/YYYY"), // Have it just be todays date
     "endDate": moment(CUR_END_DATE, "MM/DD/YYYY"),
 }, function (start, end, label) {
     //CUR_START_DATE = start;
