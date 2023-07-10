@@ -79,7 +79,8 @@ namespace ISHealthMonitor.Core.Contracts
 		Task<NearExpiredSites> GetNearExpiredSites();
 		List<RemindersToSendForSite> RemoveDuplicates(List<RemindersToSendForSite> siteRemindersList);
 
-
+		string GetTimeDiffString(DateTime expDate);
+		string GetTimeDiffColor(DateTime expDate);
 
 
 

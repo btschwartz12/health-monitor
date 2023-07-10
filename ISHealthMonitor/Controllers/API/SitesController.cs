@@ -257,7 +257,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 				siteStatus.SiteURL = site.SiteURL;
 				siteStatus.SiteName = site.SiteName;
 				siteStatus.SSLExpirationDate = site.SSLExpirationDate;
-				siteStatus.TimeUntilExpiration = GetTimeDiffString(DateTime.Parse(site.SSLExpirationDate));
+				siteStatus.TimeUntilExpiration = _healthModel.GetTimeDiffString(DateTime.Parse(site.SSLExpirationDate));
 
 
 				List<UserReminderDTO> remindersForSite = allReminders
@@ -322,34 +322,5 @@ namespace ISHealthMonitor.UI.Controllers.API
 			return Ok(JsonConvert.SerializeObject(model));
 		}
 
-
-
-		private string GetTimeDiffString(DateTime expDate)
-		{
-			TimeSpan timeDiff = expDate - DateTime.Now;
-
-			string timeDiffReadable = "";
-			if (timeDiff.TotalSeconds < 0)
-			{
-				timeDiffReadable = "Expired";
-			}
-			else
-			{
-				int years = timeDiff.Days / 365; // get the number of years
-				int months = (timeDiff.Days % 365) / 30; // get the number of remaining months
-				int days = (timeDiff.Days % 365) % 30; // get the number of remaining days
-
-				if (years > 0)
-				{
-					timeDiffReadable += $"{(years > 0 ? $"{years} year{(years > 1 ? "s" : "")}, " : "")}";
-				}
-				if (months > 0)
-				{
-					timeDiffReadable += $"{(months > 0 ? $"{months} month{(months > 1 ? "s" : "")}, " : "")}";
-				}
-				timeDiffReadable += $"{days} day{(days > 1 ? "s" : "")}";
-			}
-			return timeDiffReadable;
-		}
 	}
 }

@@ -532,9 +532,25 @@ namespace ISHealthMonitor.Core.Models
 
 		public async Task<(string Message, Dictionary<string, string> responseData)> UpdateConfluencePage()
 		{
-			List<SiteDTO> sites = GetSites()
+			List<ConfluenceSiteRowModel> sites = GetSites()
 				.Where(site => site.SiteCategory != "All" && site.SiteCategory != "Test")
-				.OrderBy(site => site.SiteName).ToList();
+				.OrderBy(site => site.SiteName)
+				.Select(site => new ConfluenceSiteRowModel
+				{
+					ID = site.ID,
+					SiteURL = site.SiteURL,
+					SiteName = site.SiteName,
+					SSLEffectiveDate = site.SSLEffectiveDate,
+					SSLExpirationDate = site.SSLExpirationDate,
+					SSLIssuer = site.SSLIssuer,
+					SSLSubject = site.SSLSubject,
+					SSLCommonName = site.SSLCommonName,
+					SSLThumbprint = site.SSLThumbprint,
+					TimeUntilExpiration = GetTimeDiffString(DateTime.Parse(site.SSLExpirationDate)),
+					RowColor = GetTimeDiffColor(DateTime.Parse(site.SSLExpirationDate))
+					
+				})
+				.ToList();
 
 			ConfluenceTableModel model = new ConfluenceTableModel()
 			{
@@ -819,6 +835,53 @@ namespace ISHealthMonitor.Core.Models
 			var minTime = reminderGroup.Min(r => r.CreatedDate);
 
 			return minTime;
+		}
+
+		public string GetTimeDiffString(DateTime expDate)
+		{
+			TimeSpan timeDiff = expDate - DateTime.Now;
+
+			string timeDiffReadable = "";
+			if (timeDiff.TotalSeconds < 0)
+			{
+				timeDiffReadable = "Expired";
+			}
+			else
+			{
+				int years = timeDiff.Days / 365; // get the number of years
+				int months = (timeDiff.Days % 365) / 30; // get the number of remaining months
+				int days = (timeDiff.Days % 365) % 30; // get the number of remaining days
+
+				if (years > 0)
+				{
+					timeDiffReadable += $"{(years > 0 ? $"{years} year{(years > 1 ? "s" : "")}, " : "")}";
+				}
+				if (months > 0)
+				{
+					timeDiffReadable += $"{(months > 0 ? $"{months} month{(months > 1 ? "s" : "")}, " : "")}";
+				}
+				timeDiffReadable += $"{days} day{(days > 1 ? "s" : "")}";
+			}
+			return timeDiffReadable;
+		}
+
+		public string GetTimeDiffColor(DateTime expDate)
+		{
+			TimeSpan timeDiff = expDate - DateTime.Now;
+
+			if (timeDiff.TotalDays <= 10)
+			{
+				return "#ffadad";
+			}
+			if (timeDiff.TotalDays <= 30)
+			{
+				return "#ffffad";
+			}
+			if (timeDiff.TotalDays > 365)
+			{
+				return "#b3ffab";
+			}
+			return "";
 		}
 	}
 
