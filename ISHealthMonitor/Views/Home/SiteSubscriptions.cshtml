@@ -1,0 +1,34 @@
+﻿@{
+    Layout = null;
+}
+
+<a href="@ViewBag.SiteURL" target="_blank" style="text-align: center; color: darkred; font-weight: bold; display: block;">
+    <h3>@ViewBag.SiteName</h3>
+</a>
+
+<div class="table-responsive" style="height:300px; overflow:auto;">
+    <table class="table table-striped" style="border-collapse: separate; border-spacing: 0 1em;">
+        <thead>
+            <tr>
+                <th style="opacity: 0.6; border-right: 1px solid #dee2e6;">Username</th>
+                <th style="opacity: 0.6;">Subscribed Intervals</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in ViewBag.UsersSubscribed)
+            {
+                <tr>
+                    <td style="border-right: 1px solid #dee2e6;">@user.Key</td>
+                    <td>
+                        <ul>
+                            @foreach (var reminder in user.Value)
+                            {
+                                <li>@reminder</li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

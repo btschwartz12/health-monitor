@@ -81,12 +81,15 @@ namespace ISHealthMonitor.Core.Contracts
 
 		string GetTimeDiffString(DateTime expDate);
 		string GetTimeDiffColor(DateTime expDate);
+		string GetTimeDiffStatusIcon(DateTime expDate);
+
+		Dictionary<string, List<string>> GetSubscriptionsForSite(int siteId);
 
 
 
 
 
-	}
+    }
 
 	public class NearExpiredSites
 	{

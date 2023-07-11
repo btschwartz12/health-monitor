@@ -19,7 +19,8 @@ namespace ISHealthMonitor.Core.Data.Models
 		public string SSLExpirationDate { get; set; }
 		public string TimeUntilExpiration { get; set; }
 		public int NumSubscribedUsers { get; set; }
-		public Dictionary<string, List<string>> UsersSubscribed { get; set; }
-		// key is the users name, value is the list of intervals they have configured
+		public string Action { get; set; }
+		public string StatusIcon { get; set; }
+		public string RowColor { get; set; }
 	}
 }

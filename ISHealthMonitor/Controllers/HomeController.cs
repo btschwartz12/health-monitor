@@ -63,8 +63,6 @@ namespace ISHealthMonitor.Controllers
                 ViewBag.ApiAuthPassword = password;
             }
 
-            //TODO
-            _healthModel.UpdateConfluencePage();
 
 
             HomeViewModel model = new()

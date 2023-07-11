@@ -14,6 +14,8 @@ using ISHealthMonitor.Core.Helpers.Email;
 using Microsoft.Extensions.Logging;
 using ISHealthMonitor.Core.Implementations;
 using System.Security.Policy;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ISHealthMonitor.Core.Models
 {
@@ -590,10 +592,17 @@ namespace ISHealthMonitor.Core.Models
 					value = tableStr
 				},
 			};
-
+			//{ "errors":[{ "status":400,"code":"INVALID_REQUEST_PARAMETER","title":"Content body cannot be converted to new editor format","detail":null}]}
 			try
 			{
 				var rekt = await _restModel.PutHttpContent("/wiki/api/v2/pages/300580865", Newtonsoft.Json.JsonConvert.SerializeObject(pp), HttpContentTypes.String);
+
+				JObject resp = JsonConvert.DeserializeObject<JObject>(rekt);
+				if (resp.ContainsKey("errors"))
+				{
+					throw new Exception(rekt.ToString());
+				}
+
 
 				return ("Success", new Dictionary<string, string>
 				{
@@ -854,13 +863,13 @@ namespace ISHealthMonitor.Core.Models
 
 				if (years > 0)
 				{
-					timeDiffReadable += $"{(years > 0 ? $"{years} year{(years > 1 ? "s" : "")}, " : "")}";
+					timeDiffReadable += $"{(years > 0 ? $"{years} year{(years != 1 ? "s" : "")}, " : "")}";
 				}
 				if (months > 0)
 				{
-					timeDiffReadable += $"{(months > 0 ? $"{months} month{(months > 1 ? "s" : "")}, " : "")}";
+					timeDiffReadable += $"{(months > 0 ? $"{months} month{(months != 1 ? "s" : "")}, " : "")}";
 				}
-				timeDiffReadable += $"{days} day{(days > 1 ? "s" : "")}";
+				timeDiffReadable += $"{days} day{(days != 1 ? "s" : "")}";
 			}
 			return timeDiffReadable;
 		}
@@ -871,20 +880,128 @@ namespace ISHealthMonitor.Core.Models
 
 			if (timeDiff.TotalDays <= 10)
 			{
-				return "#ffadad";
+				return "red";
+				//return "#ffadad";
 			}
 			if (timeDiff.TotalDays <= 30)
 			{
-				return "#ffffad";
+				return "yellow";
+				//return "#ffffad";
 			}
 			if (timeDiff.TotalDays > 365)
 			{
-				return "#b3ffab";
+				return "green";
+				//return "#b3ffab";
 			}
 			return "";
 		}
-	}
 
+		public string GetTimeDiffStatusIcon(DateTime expDate)
+		{
+			var color = GetTimeDiffColor(expDate);
+
+			if (color == "red")
+			{
+				return $"<div class='text-center'><span class='d-none' sort='1'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-danger mr-3'></i></div>";
+			}
+			if (color == "yellow")
+			{
+				return $"<div class='text-center'><span class='d-none' sort='2'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-warning mr-3'></i></div>";
+			}
+			if (color == "green")
+			{
+				return $"<div class='text-center'><span class='d-none' sort='3'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-success mr-3'></i></div>";
+			}
+
+			// Default is gray
+			return $"<div class='text-center'><span class='d-none' sort='4'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-secondary mr-3'></i></div>";
+
+		}
+
+
+
+		public Dictionary<string, List<string>> GetSubscriptionsForSite(int siteId)
+        {
+            SiteDTO site = GetSites()
+				.Where(s => s.ID == siteId)
+				.First();
+
+			if (site == null)
+			{
+				throw new Exception("Site does not exist");
+			}
+
+			// All reminders that exist
+            List<UserReminderDTO> allReminders = GetReminders();
+
+			// Reminders for just 'All Sites'
+            List<UserReminderDTO> remindersForAllSites = allReminders
+                .Where(r => r.ISHealthMonitorSiteID == 1)
+                .ToList();
+
+			// Get all reminder intervals for sorting and displaying in a list
+            List<ReminderIntervalDTO> allReminderIntervals = GetReminderIntervals();
+            Dictionary<int, (int, string)> reminderIntervalDictionary = allReminderIntervals.ToDictionary(x => x.ID, x => (x.DurationInMinutes, x.DisplayName));
+
+			// Get reminders specific to the site
+            List<UserReminderDTO> remindersForSite = allReminders
+                        .Where(r => r.ISHealthMonitorSiteID == site.ID)
+                        .ToList();
+
+            Dictionary<string, List<string>> usersSubscribed = new Dictionary<string, List<string>>();
+
+            Dictionary<string, List<(int, string)>> usersSubscribedTemp = new Dictionary<string, List<(int, string)>>();
+
+            foreach (var reminder in remindersForSite)
+            {
+                int duration = reminderIntervalDictionary[reminder.ISHealthMonitorIntervalID].Item1;
+                string displayName = reminderIntervalDictionary[reminder.ISHealthMonitorIntervalID].Item2;
+
+                // If the user already has reminders, add to their list. Otherwise, create a new list.
+                if (usersSubscribedTemp.ContainsKey(reminder.UserName))
+                {
+                    usersSubscribedTemp[reminder.UserName].Add((duration, displayName));
+                }
+                else
+                {
+                    usersSubscribedTemp[reminder.UserName] = new List<(int, string)> { (duration, displayName) };
+                }
+
+            }
+
+            // Do seperate stuff for all sites so that it is differentiable
+            foreach (var allSiteReminder in remindersForAllSites)
+            {
+                int duration = reminderIntervalDictionary[allSiteReminder.ISHealthMonitorIntervalID].Item1;
+                string displayName = reminderIntervalDictionary[allSiteReminder.ISHealthMonitorIntervalID].Item2;
+
+                if (usersSubscribedTemp.ContainsKey(allSiteReminder.UserName))
+                {
+                    usersSubscribedTemp[allSiteReminder.UserName].Add((duration, displayName + " (All Sites)"));
+                }
+                else
+                {
+                    usersSubscribedTemp[allSiteReminder.UserName] = new List<(int, string)> { (duration, displayName + " (All Sites)") };
+                }
+            }
+
+            // Sort the lists by duration and convert to lists of display names.
+            foreach (var userName in usersSubscribedTemp.Keys)
+            {
+                List<string> sortedDisplayNames = usersSubscribedTemp[userName]
+                    .OrderBy(x => x.Item1)
+                    .Select(x => x.Item2)
+                    .ToList();
+
+                usersSubscribed[userName] = sortedDisplayNames;
+            }
+
+            return usersSubscribed;
+        }
+    }
+
+
+    
 
 
 }

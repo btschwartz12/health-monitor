@@ -7,7 +7,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Policy;
 
 namespace ISHealthMonitor.UI.Controllers
 {
@@ -107,5 +111,44 @@ namespace ISHealthMonitor.UI.Controllers
 
             return View("~/Views/Home/SiteStatusViewer.cshtml");
 		}
+
+
+        public IActionResult SiteSubscriptions(int siteId)
+        {
+            SiteDTO site = _healthModel.GetSiteDTO(siteId);
+
+            ViewBag.SiteName = site.SiteName;
+            ViewBag.SiteURL = site.SiteURL;
+
+            try
+            {
+                Dictionary<string, List<string>> usersSubscribed = _healthModel.GetSubscriptionsForSite(siteId);
+
+                // Removing duplicates and adding count.
+                var usersSubscribedProcessed = new Dictionary<string, List<string>>();
+                foreach (var user in usersSubscribed)
+                {
+                    var reminders = new List<string>();
+                    var reminderCounts = user.Value.GroupBy(r => r)
+                                                .ToDictionary(g => g.Key, g => g.Count());
+
+                    foreach (var reminder in reminderCounts)
+                    {
+                        reminders.Add(reminder.Value > 1 ? $"{reminder.Key} x {reminder.Value}" : reminder.Key);
+                    }
+
+                    usersSubscribedProcessed.Add(user.Key, reminders);
+                }
+
+                ViewBag.UsersSubscribed = usersSubscribedProcessed;
+
+                return View("~/Views/Home/SiteSubscriptions.cshtml");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

@@ -6,6 +6,31 @@
 
 
 
+<div class="container">
+	<div id="siteSubscriptionModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Site Subscriptions</b>
+				</div>
+
+				<div class="modal-body">
+					<div class="text-center">
+						
+						@*here will go a scrollable table of the subscribed users*@
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="text-center" style="font-size: 11px">
+						Note: "All Sites" indicates that this user has chosen to be reminded about the expiration for every certificate, not this site specifically.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
 
 <div class="container" id="divLoading">
 	<div class="row">
@@ -59,37 +84,64 @@
 		};
 
 
+		var columns = [
+			{
+				"sTitle": "ID",
+				"data": "SiteID"
+			},
+			{
+				"sTitle": "Status",
+				"data": "StatusIcon"
+			},
+			{
+				"sTitle": "Name",
+				"data": "SiteName"
+			},
+			{
+				"sTitle": "URL",
+				"data": "SiteURL"
+			},
+			{
+				"sTitle": "Expiration\nDate",
+				"data": "SSLExpirationDate"
+			},
+			{
+				"sTitle": "Expires",
+				"data": "TimeUntilExpiration"
+			},
+			{
+				"sTitle": "# Subscribers",
+				"data": "NumSubscribedUsers"
+			},
+		];
+
+
+		var userIsAdmin = @Html.Raw(Json.Serialize(ViewBag.UserIsAdmin));
+
+		if (userIsAdmin) {
+			columns.push({ "sTitle": "Action", "data": "Action" });
+		}
+
+
 		siteStatusDataTable = $('#siteStatusTable').DataTable({
 
 			"autoWidth": false,
 			"scrollX": true,
-			"columns": [
-				{
-					"sTitle": "ID",
-					"data": "SiteID"
-				},
-				{
-					"sTitle": "Name",
-					"data": "SiteName"
-				},
-				{
-					"sTitle": "URL",
-					"data": "SiteURL"
-				},
-				{
-					"sTitle": "Expiration\nDate",
-					"data": "SSLExpirationDate"
-				},
-				{
-					"sTitle": "Expires",
-					"data": "TimeUntilExpiration"
-				},
-				{
-					"sTitle": "# Subscribers",
-					"data": "NumSubscribedUsers"
-				},
+			"columns": columns,
+			//"createdRow": function (row, data, dataIndex) {
+			//	// data.RowColor contains the color for the row
+			//	// you might need to adjust the column index depending on your data
+			//	$(row).css('background-color', data.RowColor);
+			//},
 
-				
+			"columnDefs": [
+				{
+					"targets": 1, // assuming the Status column is the second one
+					"orderData": [1, 'asc'], // sort ascending; change to 'desc' for descending
+					"orderDataType": "dom-attr",
+					"type": 'numeric',
+					"attr": "sort"
+				}
 			],
 
 			dom: 'Bfrtip',
@@ -126,35 +178,19 @@
 
 	<script>
 
-		// TODO admin
-		$(document).ready(function () {
 
-				var table = $('#siteStatusTable').DataTable();
+		function showSiteSubscriptionsModal(id) {
+			var formDiv = $('#siteSubscriptionModal .modal-body');
+			var url = "@Url.Action("SiteSubscriptions", "Sites")" + "?siteId=" + id;
 
-				$('#siteStatusTable tbody').on('mouseenter', 'tr', function () {
-					// Access the TooltipInfo data
-					var data = table.row(this).data();
-
-					// Generate the tooltip text
-					var tooltipText = "";
-					for (var userName in data.UsersSubscribed) {
-						tooltipText += "<strong>" + userName + "</strong>" + "<br/>" + data.UsersSubscribed[userName].join(', ') + "<br/><br/>";
-					}
-
-					// Remove last line breaks
-					tooltipText = tooltipText.replace(/<br\/><br\/>$/, '');
-
-					$(this).attr('title', tooltipText);
-					$(this).attr('data-toggle', 'tooltip');
-					$(this).tooltip({
-						placement: 'left',
-						html: true
-					});
-					$(this).tooltip('show');
+			$.get(url)
+				.done(function (response) {
+					formDiv.html(response);
+					$('#siteSubscriptionModal').modal('show');
 				});
-			
+		}
 
-		});
+		
 
 	</script>
 }

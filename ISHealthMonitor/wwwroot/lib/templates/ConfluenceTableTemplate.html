@@ -26,16 +26,17 @@
         </tr>
         @foreach (var site in Model.sites)
         {
-        <tr style="background-color: @site.RowColor;">
-            <td>
+        <tr>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">
                 <a href="@site.SiteURL">@site.SiteName</a>
             </td>
-            <td>@site.SSLThumbprint</td>
-            <td>@site.SSLCommonName</td>
-            <td>@site.SSLIssuer</td>
-            <td>@site.SSLEffectiveDate</td>
-            <td>@site.SSLExpirationDate</td>
-            <td>@site.TimeUntilExpiration</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLThumbprint</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLCommonName</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLIssuer</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLEffectiveDate</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLExpirationDate</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.TimeUntilExpiration</td>
+
         </tr>
         }
     </tbody>

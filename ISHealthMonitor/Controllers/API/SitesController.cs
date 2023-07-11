@@ -19,6 +19,7 @@ using ISHealthMonitor.Core.Implementations;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Policy;
 
 namespace ISHealthMonitor.UI.Controllers.API
 {
@@ -232,88 +233,43 @@ namespace ISHealthMonitor.UI.Controllers.API
 				SiteStatusList = new List<SiteStatus>() { }
 			};
 
-			List<SiteDTO> allSites = _healthModel.GetSites();
+            List<SiteDTO> allSites = _healthModel.GetSites();
 
-			List<SiteDTO> uniqueSiteDTOs = allSites
-				.Where(s => s.ID != 1) // Filter out all sites
-				.ToList();
+            List<SiteDTO> uniqueSiteDTOs = allSites
+                .Where(s => s.ID != 1) // Filter out all sites
+                .ToList();
 
-			List<UserReminderDTO> allReminders = _healthModel.GetReminders();
+            List<UserReminderDTO> allReminders = _healthModel.GetReminders();
 
-			List<UserReminderDTO> remindersForAllSites = allReminders
-				.Where(s => s.ISHealthMonitorSiteID == 1)
-				.ToList();
+            List<UserReminderDTO> remindersForAllSites = allReminders
+                .Where(s => s.ISHealthMonitorSiteID == 1)
+                .ToList();
 
-			List<ReminderIntervalDTO> allReminderIntervals = _healthModel.GetReminderIntervals();
-			Dictionary<int, (int, string)> reminderIntervalDictionary = allReminderIntervals.ToDictionary(x => x.ID, x => (x.DurationInMinutes, x.DisplayName));
-			
+            List<ReminderIntervalDTO> allReminderIntervals = _healthModel.GetReminderIntervals();
+            Dictionary<int, (int, string)> reminderIntervalDictionary = allReminderIntervals.ToDictionary(x => x.ID, x => (x.DurationInMinutes, x.DisplayName));
 
 
-			foreach (SiteDTO site in uniqueSiteDTOs)
+
+            foreach (SiteDTO site in uniqueSiteDTOs)
 			{
 				SiteStatus siteStatus = new SiteStatus();
+
+				DateTime expDate = DateTime.Parse(site.SSLExpirationDate);
 
 				siteStatus.SiteID = site.ID;
 				siteStatus.SiteURL = site.SiteURL;
 				siteStatus.SiteName = site.SiteName;
 				siteStatus.SSLExpirationDate = site.SSLExpirationDate;
-				siteStatus.TimeUntilExpiration = _healthModel.GetTimeDiffString(DateTime.Parse(site.SSLExpirationDate));
+				siteStatus.TimeUntilExpiration = _healthModel.GetTimeDiffString(expDate);
+				siteStatus.RowColor = _healthModel.GetTimeDiffColor(expDate);
+				siteStatus.Action = $"<div class='text-center'><i style='cursor: pointer;' class='fa fa-info fa-lg text-primary mr-3' " +
+					$"onclick='showSiteSubscriptionsModal({site.ID})'></i></div>";
+				siteStatus.StatusIcon = _healthModel.GetTimeDiffStatusIcon(expDate);
 
 
-				List<UserReminderDTO> remindersForSite = allReminders
-					.Where(r => r.ISHealthMonitorSiteID == site.ID)
-					.ToList();
+				Dictionary<string, List<string>> usersSubscribed = _healthModel.GetSubscriptionsForSite(site.ID);
 
-				Dictionary<string, List<string>> usersSubscribed = new Dictionary<string, List<string>>();
-
-				Dictionary<string, List<(int, string)>> usersSubscribedTemp = new Dictionary<string, List<(int, string)>>();
-
-				foreach (var reminder in remindersForSite)
-				{
-					int duration = reminderIntervalDictionary[reminder.ISHealthMonitorIntervalID].Item1;
-					string displayName = reminderIntervalDictionary[reminder.ISHealthMonitorIntervalID].Item2;
-
-					// If the user already has reminders, add to their list. Otherwise, create a new list.
-					if (usersSubscribedTemp.ContainsKey(reminder.UserName))
-					{
-						usersSubscribedTemp[reminder.UserName].Add((duration, displayName));
-					}
-					else
-					{
-						usersSubscribedTemp[reminder.UserName] = new List<(int, string)> { (duration, displayName) };
-					}
-					
-				}
-
-				// Do seperate stuff for all sites so that it is differentiable
-				foreach (var allSiteReminder in remindersForAllSites)
-				{
-                    int duration = reminderIntervalDictionary[allSiteReminder.ISHealthMonitorIntervalID].Item1;
-                    string displayName = reminderIntervalDictionary[allSiteReminder.ISHealthMonitorIntervalID].Item2;
-
-                    if (usersSubscribedTemp.ContainsKey(allSiteReminder.UserName))
-                    {
-                        usersSubscribedTemp[allSiteReminder.UserName].Add((duration, displayName + " (All Sites)"));
-                    }
-                    else
-                    {
-                        usersSubscribedTemp[allSiteReminder.UserName] = new List<(int, string)> { (duration, displayName + " (All Sites)") };
-                    }
-				}
-
-				// Sort the lists by duration and convert to lists of display names.
-				foreach (var userName in usersSubscribedTemp.Keys)
-				{
-					List<string> sortedDisplayNames = usersSubscribedTemp[userName]
-						.OrderBy(x => x.Item1)
-						.Select(x => x.Item2)
-						.ToList();
-
-					usersSubscribed[userName] = sortedDisplayNames;
-				}
-
-				siteStatus.UsersSubscribed = usersSubscribed;
-				siteStatus.NumSubscribedUsers = usersSubscribed.Count;
+                siteStatus.NumSubscribedUsers = usersSubscribed.Count;
 
 				model.SiteStatusList.Add(siteStatus);
 
@@ -322,5 +278,6 @@ namespace ISHealthMonitor.UI.Controllers.API
 			return Ok(JsonConvert.SerializeObject(model));
 		}
 
-	}
+
+    }
 }
