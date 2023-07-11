@@ -1,0 +1,93 @@
+﻿@model ISHealthMonitor.Core.Helpers.WorkOrder.WorkOrderModel
+
+
+<h2 style="text-align: center;">Work Order Submission Form</h2>
+
+<hr />
+
+
+<form id="workOrderForm" onsubmit="return SubmitWorkOrderForm()">
+
+
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label asp-for="IssueType" class="control-label"></label>
+            <input asp-for="IssueType" class="form-control" disabled />
+            <span asp-validation-for="IssueType" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="Category" class="control-label"></label>
+            <input asp-for="Category" class="form-control" disabled />
+            <span asp-validation-for="Category" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label asp-for="System" class="control-label"></label>
+            <input asp-for="System" class="form-control" disabled />
+            <span asp-validation-for="System" class="text-danger"></span>
+        </div>
+        <div class="form-group col-md-6">
+            <label asp-for="Urgency" class="control-label"></label>
+            <select id="select-urgency" class="" placeholder="Loading..."></select>
+            <span asp-validation-for="Urgency" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row" id="emergencyDiv" hidden>
+        <div class="form-group col-md-12">
+            <label asp-for="EmergencyReason" class="control-label"></label>
+            <input asp-for="EmergencyReason" class="form-control" />
+            <span asp-validation-for="EmergencyReason" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="ShortDescription" class="control-label"></label>
+            <input asp-for="ShortDescription" class="form-control" />
+            <span asp-validation-for="ShortDescription" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="Description" class="control-label"></label>
+            <input asp-for="Description" class="form-control" />
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+    <div id="infoMessage" class="alert alert-info d-block d-none" role="alert"></div>
+
+    <div class="form-group d-flex justify-content-center">
+        <button id="submitButton" type="submit" class="btn btn-success mr-3" >Submit</button>
+        <button type="reset" onclick="alert('not implemented!')" class="btn btn-warning mr-3">Cancel</button>
+
+    </div>
+</form>
+
+
+
+
+@section Scripts{
+
+	<script src="~/js/WorkOrderForm.js" asp-append-version="true"></script>
+	<script>
+
+        function returnHome() {
+            window.location = "/";
+        }
+
+        $(document).ready(function () {
+            let modelData = @Html.Raw(Json.Serialize(Model));
+            initWorkOrderForm(modelData);
+
+        });
+
+    </script>
+
+}

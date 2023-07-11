@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.IO;
+using ISHealthMonitor.Core.Helpers.WorkOrder;
 
 namespace ISHealthMonitor.Controllers
 {
@@ -108,8 +109,42 @@ namespace ISHealthMonitor.Controllers
         }
 
 
+		public async Task<IActionResult> WorkOrderBuilder()
+        {
+			var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
-        
+			var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+
+			ViewBag.UserName = CurrentEmployee.DisplayName;
+			ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
+
+			if (ViewBag.UserIsAdmin)
+			{
+				string username = _config.GetSection("ApiAuthConfig")["userName"];
+				string password = _config.GetSection("ApiAuthConfig")["password"];
+
+				ViewBag.ApiAuthUserName = username;
+				ViewBag.ApiAuthPassword = password;
+			}
+
+
+            WorkOrderModel model = new WorkOrderModel()
+            {
+                IssueType = "Other",
+                Category = "Help Desk",
+                System = "Help Desk",
+                ShortDescription = "Short description template",
+                Urgency = "2",
+                Description = "Long description template"
+            };
+
+
+
+
+			return View(model);
+        }
+
+
 
 
 
