@@ -18,6 +18,9 @@ using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.IO;
 using ISHealthMonitor.Core.Helpers.WorkOrder;
+using ISHealthMonitor.Core.Model;
+using ISHealthMonitor.Core.Data.DTO;
+using System.Security.Policy;
 
 namespace ISHealthMonitor.Controllers
 {
@@ -43,17 +46,17 @@ namespace ISHealthMonitor.Controllers
         {
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
-			var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
 
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-			bool userHasReminders = await _healthModel.UserHasReminders(new Guid(CurrentEmployee.GUID));
+            bool userHasReminders = await _healthModel.UserHasReminders(new Guid(CurrentEmployee.GUID));
             ViewBag.UserHasReminders = userHasReminders;
 
 
             _logger.LogInformation("Home Page Visitor: " + CurrentEmployee.DisplayName + " (has reminders: " + userHasReminders.ToString() + ")");
-            
+
 
             if (ViewBag.UserIsAdmin)
             {
@@ -63,6 +66,18 @@ namespace ISHealthMonitor.Controllers
                 ViewBag.ApiAuthUserName = username;
                 ViewBag.ApiAuthPassword = password;
             }
+
+
+
+
+            //var token = new UnityRestAPIToken(_logger, _config);
+
+            //var f = token.AuthenticationToken;
+
+            //var unity = new UnityRestAPIAccess(_logger, _config);
+
+            //var email = "Nick.Susanjar@hyland.com";
+            //var id = unity.GetRequestorId(email);
 
 
 
@@ -109,39 +124,64 @@ namespace ISHealthMonitor.Controllers
         }
 
 
-		public async Task<IActionResult> WorkOrderBuilder()
+        public async Task<IActionResult> WorkOrderBuilder(int siteId = 0)
         {
-			var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
-			var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
 
-			ViewBag.UserName = CurrentEmployee.DisplayName;
-			ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
+            ViewBag.UserName = CurrentEmployee.DisplayName;
+            ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-			if (ViewBag.UserIsAdmin)
-			{
-				string username = _config.GetSection("ApiAuthConfig")["userName"];
-				string password = _config.GetSection("ApiAuthConfig")["password"];
-
-				ViewBag.ApiAuthUserName = username;
-				ViewBag.ApiAuthPassword = password;
-			}
-
-
-            WorkOrderModel model = new WorkOrderModel()
+            if (ViewBag.UserIsAdmin)
             {
-                IssueType = "Other",
-                Category = "Help Desk",
-                System = "Help Desk",
-                ShortDescription = "Short description template",
-                Urgency = "2",
-                Description = "Long description template"
-            };
+                string username = _config.GetSection("ApiAuthConfig")["userName"];
+                string password = _config.GetSection("ApiAuthConfig")["password"];
+
+                ViewBag.ApiAuthUserName = username;
+                ViewBag.ApiAuthPassword = password;
+            }
 
 
+            try
+            {
 
+                if (siteId == 0)
+                {
+                    throw new Exception();
+                }
 
-			return View(model);
+                SiteDTO site = _healthModel.GetSiteDTO(siteId);
+
+                WorkOrderDTO model = new WorkOrderDTO()
+                {
+                    SiteName = site.SiteName,
+                    SiteURL = site.SiteURL,
+                    IssueType = "Other",
+                    Category = "Help Desk",
+                    System = "Help Desk",
+                    ShortDescription = $"Update certificate for {site.SiteName} ({site.SiteURL})",
+                    Urgency = "2",
+                    Description = $"The SSL Certificate is going to expire on: {site.SSLExpirationDate}. Additional info: _________________"
+                };
+                return View(model);
+            }
+            catch (Exception ex) 
+            {
+                WorkOrderDTO model = new WorkOrderDTO()
+                {
+                    SiteName = "___",
+                    SiteURL = "about:blank",
+                    IssueType = "Other",
+                    Category = "Help Desk",
+                    System = "Help Desk",
+                    ShortDescription = $"Update certificate for _____",
+                    Urgency = "2",
+                    Description = ""
+                };
+                return View(model);
+            }
+            
         }
 
 
@@ -150,3 +190,4 @@ namespace ISHealthMonitor.Controllers
 
     }
 }
+

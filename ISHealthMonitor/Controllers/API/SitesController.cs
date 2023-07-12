@@ -264,7 +264,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 				siteStatus.RowColor = _healthModel.GetTimeDiffColor(expDate);
 				siteStatus.Action = $"<div class='text-center'><i style='cursor: pointer;' class='fa fa-info fa-lg text-primary mr-3' " +
 					$"onclick='showSiteSubscriptionsModal({site.ID})'></i></div>";
-				siteStatus.StatusIcon = _healthModel.GetTimeDiffStatusIcon(expDate);
+                siteStatus.WorkOrderAction = $"<div class='text-center'><a href='/Home/WorkOrderBuilder/?siteId={site.ID}'><i style='cursor: pointer;' class='fa fa-solid fa-wrench mr-3'></i></a></div>";
+                siteStatus.StatusIcon = _healthModel.GetTimeDiffStatusIcon(expDate);
 
 
 				Dictionary<string, List<string>> usersSubscribed = _healthModel.GetSubscriptionsForSite(site.ID);

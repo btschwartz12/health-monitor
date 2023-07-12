@@ -113,13 +113,17 @@
 				"sTitle": "# Subscribers",
 				"data": "NumSubscribedUsers"
 			},
+			{
+				"sTitle": "Create\nWork Order",
+				"data": "WorkOrderAction"
+			},
 		];
 
 
 		var userIsAdmin = @Html.Raw(Json.Serialize(ViewBag.UserIsAdmin));
 
 		if (userIsAdmin) {
-			columns.push({ "sTitle": "Action", "data": "Action" });
+			columns.push({ "sTitle": "Subscription\nInfo", "data": "Action" });
 		}
 
 
@@ -128,21 +132,8 @@
 			"autoWidth": false,
 			"scrollX": true,
 			"columns": columns,
-			//"createdRow": function (row, data, dataIndex) {
-			//	// data.RowColor contains the color for the row
-			//	// you might need to adjust the column index depending on your data
-			//	$(row).css('background-color', data.RowColor);
-			//},
+			
 
-			"columnDefs": [
-				{
-					"targets": 1, // assuming the Status column is the second one
-					"orderData": [1, 'asc'], // sort ascending; change to 'desc' for descending
-					"orderDataType": "dom-attr",
-					"type": 'numeric',
-					"attr": "sort"
-				}
-			],
 
 			dom: 'Bfrtip',
 			lengthMenu: [

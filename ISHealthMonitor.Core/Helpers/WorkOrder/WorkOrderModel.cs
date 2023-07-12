@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -7,35 +8,97 @@ using System.Threading.Tasks;
 
 namespace ISHealthMonitor.Core.Helpers.WorkOrder
 {
-	public class WorkOrderModel
-	{
-		[Required(ErrorMessage = "IssueType is required")]
-		[Display(Name = "Issue Type")]
-		public string IssueType { get; set; }
+    public class WorkOrderModel
+    {
+        private readonly ILogger<object> _logger;
 
-		[Required(ErrorMessage = "Category is required")]
-		[Display(Name = "Category")]
-		public string Category { get; set; }
+        public WorkOrderModel(ILogger<object> logger)
+        {
+            _logger = logger;
+        }
 
-		[Required(ErrorMessage = "System is required")]
-		[Display(Name = "System")]
-		public string System { get; set; }
 
-		[Required(ErrorMessage = "Urgency is required")]
-		[Display(Name = "Urgency")]
-		public string Urgency { get; set; }
+        public List<AttrInfo> CreateAttrList(int objectid, int workOrderCategory,
+                                             int systemProfile, string title,
+                                             string description, string urgency,
+                                             string reasonForEmergency,
+                                             string origin)
+        {
+            var attrList = new List<AttrInfo>
+            {
+                new AttrInfo()
+                {
+                    name = "Requestor",
+                    nameSpecified = true,
+                    value = new List<string>() { objectid.ToString() },
+                },
+                new AttrInfo()
+                {
+                    name = "LinkToWorkOrderCategory",
+                    nameSpecified = true,
+                    value = new List<string>() { workOrderCategory.ToString() },
+                },
+                new AttrInfo()
+                {
+                    name = "LinkToSystemProfile",
+                    nameSpecified = true,
+                    value = new List<string>() { systemProfile.ToString() },
+                },
+                new AttrInfo()
+                {
+                    name = "Title",
+                    nameSpecified = true,
+                    value = new List<string>() { title },
+                },
+                new AttrInfo()
+                {
+                    name = "Content",
+                    nameSpecified = true,
+                    value = new List<string>() { description },
+                },
+                new AttrInfo()
+                {
+                    name = "Urgency",
+                    nameSpecified = true,
+                    value = new List<string>() { urgency },
+                },
+                new AttrInfo()
+                {
+                    name = "ReasonForEmergency",
+                    nameSpecified = true,
+                    value = new List<string>() { reasonForEmergency },
+                },
+                new AttrInfo()
+                {
+                    name = "Origin",
+                    nameSpecified = true,
+                    value = new List<string>() { origin },
+                },
+            };
 
-		[Required(ErrorMessage = "Short Description is required")]
-		[Display(Name = "Short Description")]
-		public string ShortDescription { get; set; }
+            return attrList;
+        }
+        
 
-		[Required(ErrorMessage = "Description is required")]
-		[Display(Name = "Description")]
-		public string Description { get; set; }
+        public OnbaseWorkviewObjectDTO GetWorkViewObjectDTO(int objectid, string appName,
+                                                            string className, List<AttrInfo> attrList)
+        {
+            var wvObject = new OnbaseWorkviewObjectDTO()
+            {
+                objectId = objectid,
+                appName = appName,
+                appNameSpecified = true,
+                className = className,
+                classNameSpecified = true,
+                attributeList = attrList,
 
-        [Required(ErrorMessage = "Emergency Reason is required")]
-        [Display(Name = "Emergency Reason")]
-        public string EmergencyReason { get; set; }
-	}
+            };
+
+            return wvObject;
+        }
+    }
+
+
+    
 
 }

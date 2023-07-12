@@ -23,6 +23,9 @@
             <th>
                 <p><strong>Time Until Exp</strong></p>
             </th>
+            <th>
+                <p><strong>Action</strong></p>
+            </th>
         </tr>
         @foreach (var site in Model.sites)
         {
@@ -36,6 +39,9 @@
             <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLEffectiveDate</td>
             <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLExpirationDate</td>
             <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.TimeUntilExpiration</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">
+                <a href="https://dev.healthmonitor.hyland.com/Home/WorkOrderBuilder?siteId=@site.ID" style="display: inline-block; padding: 10px 20px; text-align: center; text-decoration: none; color: #ffffff; background-color: #007BFF; border-radius: 4px;">Create Work Order</a>
+            </td>
 
         </tr>
         }

@@ -30,6 +30,7 @@ namespace ISHealthMonitor.Core.Helpers.Confluence
 		public string? SSLThumbprint { get; set; }
 		public string? TimeUntilExpiration { get; set; }
 		public string? RowColor { get; set; }
+		
 	}
 
 }

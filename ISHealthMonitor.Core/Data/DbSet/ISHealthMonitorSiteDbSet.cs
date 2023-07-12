@@ -24,7 +24,10 @@ namespace ISHealthMonitor.Core.Data.DbSet
 		public bool Active { get; set; }
 		public bool Deleted { get; set; }
 		public bool Disabled { get; set; }
-	}
+		public DateTime? HSIDBWorkOrderLastSubmittedDate { get; set; }
+		public int? HSIDBWorkOrderCurrentObjectID { get; set; }
+
+    }
 
 }
 

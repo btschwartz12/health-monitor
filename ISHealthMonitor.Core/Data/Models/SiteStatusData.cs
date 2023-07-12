@@ -20,6 +20,7 @@ namespace ISHealthMonitor.Core.Data.Models
 		public string TimeUntilExpiration { get; set; }
 		public int NumSubscribedUsers { get; set; }
 		public string Action { get; set; }
+		public string WorkOrderAction { get; set; }
 		public string StatusIcon { get; set; }
 		public string RowColor { get; set; }
 	}

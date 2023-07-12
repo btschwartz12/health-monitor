@@ -77,6 +77,12 @@ namespace ISHealthMonitor.Core.Models
 				return new SiteDTO() { ID = 0 };
 			}
 			ISHealthMonitorSiteDbSet site = GetSite(id);
+
+            if (site == null)
+			{
+				throw new Exception("Site does not exist with id: " + id);
+			}
+
 			return new SiteDTO()
 			{
 				ID = site.ID,
