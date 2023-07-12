@@ -314,3 +314,147 @@ System.InvalidOperationException: The exception handler configured on ExceptionH
 2023-07-12T10:44:18.9452280-04:00 800000fd-0004-ff00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
 2023-07-12T10:45:02.9864339-04:00 80000110-0004-ff00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
 2023-07-12T10:45:21.8072642-04:00 80000110-0004-ff00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:17:38.0143234-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T11:17:38.0235711-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T11:17:38.0267887-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T11:17:41.3292743-04:00 80000015-0005-fe00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T11:18:48.5935032-04:00 80000069-0004-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:21:05.6972823-04:00 80000069-0004-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:23:42.6880768-04:00 80000069-0004-fd00-b63f-84710c7967bb [ERR] StatusCode: 401, ReasonPhrase: 'Unauthorized', Version: 1.1, Content: System.Net.Http.HttpConnectionResponseContent, Headers:
+{
+  Cache-Control: no-cache
+  Pragma: no-cache
+  Server: Microsoft-IIS/10.0
+  X-AspNet-Version: 4.0.30319
+  WWW-Authenticate: Bearer
+  X-Powered-By: ASP.NET
+  Date: Wed, 12 Jul 2023 15:21:55 GMT
+  Content-Type: application/json; charset=utf-8
+  Expires: -1
+  Content-Length: 61
+} (9e4c8b00)
+2023-07-12T11:23:53.5613056-04:00 8000006a-0004-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:26:03.0313693-04:00 8000006a-0004-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:26:03.2065498-04:00 8000006a-0004-fd00-b63f-84710c7967bb [ERR] StatusCode: 401, ReasonPhrase: 'Unauthorized', Version: 1.1, Content: System.Net.Http.HttpConnectionResponseContent, Headers:
+{
+  Cache-Control: no-cache
+  Pragma: no-cache
+  Server: Microsoft-IIS/10.0
+  X-AspNet-Version: 4.0.30319
+  WWW-Authenticate: Bearer
+  X-Powered-By: ASP.NET
+  Date: Wed, 12 Jul 2023 15:26:03 GMT
+  Content-Type: application/json; charset=utf-8
+  Expires: -1
+  Content-Length: 61
+} (9c92b34e)
+2023-07-12T11:26:16.9869750-04:00 8000006b-0004-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:26:42.0019889-04:00 8000006b-0004-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:30:14.7500568-04:00 8000006b-0004-fd00-b63f-84710c7967bb [ERR] StatusCode: 401, ReasonPhrase: 'Unauthorized', Version: 1.1, Content: System.Net.Http.HttpConnectionResponseContent, Headers:
+{
+  Cache-Control: no-cache
+  Pragma: no-cache
+  Server: Microsoft-IIS/10.0
+  X-AspNet-Version: 4.0.30319
+  WWW-Authenticate: Bearer
+  X-Powered-By: ASP.NET
+  Date: Wed, 12 Jul 2023 15:30:13 GMT
+  Content-Type: application/json; charset=utf-8
+  Expires: -1
+  Content-Length: 61
+} (f9c0067f)
+2023-07-12T11:30:18.9323315-04:00 8000006c-0004-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:31:31.5511330-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T11:31:31.5692799-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T11:31:31.5717773-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T11:31:37.1223641-04:00 80000063-0002-fc00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T11:32:12.0572940-04:00 8000006d-0002-fc00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:34:59.3608984-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T11:34:59.3727479-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T11:34:59.3753249-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T11:35:04.5230801-04:00 80000072-0004-fd00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T11:36:01.2284267-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T11:36:01.2404330-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T11:36:01.2426170-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T11:36:05.9668052-04:00 8000002a-0007-ff00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T11:36:24.7518204-04:00 80000034-0007-ff00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:37:56.6380724-04:00 80000034-0007-ff00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:48:54.7054576-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T11:48:54.7194441-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T11:48:54.7221623-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T11:48:59.9169618-04:00 80000067-0005-fa00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T11:49:09.4079150-04:00 8000006e-0005-fa00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T11:49:17.7211211-04:00 8000007b-0002-fc00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:50:07.3241897-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T11:50:07.3415162-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T11:50:07.3438139-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T11:50:13.8680604-04:00 800000b0-0003-fc00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T11:50:27.6738990-04:00 8000009d-0001-fc00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:50:44.2055488-04:00 8000009d-0001-fc00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:58:19.0149930-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T11:58:19.0275484-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T11:58:19.0295822-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T11:58:23.3514085-04:00 8000001d-0006-ff00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T11:58:35.2200922-04:00 80000027-0006-ff00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T11:58:42.0151853-04:00 80000027-0006-ff00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://salesforce.unityapi.onbase.com/token? (22b8d794)
+2023-07-12T12:03:03.2468237-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T12:03:03.2882042-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T12:03:03.2993382-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T12:03:13.3452785-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T12:03:13.3592914-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T12:03:13.3609425-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T12:03:17.8501205-04:00 80000095-0005-fd00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T12:03:56.3462164-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T12:03:56.3614830-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T12:03:56.3633542-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T12:04:00.5023906-04:00 80000072-0001-fd00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T12:04:10.0318075-04:00 800000a7-0001-fc00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T12:04:14.3988393-04:00 800000a7-0001-fc00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T12:05:05.0178449-04:00 800000a8-0001-fc00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T13:10:59.5229761-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T13:10:59.5324904-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T13:10:59.5344747-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T13:11:02.5389077-04:00 800000b2-0004-fd00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T13:11:23.8916917-04:00 800000bf-0004-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T13:11:47.1554040-04:00 800000bf-0004-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T13:20:56.5146843-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T13:20:56.5251579-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T13:20:56.5276573-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T13:20:59.2247168-04:00 80000044-0002-fa00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T13:21:29.6141332-04:00 80000054-0000-f700-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T13:21:38.9083349-04:00 80000054-0000-f700-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T13:47:44.1267210-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T13:47:44.1359198-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T13:47:44.1376138-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T13:47:47.1220737-04:00 8000006f-0007-fe00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T13:47:58.3042187-04:00 8000008d-0001-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T13:48:14.1553007-04:00 8000008d-0001-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T13:48:41.8691931-04:00 8000008e-0001-fd00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T14:13:02.9257269-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T14:13:02.9419594-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T14:13:02.9442165-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T14:13:07.7782936-04:00 8000009c-0001-fd00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T14:31:41.1838606-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T14:31:41.1957521-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T14:31:41.1975293-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T14:31:44.8996693-04:00 80000028-0005-fe00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T14:41:30.8955830-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T14:41:30.9031186-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T14:41:30.9045810-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T14:41:33.8875754-04:00 8000005e-0000-f700-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T14:47:12.9755882-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T14:47:12.9863428-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T14:47:12.9885937-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T14:47:16.9172451-04:00 80000038-0005-fe00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T14:48:21.0055306-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T14:48:21.0186084-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T14:48:21.0207899-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T14:48:24.3176340-04:00 8000003e-0005-fe00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T14:49:41.2514420-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-12T14:49:41.2650638-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-12T14:49:41.2667411-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-12T14:49:44.5940540-04:00 8000006d-0006-ff00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-12T14:49:54.8378679-04:00 800000cd-0000-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T14:50:01.9411121-04:00 800000cd-0000-fd00-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
+2023-07-12T14:50:24.2213045-04:00 800000cd-0000-fd00-b63f-84710c7967bb [INF] Work Order created by c6f3b9ca-66a9-4b81-a4fd-c18c9c90c109 for siteID=4. Work Order object ID = 45957949 (f67e1db5)
+2023-07-12T14:50:24.3092312-04:00 800000ce-0000-fd00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)

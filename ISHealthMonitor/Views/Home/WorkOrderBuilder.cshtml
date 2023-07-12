@@ -1,6 +1,38 @@
 ﻿@model ISHealthMonitor.Core.Helpers.WorkOrder.WorkOrderDTO
 
 
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Duplicate Work Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Our systems indicate that you may be creating a duplicate work order.</p>
+                <p>There is currently a work order that has been submitted for this site. The work order object ID is <b id="workOrderObjectId"></b>. You can find the Work Order <a href="#" id="workOrderLink">here</a>.</p>
+                <p>This work order was submitted on <b id="workOrderSubmissionDate"></b> and the current Effective Date for this site is <b id="effectiveDate"></b> which may mean a pending work order for this site has not been fulfilled.</p>
+                <p>Do you wish to proceed with making a work order anyway?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelButton">Cancel</button>
+                <button type="button" class="btn btn-primary" id="proceedButton">Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
 <h3 style="text-align: center;">Work Order Submission Form for <a href="@Model.SiteURL">@Model.SiteName</a></h3>
 
 
@@ -61,12 +93,14 @@
         </div>
     </div>
 
+    <input asp-for="SiteID" type="hidden" />
+
     <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
     <div id="infoMessage" class="alert alert-info d-block d-none" role="alert"></div>
 
     <div class="form-group d-flex justify-content-center">
-        <button id="submitButton" type="submit" class="btn btn-success mr-3" >Submit</button>
-        <button type="reset" onclick="alert('not implemented!')" class="btn btn-warning mr-3">Cancel</button>
+        <button id="submitButton" type="submit" class="btn btn-success mr-3">Submit <i id="spinnerWorkOrder" class="fa fa-spinner fa-spin d-none"></i></button>
+        <button id="resetButton" type="reset" onclick="ReturnHome()" class="btn btn-warning mr-3">Cancel</button>
 
     </div>
 </form>

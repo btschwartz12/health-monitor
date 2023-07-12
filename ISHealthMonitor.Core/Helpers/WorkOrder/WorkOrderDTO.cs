@@ -40,6 +40,7 @@ namespace ISHealthMonitor.Core.Helpers.WorkOrder
 
         public string? SiteName { get; set; }
         public string? SiteURL { get; set; }
+        public int SiteID { get; set; }
     }
 
     public class OnbaseWorkviewObjectDTO

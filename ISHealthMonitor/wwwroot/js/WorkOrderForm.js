@@ -65,47 +65,135 @@ function initWorkOrderForm(model) {
 }
 
 
+function CheckWorkOrderStatus() {
+	$('#spinnerWorkOrder').removeClass('d-none');
 
-function SubmitWorkOrderForm() {
-	var form = $('#workOrderForm');
-	$.validator.unobtrusive.parse(form);
+	var siteId = $('#SiteID').val();
+	var modal = new bootstrap.Modal(document.getElementById('confirmationModal'));
 
-	var urgencyControl = $('#select-urgency')[0].selectize;
-
-	var selectedUrgency = urgencyControl.options[urgencyControl.getValue()].title;
-
-	var data = {
-		'IssueType': $("#IssueType").val(),
-		'Category': $("#Category").val(),
-		'System': $("#System").val(),
-		'Urgency': selectedUrgency,
-		'ShortDescription': $("#ShortDescription").val(),
-		'Description': $("#Description").val(),
-		'EmergencyReason': $("#EmergencyReason").val() + 'x',
-	};
-
-	console.log(data);
-
-	if ($(form).valid()) {
+	return new Promise((resolve, reject) => {
 		$.ajax({
-			type: "post",
-			url: '/api/WorkOrder/CreateWorkOrder',
-			data: JSON.stringify(data),
+			type: "get",
+			url: '/api/WorkOrder/CheckWorkOrderStatus?siteId=' + siteId,
+			async: true,
+			cache: false,
+			processData: false,
 			traditional: true,
-			dataType: 'json',
 			contentType: "application/json; charset=utf-8",
 			success: function (data) {
+				$('#spinnerWorkOrder').addClass('d-none');
 				console.log(data);
-				console.log('yes');
-				returnHome();
+
+				if (data.message == "Warning") {
+					var workOrderObjectId = data.warningData.workOrderObjectId;
+					var workOrderUrl = data.warningData.workOrderViewUrl;
+					var submissionDate = data.warningData.workOrderSubmissionDate;
+					var siteCertEffectiveDate = data.warningData.siteCertEffectiveDate;
+
+					$('#workOrderObjectId').text(workOrderObjectId);
+					$('#workOrderLink').attr('href', workOrderUrl);
+					$('#workOrderSubmissionDate').text(submissionDate);
+					$('#effectiveDate').text(siteCertEffectiveDate);
+
+					modal.show();
+					$('#proceedButton').click(function () {
+						modal.hide();
+						resolve(true); // Resolve the promise with true when "proceed" is clicked
+					});
+
+					$('#cancelButton').click(function () {
+						modal.hide();
+						resolve(false); // Resolve the promise with false when "cancel" is clicked
+					});
+				}
+				else if (data.message == "Ok") {
+					resolve(true);
+				}
 			},
 			error: function (resp) {
 				console.log(resp);
-				var errorMessage = resp.responseJSON && resp.responseJSON.message ? resp.responseJSON.message : 'Error creating users.';
+				var errorMessage = resp.responseJSON && resp.responseJSON.message ? resp.responseJSON.message : 'Error checking work order status.';
 				$('#errorMessage').text(errorMessage);
 				$('#errorMessage').removeClass('d-none');
+				$('#spinnerWorkOrder').addClass('d-none');
+				$('#resetButton').prop('disabled', false);
+				$('#submitButton').prop('disabled', false);
+				reject(false); // Reject the promise when an error occurs
 			}
 		});
-	}
+	});
+}
+
+
+
+
+function SubmitWorkOrderForm() {
+
+	CheckWorkOrderStatus().then(valid => {
+		if (valid) {
+			var form = $('#workOrderForm');
+			$.validator.unobtrusive.parse(form);
+
+			var urgencyControl = $('#select-urgency')[0].selectize;
+
+			var selectedUrgency = urgencyControl.options[urgencyControl.getValue()].title;
+
+			var emergencyReason = $("#EmergencyReason").val();
+			emergencyReason = (emergencyReason === '') ? 'null' : emergencyReason;
+
+			var data = {
+				'IssueType': $("#IssueType").val(),
+				'Category': $("#Category").val(),
+				'System': $("#System").val(),
+				'Urgency': selectedUrgency,
+				'ShortDescription': $("#ShortDescription").val(),
+				'Description': $("#Description").val(),
+				'EmergencyReason': emergencyReason,
+				'SiteID': $('#SiteID').val()
+			};
+
+			console.log(data);
+
+			$('#spinnerWorkOrder').removeClass('d-none');
+
+			$('#resetButton').prop('disabled', true);
+			$('#submitButton').prop('disabled', true);
+
+			if ($(form).valid()) {
+				$.ajax({
+					type: "post",
+					url: '/api/WorkOrder/CreateWorkOrder',
+					data: JSON.stringify(data),
+					traditional: true,
+					dataType: 'json',
+					contentType: "application/json; charset=utf-8",
+					success: function (data) {
+						$('#spinnerWorkOrder').addClass('d-none');
+						console.log(data);
+						console.log('yes');
+						$('#resetButton').prop('disabled', false);
+						$('#submitButton').prop('disabled', false);
+						returnHome();
+					},
+					error: function (resp) {
+						console.log(resp);
+						var errorMessage = resp.responseJSON && resp.responseJSON.message ? resp.responseJSON.message : 'Error creating work order.';
+						$('#errorMessage').text(errorMessage);
+						$('#errorMessage').removeClass('d-none');
+						$('#spinnerWorkOrder').addClass('d-none');
+						$('#resetButton').prop('disabled', false);
+						$('#submitButton').prop('disabled', false);
+					}
+				});
+			}
+			return false;
+		}
+	}).catch(error => {
+		console.error(error);
+	});
+
 	return false;
+
+
+	
 }

@@ -119,11 +119,11 @@ function RefreshCerts() {
                         cache: false,
                         contentType: 'application/json',
                         processData: false,
-                        //beforeSend: function (xhr) {
-                        //    // Include the bearer token in the header
-                        //    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                        //    console.log(xhr);
-                        //}
+                        beforeSend: function (xhr) {
+                            // Include the bearer token in the header
+                            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                            console.log(xhr);
+                        }
                     }).done(function (data) {
                         console.log(data);
                         if (data.message === "Success") {

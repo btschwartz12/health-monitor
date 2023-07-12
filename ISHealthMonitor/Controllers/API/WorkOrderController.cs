@@ -1,5 +1,5 @@
 ﻿using ISHealthMonitor.Core.Contracts;
-
+using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Helpers.WorkOrder;
 using ISHealthMonitor.Core.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace ISHealthMonitor.UI.Controllers.API
 {
@@ -33,9 +35,42 @@ namespace ISHealthMonitor.UI.Controllers.API
         }
 
 
+        [HttpGet]
+        [Route("CheckWorkOrderStatus")]
+        public async Task<IActionResult> CheckWorkOrderStatus(int siteId)
+        {
+            ISHealthMonitorSiteDbSet site = _healthModel.GetSite(siteId);
+
+            if (site == null)
+            {
+                return NotFound();
+            }
+
+            if (site.HSIDBWorkOrderLastSubmittedDate <= site.SSLEffectiveDate)
+            {
+                return Ok(new { Message = "Ok" });
+            }
+
+            var objId = site.HSIDBWorkOrderCurrentObjectID;
+            var workOrderViewUrl = "https://example.com";
+            var submittedDate = site.HSIDBWorkOrderLastSubmittedDate.ToString();
+            var certEffectiveDate = site.SSLEffectiveDate.ToString();
+
+            var warningData = new Dictionary<string, string>
+            {
+                { "workOrderObjectId", objId.ToString() },
+                { "workOrderViewUrl", workOrderViewUrl },
+                { "workOrderSubmissionDate", submittedDate },
+                { "siteCertEffectiveDate", certEffectiveDate },
+            };
+
+            return Ok(new { Message = "Warning", WarningData = warningData });
+        }
+
+
         [HttpPost]
         [Route("CreateWorkOrder")]
-        public IActionResult CreateWorkOrder([FromBody] WorkOrderDTO model)
+        public async Task<IActionResult> CreateWorkOrder([FromBody] WorkOrderDTO model)
         {
             var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
             var employee = _employee.GetEmployeeByUserName(username);
@@ -47,7 +82,7 @@ namespace ISHealthMonitor.UI.Controllers.API
             try
             {
                 //objectid = unityModel.GetRequestorId(employee.Email);
-                objectid = unityModel.GetRequestorId("Nick.Susanjar@hyland.com");
+                objectid = await unityModel.GetRequestorId("Nick.Susanjar@hyland.com");
 
                 if (objectid == -1)
                 {
@@ -81,15 +116,21 @@ namespace ISHealthMonitor.UI.Controllers.API
 
             try
             {
-                var retVal = unityApi.CreateWorkViewObject(wvObject.appName, wvObject.className,
-                                                       JsonSerializer.Serialize(wvObject));
+                string wvObjectJson = JsonSerializer.Serialize(wvObject);
 
-                return Ok(retVal);
+                var objectId = await unityApi.CreateWorkViewObject(wvObject.appName, wvObject.className,
+                                                       wvObjectJson);
+
+                _healthModel.UpdateWorkOrderForSite(model.SiteID, int.Parse(objectId));
+
+                _logger.LogInformation($"Work Order created by {employee.GUID} for siteID={model.SiteID}. Work Order object ID = {objectId}");
+
+                return Ok(objectId);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
     }

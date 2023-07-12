@@ -53,7 +53,7 @@ namespace ISHealthMonitor.Core.Model
             }
         }
 
-        public string CreateWorkViewObject(string appName, string className, string wvObject)
+        public async Task<string> CreateWorkViewObject(string appName, string className, string wvObject)
         {
             using (var client = new HttpClient())
             {
@@ -89,7 +89,7 @@ namespace ISHealthMonitor.Core.Model
         }
 
 
-        public int GetRequestorId(string email)
+        public async Task<int> GetRequestorId(string email)
         {
             var requestBody = new RequestBody
             {

@@ -1004,6 +1004,19 @@ namespace ISHealthMonitor.Core.Models
 
             return usersSubscribed;
         }
+
+        public void UpdateWorkOrderForSite(int siteId, int workOrderObjectId)
+        {
+			ISHealthMonitorSiteDbSet site = GetSite(siteId);
+
+			site.HSIDBWorkOrderCurrentObjectID = workOrderObjectId;
+			site.HSIDBWorkOrderLastSubmittedDate = DateTime.Now;
+
+			_IACMSEntityContext.Entry(site).State = EntityState.Modified;
+			_IACMSEntityContext.SaveChanges();
+
+
+        }
     }
 
 

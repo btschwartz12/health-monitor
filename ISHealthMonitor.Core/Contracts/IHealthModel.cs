@@ -86,6 +86,7 @@ namespace ISHealthMonitor.Core.Contracts
 		Dictionary<string, List<string>> GetSubscriptionsForSite(int siteId);
 
 
+		void UpdateWorkOrderForSite(int siteId, int workOrderObjectId);
 
 
 

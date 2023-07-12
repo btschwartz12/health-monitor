@@ -148,13 +148,14 @@ namespace ISHealthMonitor.Controllers
 
                 if (siteId == 0)
                 {
-                    throw new Exception();
+                    throw new Exception("No siteId provided as a query parameter");
                 }
 
                 SiteDTO site = _healthModel.GetSiteDTO(siteId);
 
                 WorkOrderDTO model = new WorkOrderDTO()
                 {
+                    SiteID = siteId,
                     SiteName = site.SiteName,
                     SiteURL = site.SiteURL,
                     IssueType = "Other",
@@ -168,18 +169,20 @@ namespace ISHealthMonitor.Controllers
             }
             catch (Exception ex) 
             {
-                WorkOrderDTO model = new WorkOrderDTO()
-                {
-                    SiteName = "___",
-                    SiteURL = "about:blank",
-                    IssueType = "Other",
-                    Category = "Help Desk",
-                    System = "Help Desk",
-                    ShortDescription = $"Update certificate for _____",
-                    Urgency = "2",
-                    Description = ""
-                };
-                return View(model);
+                //WorkOrderDTO model = new WorkOrderDTO()
+                //{
+                //    SiteID = siteId,
+                //    SiteName = "___",
+                //    SiteURL = "about:blank",
+                //    IssueType = "Other",
+                //    Category = "Help Desk",
+                //    System = "Help Desk",
+                //    ShortDescription = $"Update certificate for _____",
+                //    Urgency = "2",
+                //    Description = ""
+                //};
+                //return View(model);
+                return BadRequest(ex.Message);
             }
             
         }
