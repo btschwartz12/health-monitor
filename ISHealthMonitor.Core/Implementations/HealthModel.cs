@@ -1017,6 +1017,29 @@ namespace ISHealthMonitor.Core.Models
 
 
         }
+
+        public int GetNumSubscriptionsForSite(int siteId)
+        {
+            SiteDTO site = GetSites()
+               .Where(s => s.ID == siteId)
+               .First();
+
+            if (site == null)
+            {
+				return -1;
+            }
+
+            int numSubscribers = _IACMSEntityContext.ISHealthMonitorUserReminders
+								 .Where(r => !r.Deleted && (r.ISHealthMonitorSiteID == siteId || r.ISHealthMonitorSiteID == 1))
+								 .GroupBy(r => r.CreatedBy)
+								 .Count();
+
+            return numSubscribers;
+
+
+
+
+        }
     }
 
 

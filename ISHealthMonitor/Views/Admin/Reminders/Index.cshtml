@@ -1,5 +1,5 @@
 ﻿@{
-	ViewData["Title"] = "Reminders Page";
+	ViewData["Title"] = "Reminders";
 	ViewData["UserName"] = ViewBag.UserName;
 	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
 }
@@ -39,7 +39,38 @@
 </div>
 
 
+<div class="container text-center">
+
+	<div style="display: flex; justify-content: center; align-items: center;">
+		<h2 class="animate__animated animate__flipInX" style="margin-right: 10px;">Reminder Manager</h2>
+		<button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#infoSections" aria-expanded="false" aria-controls="infoSections">
+			<i id="expandIcon" class="fad fa-angle-double-down"></i>
+		</button>
+
+	</div>
+
+
+
+	<div class="collapse" id="infoSections">
+
+
+		<div class="row justify-content-center animate__animated animate__fadeInLeft my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fas fa-info-circle fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>This is the Reminder Manager, where you can add, delete, or update the reminders that are currently configured by all users.</p>
+			</div>
+		</div>
+
+	</div>
+
+	<hr />
+</div>
+
+
 <div class="container" id="divLoading">
+
 	<div class="row">
 		<div class="form-group col-12">
 			<div style="display:inline-block; margin-left: 20px;">
@@ -50,12 +81,7 @@
 </div>
 
 <div class="container">
-	<div class="row justify-content-center">
-		<div class="col-12 col-md-8">
-			<a onclick="showReminderAddEditModal(0)" class="btn btn-info btn-block">Add Reminder</a>
-		</div>
-	</div>
-	<hr />
+	
 	<div class="row">
 		<div class="col-12" style="margin-left:50px;">
 			<table id="reminderTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
@@ -72,6 +98,45 @@
 				columns: [0, 1, 2, 3]
 			}
 		};
+
+		var buttons = [
+			'pageLength',
+			$.extend(true, {}, buttonCommon, {
+				extend: 'copyHtml5',
+				title: "Training Billing Discounts",
+				className: "btn btn-outline-secondary"
+			}),
+			$.extend(true, {}, buttonCommon, {
+				extend: 'excelHtml5',
+				title: "Training Billing Discounts",
+				className: "btn btn-outline-secondary"
+			}),
+			$.extend(true, {}, buttonCommon, {
+				extend: 'pdfHtml5',
+				title: "Training Billing Discounts",
+				orientation: 'landscape',
+				customize: function (doc) {
+					doc.pageMargins = [5, 5, 0, 0];
+					doc.defaultStyle.fontSize = 8;
+					doc.styles.tableHeader.fontSize = 9;
+				},
+				className: "btn btn-outline-secondary"
+
+			})
+		];
+
+
+		buttons.push({
+			text: 'Add Reminder',
+			className: 'btn btn-info',
+			action: function (e, dt, node, config) {
+				showReminderAddEditModal(0);
+			},
+			attr: {
+				id: 'addReminderBtn'
+			}
+		});
+		
 
 		remindersDataTable = $('#reminderTable').DataTable({
 
@@ -90,30 +155,31 @@
 				[10, 50, 100, -1],
 				['10', '50', '100', 'All']
 			],
-			buttons: [
-				'pageLength',
-				$.extend(true, {}, buttonCommon, {
-					extend: 'copyHtml5',
-					title: "Training Billing Discounts"
-				}),
-				$.extend(true, {}, buttonCommon, {
-					extend: 'excelHtml5',
-					title: "Training Billing Discounts"
-				}),
-				$.extend(true, {}, buttonCommon, {
-					extend: 'pdfHtml5',
-					title: "Training Billing Discounts",
-					orientation: 'landscape',
-					customize: function (doc) {
-						doc.pageMargins = [5, 5, 0, 0];
-						doc.defaultStyle.fontSize = 8;
-						doc.styles.tableHeader.fontSize = 9;
-					}
-				})
-			]
+			initComplete: function () {
+				var btns = $('.dt-button');
+				btns.removeClass('dt-button');
+				$(".buttons-collection.buttons-page-length").addClass("btn btn-dark");
+			},
+			buttons: buttons
 		});
 
 		DATATABLE_REQUESTS.LoadRemindersTable('all');
+	</script>
+
+
+	<script>
+		$(document).ready(function () {
+
+			$('#infoSections').on('show.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-up")
+
+			});
+
+			$('#infoSections').on('hide.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-down")
+
+			});]
+		});
 	</script>
 
 	<script>

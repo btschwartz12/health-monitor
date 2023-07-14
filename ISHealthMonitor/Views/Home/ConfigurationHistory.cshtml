@@ -1,5 +1,5 @@
 ﻿@{
-	ViewData["Title"] = "Configuration History Page";
+	ViewData["Title"] = "Configuration History";
 	ViewData["UserName"] = ViewBag.UserName;
 	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
 }
@@ -29,62 +29,76 @@
 
 
 
-<div class="container" id="divLoading">
-	<div class="row">
-		<div class="form-group col-12">
-			<div style="display:inline-block; margin-left: 20px;">
-				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-			</div>
-		</div>
-	</div>
-</div>
+
 
 
 <div class="container text-center">
 
-	<h1>
-		@if (ViewBag.SiteDTO.ID == 0)
-		{
-			<span>Previous Configurations for All Sites</span>
-		}
-		else
-		{
-			<span>Previous Configurations for <strong>@ViewBag.SiteDTO.SiteName</strong></span>
-		}
-	</h1>
+	<div style="display: flex; justify-content: center; align-items: center;">
+		<h2 class="animate__animated animate__flipInX" style="margin-right: 10px;">
+
+			@if (ViewBag.SiteDTO.ID == 0)
+			{
+				<span>Configuration History for All Sites</span>
+			}
+			else
+			{
+				<span>Configuration History for <strong>@ViewBag.SiteDTO.SiteName</strong></span>
+			}
+
+		</h2>
+		<button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#infoSections" aria-expanded="false" aria-controls="infoSections">
+			<i id="expandIcon" class="fad fa-angle-double-down"></i>
+		</button>
+
+	</div>
+
+
+
+	<div class="collapse" id="infoSections">
+		<div class="row justify-content-center animate__animated animate__fadeInRight my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fas fa-history fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>Here are all of the past configuration forms you have submitted, which collectively define all of the reminders for each site you are subscribed to.</p>
+			</div>
+		</div>
+
+		<div class="row justify-content-center animate__animated animate__fadeInLeft my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fas fa-info-circle fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>Hover over each row to see which sites and reminders are present in each form, or click the pencil icon to edit them!</p>
+			</div>
+		</div>
+
+		<div class="row justify-content-center animate__animated animate__fadeInRight my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fas fa-warning fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>Please note that since it is possible for you to configure the same reminder for the same site in different configuration forms, if you want to be unsubscribed from a particular site/interval combination, you must do so for each form. If you want to be unsubscribed from just a particular site, you can remove that site from the table on the home screen.</p>
+
+			</div>
+		</div>
+	</div>
 
 	<hr />
 
-	<div class="row justify-content-center my-4">
-		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
-			<i class="fas fa-history fa-3x"></i>
-		</div>
-		<div class="col-11 col-md-8 text-left">
-			<p>Here are all of the past configuration forms you have submitted, which collectively define all of the reminders for each site you are subscribed to.</p>
+	
+
+
+	<div class="container" id="divLoading">
+		<div class="row">
+			<div class="form-group col-12">
+				<div style="display:inline-block; margin-left: 20px;">
+					Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+				</div>
+			</div>
 		</div>
 	</div>
-
-	<div class="row justify-content-center  my-4">
-		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
-			<i class="fas fa-info-circle fa-3x"></i>
-		</div>
-		<div class="col-11 col-md-8 text-left">
-			<p>Hover over each row to see which sites and reminders are present in each form, or click the pencil icon to edit them!</p>
-
-		</div>
-	</div>
-
-	<div class="row justify-content-center  my-4">
-		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
-			<i class="fas fa-warning fa-3x"></i>
-		</div>
-		<div class="col-11 col-md-8 text-left">
-			<p>Please note that since it is possible for you to configure the same reminder for the same site in different configuration forms, if you want to be unsubscribed from a particular site/interval combination, you must do so for each form. If you want to be unsubscribed from just a particular site, you can remove that site from the table on the home screen.</p>
-
-		</div>
-	</div>
-
-	<hr />
 
 	<table id="configurationHistoryTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
 
@@ -138,15 +152,22 @@
 				[10, 50, 100, -1],
 				['10', '50', '100', 'All']
 			],
+			initComplete: function () {
+				var btns = $('.dt-button');
+				btns.removeClass('dt-button');
+				$(".buttons-collection.buttons-page-length").addClass("btn btn-dark");
+			},
 			buttons: [
 				'pageLength',
 				$.extend(true, {}, buttonCommon, {
 					extend: 'copyHtml5',
-					title: "Training Billing Discounts"
+					title: "Training Billing Discounts",
+					className: "btn btn-outline-secondary"
 				}),
 				$.extend(true, {}, buttonCommon, {
 					extend: 'excelHtml5',
-					title: "Training Billing Discounts"
+					title: "Training Billing Discounts",
+					className: "btn btn-outline-secondary"
 				}),
 				$.extend(true, {}, buttonCommon, {
 					extend: 'pdfHtml5',
@@ -156,7 +177,8 @@
 						doc.pageMargins = [5, 5, 0, 0];
 						doc.defaultStyle.fontSize = 8;
 						doc.styles.tableHeader.fontSize = 9;
-					}
+					},
+					className: "btn btn-outline-secondary"
 				})
 			]
 		});
@@ -172,6 +194,21 @@
 		function redirectToConfigurationBuilder(groupID) {
 			window.location.href = '/Reminders/ConfigurationBuilder?groupID=' + groupID;
 		}
+
+		$(document).ready(function () {
+
+			$('#infoSections').on('show.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-up")
+
+			});
+
+			$('#infoSections').on('hide.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-down")
+
+			});
+
+
+		});
 	</script>
 
 	<script>

@@ -268,9 +268,8 @@ namespace ISHealthMonitor.UI.Controllers.API
                 siteStatus.StatusIcon = _healthModel.GetTimeDiffStatusIcon(expDate);
 
 
-				Dictionary<string, List<string>> usersSubscribed = _healthModel.GetSubscriptionsForSite(site.ID);
 
-                siteStatus.NumSubscribedUsers = usersSubscribed.Count;
+                siteStatus.NumSubscribedUsers = _healthModel.GetNumSubscriptionsForSite(site.ID);
 
 				model.SiteStatusList.Add(siteStatus);
 

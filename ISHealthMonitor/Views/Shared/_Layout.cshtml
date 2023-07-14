@@ -28,30 +28,37 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="Index">Sites</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="SiteStatusViewer">Status</a>
-                        </li>
-
                         @{
                             bool isAdmin = ViewData.ContainsKey("UserIsAdmin") && bool.TryParse(ViewData["UserIsAdmin"].ToString(), out bool isAdmin2) && isAdmin2;
                             string displayName = ViewData["UserName"].ToString() + (isAdmin ? " (admin)" : "");
                         }
+
+                        <li class="nav-item" id="navItemConfigBuilder">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Config Builder</a>
+                        </li>
+
+                        <li class="nav-item" id="navItemConfigHistory">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">Config History</a>
+                        </li>
+
+                        <li class="nav-item" id="navItemCertStatus">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="SiteStatusViewer">Cert Status</a>
+                        </li>
+
                         @if (isAdmin)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="Index">Reminders</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ReminderIntervals" asp-action="Index">Intervals</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                            <li class="nav-item dropdown" id="navItemAdmin">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarAdminDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Admin
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarAdminDropdown">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Sites" asp-action="Index">Sites</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Reminders" asp-action="Index">Reminders</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="ReminderIntervals" asp-action="Index">Intervals</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                </div>
                             </li>
                         }
-                        
 
                         <li class="nav-item ml-auto">
                             @if (isAdmin)
@@ -66,9 +73,9 @@
 
                     </ul>
                 </div>
-
             </div>
         </nav>
+
     </header>
     <div class="container">
 
@@ -198,3 +205,40 @@
 
     });
 </script>
+
+<script>
+    $(document).ready(function () {
+        var title = '@ViewData["Title"]';
+        switch (title) {
+            case 'Configuration History':
+                $('#navItemConfigHistory').css({ "color": "gold", "font-weight": "bold" });
+                break;
+            case 'Configuration Builder':
+                $('#navItemConfigBuilder').css({ "color": "gold", "font-weight": "bold" });
+                break;
+            case 'Site Status':
+                $('#navItemCertStatus').css({ "color": "gold", "font-weight": "bold" });
+                break;
+
+            // Admin dropdown
+
+            case "Users":
+                $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
+                break;
+            case "Reminders":
+                $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
+                break;
+            case "Reminder Intervals":
+                $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
+                break;
+            case 'Sites':
+                $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
+                break;
+
+            default:
+                break;
+        }
+    });
+
+</script>
+

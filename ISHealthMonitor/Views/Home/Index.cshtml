@@ -30,89 +30,76 @@
 
 
 <div class="container text-center">
-
-
-	<div class="row justify-content-center animate__animated animate__fadeInRight animate__delay-1s my-4">
-		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
-			<i class="fas fa-info-circle fa-3x"></i>
-		</div>
-		<div class="col-11 col-md-8 text-left">
-			<p>Welcome to the IS Health Monitor, a platform that aims to streamline the management of Hyland's internal site certificates. It provides you with the capability to set reminders for site certificates that are on the brink of expiry, thereby ensuring timely renewal.</p>
-		</div>
+	<div  style="display: flex; justify-content: center; align-items: center;">
+		<h2 class="animate__animated animate__flipInX" style="margin-right: 10px;">IS Health Monitor</h2>
+		<button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#infoSections" aria-expanded="false" aria-controls="infoSections">
+			<i id ="expandIcon" class="fad fa-angle-double-down"></i>
+		</button>
+		
 	</div>
 
-	<div class="row justify-content-center animate__animated animate__fadeInLeft animate__delay-1s my-4">
-		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
-			<i class="fas fa-envelope-open-text fa-3x"></i>
-		</div>
-		<div class="col-11 col-md-8 text-left">
-			<p>You can proceed to create a configuration below, where you can select which sites and the time frame in which you'd like to be reminded. Once set up, you will be able to receive an email reminder at your specified interval.</p>
-		</div>
-	</div>
 
-	<div class="row justify-content-center animate__animated animate__fadeInRight animate__delay-1s my-4">
-		<div class="col-1 d-flex justify-content-center align-items-start pt-1">
-			<i class="fas fa-exclamation-triangle fa-3x"></i>
+
+	<div class="collapse" id="infoSections">
+		<div class="row justify-content-center animate__animated animate__fadeInRight my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fas fa-info-circle fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>Welcome to the IS Health Monitor, a platform that aims to streamline the management of Hyland's internal site certificates. It provides you with the capability to set reminders for site certificates that are on the brink of expiry, thereby ensuring timely renewal.</p>
+			</div>
 		</div>
-		<div class="col-11 col-md-8 text-left">
-			<p>Please note that this platform is still in its beta release. We encourage you to provide feedback on any bugs you encounter or features you'd like to see. We appreciate your support!</p>
+
+		<div class="row justify-content-center animate__animated animate__fadeInLeft my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fas fa-envelope-open-text fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>You can proceed to create a configuration below, where you can select which sites and the time frame in which you'd like to be reminded. Once set up, you will be able to receive an email reminder at your specified interval.</p>
+			</div>
+		</div>
+
+		<div class="row justify-content-center animate__animated animate__fadeInRight my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fas fa-exclamation-triangle fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>Please note that this platform is still in its beta release. We encourage you to provide feedback on any bugs you encounter or features you'd like to see. We appreciate your support!</p>
+			</div>
 		</div>
 	</div>
 
 	<hr />
-
 	
 
 	<div class="row justify-content-center">
 		
 		@if (ViewBag.UserHasReminders)
 		{
-			<div class="col-4 col-md-3 text-center animate__animated animate__fadeInBottomLeft animate__delay-2s">
-				<a class="btn btn-primary my-2 btn-block" id="configBuilderBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration <i class="fas fa-cogs"></i></a>
+	
+
+			<div id="divLoading" class="row justify-content-center animate__animated animate__fadeIn animate__delay-1s">
+				<div class="col-auto">
+					Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+				</div>
 			</div>
-			<div class="col-4 col-md-3 text-center animate__animated animate__fadeInUp animate__delay-2s">
-				<a class="btn btn-warning my-2 btn-block" id="configHistoryBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">View Configuration History <i class="fas fa-history"></i></a>
-			</div>
-			<div class="col-4 col-md-3 text-center animate__animated animate__fadeInBottomRight animate__delay-2s">
-				<a class="btn btn-info my-2 btn-block" id="trackedSitesBtn" sp-area="" asp-area="" asp-controller="Sites" asp-action="SiteStatusViewer">View Tracked Sites <i class="fas fa-globe"></i></a>
+
+			<div class="row my-2">
+				<div class="col-12 animate__animated animate__fadeIn animate__delay-1s">
+					<table id="siteConfigurationTable" class="table table-striped display compact wrap"></table>
+				</div>
 			</div>
 		}
 		else
 		{
-			<div class="col-4 col-md-3 text-center animate__animated animate__fadeInUp animate__delay-2s">
+			<div class="col-4 col-md-3 text-center animate__animated animate__fadeInUp animate__delay-1s">
 				<a class="btn btn-primary my-2 btn-block" id="configBuilderBtn" sp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Create a Configuration <i class="fas fa-cogs"></i></a>
 			</div>
 		}
 
 	</div>
 
-	@*<div class="col-4 col-md-3 text-center animate__animated animate__fadeInBottomRight animate__delay-2s">
-		<a class="btn btn-danger my-2 btn-block" id="" sp-area="" asp-area="" asp-controller="Home" asp-action="WorkOrderBuilder">Work Order Builder<i class="fas fa-globe"></i></a>
-	</div>*@
 
-	@if (ViewBag.UserHasReminders)
-	{
-		<hr />
-
-		<div class="row ">
-			<div class="col-12 col-md-6 mx-auto animate__animated animate__fadeInDown animate__delay-2s">
-				<h2 class="animate__animated animate__fadeIn">My Reminders</h2>
-			</div>
-		</div>
-
-
-		<div id="divLoading" class="row justify-content-center animate__animated animate__fadeInDown animate__delay-2s">
-			<div class="col-auto">
-				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-			</div>
-		</div>
-
-		<div class="row my-2">
-			<div class="col-12 animate__animated animate__fadeInDown animate__delay-2s">
-				<table id="siteConfigurationTable" class="table table-striped display compact wrap"></table>
-			</div>
-		</div>
-	}
 
 	
 
@@ -132,62 +119,111 @@
 
 
     <script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
-    
+	
 
 	<script>
-		var buttonCommon = {
-			exportOptions: {
-				columns: [0, 1, 2, 3]
-			}
-		};
+		$(document).ready(function () {
 
 
-		siteConfigurationDataTable = $('#siteConfigurationTable').DataTable({
 
-			"autoWidth": false,
-			"scrollX": true,
-			"destroy": true,
-			"columns": [
+			var buttonCommon = {
+				exportOptions: {
+					columns: [0, 1]
+				}
+			};
+
+			var columns = [
 				{ "sTitle": "Site Name", "data": "SiteName" },
 				{
 					"sTitle": "Reminder Intervals",
 					"data": "ReminderIntervals",
 					"render": function (data, type, row) {
-						
+
 						return data.map(ri => ri.DisplayName).join(', ');
 					}
 				},
 				{ "sTitle": "Action", "data": "Action" }
-			],
-			dom: 'Bfrtip',
-			lengthMenu: [
-				[10, 50, 100, -1],
-				['10', '50', '100', 'All']
-			],
-			buttons: [
-				'pageLength',
-				$.extend(true, {}, buttonCommon, {
-					extend: 'copyHtml5',
-					title: "Training Billing Discounts"
-				}),
-				$.extend(true, {}, buttonCommon, {
-					extend: 'excelHtml5',
-					title: "Training Billing Discounts"
-				}),
-				$.extend(true, {}, buttonCommon, {
-					extend: 'pdfHtml5',
-					title: "Training Billing Discounts",
-					orientation: 'landscape',
-					customize: function (doc) {
-						doc.pageMargins = [5, 5, 0, 0];
-						doc.defaultStyle.fontSize = 8;
-						doc.styles.tableHeader.fontSize = 9;
-					}
-				})
-			]
-		});
+			];
 
-		DATATABLE_REQUESTS.LoadSiteConfigurationsTable('all');
+			
+
+
+			siteConfigurationDataTable = $('#siteConfigurationTable').DataTable({
+
+				"autoWidth": false,
+				"scrollX": true,
+				"columns": columns,
+				dom: 'Bfrtip',
+				lengthMenu: [
+					[10, 50, 100, -1],
+					['10', '50', '100', 'All']
+				],
+				initComplete: function () {
+					var btns = $('.dt-button');
+					btns.removeClass('dt-button');
+					$(".buttons-collection.buttons-page-length").addClass("btn btn-dark");
+				},
+				buttons: [
+					'pageLength',
+					$.extend(true, {}, buttonCommon, {
+						extend: 'copyHtml5',
+						title: "Training Billing Discounts",
+						className: "btn btn-outline-secondary"
+					}),
+					$.extend(true, {}, buttonCommon, {
+						extend: 'excelHtml5',
+						title: "Training Billing Discounts",
+						className: "btn btn-outline-secondary"
+					}),
+					$.extend(true, {}, buttonCommon, {
+						extend: 'pdfHtml5',
+						title: "Training Billing Discounts",
+						orientation: 'landscape',
+						customize: function (doc) {
+							doc.pageMargins = [5, 5, 0, 0];
+							doc.defaultStyle.fontSize = 8;
+							doc.styles.tableHeader.fontSize = 9;
+						},
+						className: "btn btn-outline-secondary"
+
+					}),
+					{
+						text: '<i class="fas fa-cogs"></i>',
+						className: 'btn btn-primary animate__animated animate__pulse animate__repeat-3',
+						action: function (e, dt, node, config) {
+							window.location.href = '/Reminders/ConfigurationBuilder';
+						},
+						attr: {
+							id: 'configBuilderBtn'
+						}
+					},
+					{
+						text: '<i class="fas fa-history"></i>',
+						className: 'btn btn-warning animate__animated animate__pulse animate__repeat-3',
+						action: function (e, dt, node, config) {
+							window.location.href = '/Reminders/ConfigurationHistory';
+						},
+						attr: {
+							id: 'configHistoryBtn'
+						}
+					},
+					{
+						text: '<i class="fas fa-globe"></i>',
+						className: 'btn btn-info animate__animated animate__pulse animate__repeat-3',
+						action: function (e, dt, node, config) {
+							window.location.href = '/Sites/SiteSubscriptions';
+						},
+						attr: {
+							id: 'trackedSitesBtn'
+						}
+					}
+				]
+			});
+
+			
+
+			DATATABLE_REQUESTS.LoadSiteConfigurationsTable('all');
+		})
 	</script>
 
 
@@ -195,6 +231,28 @@
 		function redirectToConfigurationHistory(siteID) {
 			window.location.href = '/Reminders/ConfigurationHistory?siteID=' + siteID;
 		}
+
+		$(document).ready(function () {
+			var userHasReminders = @Html.Raw(Json.Serialize(ViewBag.UserHasReminders));
+
+			
+
+			$('#infoSections').on('show.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-up")
+				
+			});
+
+			$('#infoSections').on('hide.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-down")
+				
+			});
+
+
+			if (!userHasReminders) {
+				$('#infoSections').collapse('show');
+			}
+
+		});
 	</script>
 
 
@@ -202,17 +260,17 @@
 		$(document).ready(function () {
 			$('#configBuilderBtn').tooltip({
 				title: "Create a Configuration if you want to set reminders for the expiration of SSL certs of certain sites",
-				placement: 'bottom'
+				placement: 'top'
 			});
 
 			$('#configHistoryBtn').tooltip({
 				title: "View your Configuration History if you want to view or edit your past configurations",
-				placement: 'bottom'
+				placement: 'top'
 			});
 
 			$('#trackedSitesBtn').tooltip({
 				title: "View all of the sites this app keeps track of and their certificate information",
-				placement: 'bottom'
+				placement: 'top'
 			});
 		});
 

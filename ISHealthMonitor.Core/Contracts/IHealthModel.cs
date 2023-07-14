@@ -84,6 +84,7 @@ namespace ISHealthMonitor.Core.Contracts
 		string GetTimeDiffStatusIcon(DateTime expDate);
 
 		Dictionary<string, List<string>> GetSubscriptionsForSite(int siteId);
+		int GetNumSubscriptionsForSite(int siteId);
 
 
 		void UpdateWorkOrderForSite(int siteId, int workOrderObjectId);
