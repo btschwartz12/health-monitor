@@ -30,7 +30,7 @@
 					<div class="text-center">
 						<p>Are you sure you want to delete this site?</p>
 						<button class="btn btn-danger" id="deleteSiteYes" onclick="deleteSite()">Delete</button>
-						<button class="btn btn-warning" onclick="toggleSiteDeleteModal()">Cancel</button>
+						<button class="btn btn-secondary" onclick="toggleSiteDeleteModal()">Cancel</button>
 					</div>
 				</div>
 			</div>
@@ -97,26 +97,23 @@
 
 			var buttonCommon = {
 				exportOptions: {
-					columns: [0, 1, 2, 3]
+					columns: [0, 1, 2, 3, 4, 5]
 				}
 			};
 
 			var columns = [
+				{ "sTitle": "ID", "data": "ID" },
 				{ "sTitle": "Site Name", "data": "SiteName" },
 				{ "sTitle": "Site Category", "data": "SiteCategory" },
-				{ "sTitle": "Site URL", "data": "SiteURL" },
+				//{ "sTitle": "Site URL", "data": "SiteURL" },
 				
 				{ "sTitle": "Effective\nDate", "data": "SSLEffectiveDate", "type": "date" },
 				{ "sTitle": "Expiration\nDate", "data": "SSLExpirationDate", "type": "date" },
 				{ "sTitle": "Thumbprint", "data": "SSLThumbprint" },
+				{ "sTitle": "Action", "data": "Action" }
 			];
 
-			var userIsAdmin = @Html.Raw(Json.Serialize(ViewBag.UserIsAdmin));
-
-			if (userIsAdmin) {
-				columns.unshift({ "sTitle": "ID", "data": "ID" })
-				columns.push({ "sTitle": "Action", "data": "Action" });
-			}
+	
 
 			var buttons = [
 				'pageLength',
@@ -144,18 +141,18 @@
 				})
 			];
 
-			if (userIsAdmin) {
-				buttons.push({
-					text: 'Add Site',
-					className: 'btn btn-info',
-					action: function (e, dt, node, config) {
-						showSiteAddEditModal(0);
-					},
-					attr: {
-						id: 'addSiteBtn'
-					}
-				});
-			}
+
+			buttons.push({
+				text: 'Add Site',
+				className: 'btn btn-info',
+				action: function (e, dt, node, config) {
+					showSiteAddEditModal(0);
+				},
+				attr: {
+					id: 'addSiteBtn'
+				}
+			});
+			
 
 			
 			sitesDataTable = $('#siteTable').DataTable({

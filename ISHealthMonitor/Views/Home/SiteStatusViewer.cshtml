@@ -38,7 +38,7 @@
 <div class="container text-center">
 
 	<div style="display: flex; justify-content: center; align-items: center;">
-		<h2 class="animate__animated animate__flipInX" style="margin-right: 10px;">Site Status</h2>
+		<h2 class="animate__animated animate__flipInX" style="margin-right: 10px;">Certificate Statuses</h2>
 		<button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#infoSections" aria-expanded="false" aria-controls="infoSections">
 			<i id="expandIcon" class="fad fa-angle-double-down"></i>
 		</button>
@@ -97,6 +97,10 @@
 
 
 	<script>
+		
+	</script>
+
+	<script>
 		var buttonCommon = {
 			exportOptions: {
 				columns: [0, 1, 2, 3]
@@ -105,37 +109,42 @@
 
 
 		var columns = [
-			{
-				"sTitle": "ID",
-				"data": "SiteID"
-			},
-			{
-				"sTitle": "Status",
-				"data": "StatusIcon"
-			},
+			//{
+			//	"sTitle": "ID",
+			//	"data": "SiteID"
+			//},
+			//{
+			//	"sTitle": "Status",
+			//	"data": "StatusIcon"
+			//},
 			{
 				"sTitle": "Name",
-				"data": "SiteName"
+				"data": "SiteName",
+				"orderable": true,
 			},
-			{
-				"sTitle": "URL",
-				"data": "SiteURL"
-			},
+			//{
+			//	"sTitle": "URL",
+			//	"data": "SiteURL"
+			//},
 			{
 				"sTitle": "Expiration\nDate",
-				"data": "SSLExpirationDate"
+				"data": "SSLExpirationDate",
+				"orderable": true,
 			},
 			{
 				"sTitle": "Expires",
-				"data": "TimeUntilExpiration"
+				"data": "TimeUntilExpiration",
+				"orderable": false
 			},
 			{
 				"sTitle": "# Subscribers",
-				"data": "NumSubscribedUsers"
+				"data": "NumSubscribedUsers",
+				"orderable": true,
 			},
 			{
 				"sTitle": "Create\nWork Order",
-				"data": "WorkOrderAction"
+				"data": "WorkOrderAction",
+				"orderable": false,
 			},
 		];
 
@@ -143,7 +152,7 @@
 		var userIsAdmin = @Html.Raw(Json.Serialize(ViewBag.UserIsAdmin));
 
 		if (userIsAdmin) {
-			columns.push({ "sTitle": "Subscription\nInfo", "data": "Action" });
+			columns.push({ "sTitle": "Subscription\nInfo", "data": "Action", "orderable": false, });
 		}
 
 		var buttons = [
@@ -191,7 +200,23 @@
 				btns.removeClass('dt-button');
 				$(".buttons-collection.buttons-page-length").addClass("btn btn-dark");
 			},
-			buttons: buttons
+			buttons: buttons,
+			"createdRow": function (row, data, dataIndex) {
+				// assign color based on the RowColor data
+				switch (data.RowColor) {
+					case 'green':
+						$(row).css('background-color', '#90EE90'); // light green
+						break;
+					case 'yellow':
+						$(row).css('background-color', '#FFFF00'); // yellow
+						break;
+					case 'red':
+						$(row).css('background-color', '#fc8d8d'); // red
+						break;
+					default:
+						$(row).css('background-color', '#FFFFFF'); // white (or any default color)
+				}
+			},
 		});
 
 		DATATABLE_REQUESTS.LoadSiteStatusTable();

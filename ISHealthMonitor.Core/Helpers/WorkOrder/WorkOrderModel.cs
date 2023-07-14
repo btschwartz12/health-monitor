@@ -24,6 +24,11 @@ namespace ISHealthMonitor.Core.Helpers.WorkOrder
                                              string reasonForEmergency,
                                              string origin)
         {
+            if (reasonForEmergency == "null")
+            {
+                reasonForEmergency = "";
+            }
+
             var attrList = new List<AttrInfo>
             {
                 new AttrInfo()

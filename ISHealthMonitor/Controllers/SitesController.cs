@@ -31,6 +31,7 @@ namespace ISHealthMonitor.UI.Controllers
             _config = config;
         }
 
+        [Authorize(Policy = "Admin")]
         public IActionResult Index()
         {
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
@@ -50,9 +51,10 @@ namespace ISHealthMonitor.UI.Controllers
                 ViewBag.ApiAuthPassword = password;
             }
 
-            return View("~/Views/Home/Sites.cshtml");
+            return View("~/Views/Admin/Sites/Index.cshtml");
         }
 
+        [Authorize(Policy = "Admin")]
         [HttpGet]
         public IActionResult AddEdit(int id = 0)
         {
@@ -112,7 +114,7 @@ namespace ISHealthMonitor.UI.Controllers
             return View("~/Views/Home/SiteStatusViewer.cshtml");
 		}
 
-
+        [Authorize(Policy = "Admin")]
         public IActionResult SiteSubscriptions(int siteId)
         {
             SiteDTO site = _healthModel.GetSiteDTO(siteId);
@@ -142,7 +144,7 @@ namespace ISHealthMonitor.UI.Controllers
 
                 ViewBag.UsersSubscribed = usersSubscribedProcessed;
 
-                return View("~/Views/Home/SiteSubscriptions.cshtml");
+                return View("~/Views/Admin/SiteSubscriptions.cshtml");
             }
             catch (Exception ex)
             {

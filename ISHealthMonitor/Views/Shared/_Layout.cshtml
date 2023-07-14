@@ -19,9 +19,10 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav style="background-color: #e6f4f7 !important; " class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+
             <div class="container">
-                <a class="navbar-brand custom-navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><strong>IS Health Monitor</strong></a>
+                <a class="navbar-brand custom-navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">IS Health Monitor</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -33,6 +34,10 @@
                             string displayName = ViewData["UserName"].ToString() + (isAdmin ? " (admin)" : "");
                         }
 
+                        <li class="nav-item" id="navItemCertStatus">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="SiteStatusViewer">Cert Statuses</a>
+                        </li>
+
                         <li class="nav-item" id="navItemConfigBuilder">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Config Builder</a>
                         </li>
@@ -41,9 +46,11 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">Config History</a>
                         </li>
 
-                        <li class="nav-item" id="navItemCertStatus">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="SiteStatusViewer">Cert Status</a>
+                        <li class="nav-item" >
+                            <a class="nav-link text-dark" target="_blank" href="https://hyland-sandbox-342.atlassian.net/wiki/spaces/ICAS/pages/300580865/IS+Health+Monitor+Resource">Confluence</a>
                         </li>
+
+                        
 
                         @if (isAdmin)
                         {
@@ -140,7 +147,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - ISHealthMonitor - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - ISHealthMonitor
         </div>
     </footer>
     
@@ -183,6 +190,42 @@
     
 </html>
 
+
+@*<script type="text/javascript" language="javascript" src="https://threejs.org/build/three.js"></script>
+
+<script>
+
+    
+
+    $(document).ready(function () {
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true }); // alpha true makes the background transparent
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.querySelector('.navbar').appendChild(renderer.domElement);
+
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 5;
+
+        const animate = function () {
+            requestAnimationFrame(animate);
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+        
+    });
+
+</script>*@
+
 <script> 
 
     var apiAuthUsername = 'null';
@@ -211,13 +254,13 @@
         var title = '@ViewData["Title"]';
         switch (title) {
             case 'Configuration History':
-                $('#navItemConfigHistory').css({ "color": "gold", "font-weight": "bold" });
+                $('#navItemConfigHistory').css({ "color": "gold !important", "font-weight": "bold" });
                 break;
             case 'Configuration Builder':
-                $('#navItemConfigBuilder').css({ "color": "gold", "font-weight": "bold" });
+                $('#navItemConfigBuilder').css({ "color": "gold !important", "font-weight": "bold" });
                 break;
             case 'Site Status':
-                $('#navItemCertStatus').css({ "color": "gold", "font-weight": "bold" });
+                $('#navItemCertStatus').css({ "color": "gold !important", "font-weight": "bold" });
                 break;
 
             // Admin dropdown

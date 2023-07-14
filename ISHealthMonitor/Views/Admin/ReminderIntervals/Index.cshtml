@@ -29,7 +29,7 @@
 					<div class="text-center">
 						<p>Are you sure you want to delete this reminder interval?</p>
 						<button class="btn btn-danger" id="deleteIntervalYes" onclick="deleteInterval()">Delete</button>
-						<button class="btn btn-warning" onclick="toggleIntervalDeleteModal()">Cancel</button>
+						<button class="btn btn-secondary" onclick="toggleIntervalDeleteModal()">Cancel</button>
 					</div>
 				</div>
 			</div>
@@ -136,8 +136,9 @@
 			"autoWidth": false,
 			"scrollX": true,
 			"columns": [
-				{ "sTitle": "Category", "data": "Type" },
 				{ "sTitle": "ID", "data": "ID" },
+				{ "sTitle": "Category", "data": "Type" },
+				
 				{ "sTitle": "Name", "data": "DisplayName" },
 				{ "sTitle": "DurationInMinutes", "data": "DurationInMinutes" },
 				{ "sTitle": "Action", "data": "Action" }

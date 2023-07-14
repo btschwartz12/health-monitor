@@ -30,7 +30,7 @@
 					<div class="text-center">
 						<p>Are you sure you want to delete this reminder?</p>
 						<button class="btn btn-danger" id="deleteSiteYes" onclick="deleteReminder()">Delete</button>
-						<button class="btn btn-warning" onclick="toggleReminderDeleteModal()">Cancel</button>
+						<button class="btn btn-secondary" onclick="toggleReminderDeleteModal()">Cancel</button>
 					</div>
 				</div>
 			</div>
@@ -143,8 +143,9 @@
 			"autoWidth": false,
 			"scrollX": true,
 			"columns": [
-				{ "sTitle": "UserName", "data": "UserName" },
 				{ "sTitle": "ID", "data": "ID" },
+				{ "sTitle": "UserName", "data": "UserName" },
+				
 				{ "sTitle": "Site", "data": "SiteName" },
 				{ "sTitle": "Interval", "data": "IntervalName" },
 				{ "sTitle": "Action", "data": "Action" }

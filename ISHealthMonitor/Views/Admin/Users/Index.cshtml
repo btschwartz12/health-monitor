@@ -30,7 +30,7 @@
 					<div class="text-center">
 						<p>Are you sure you want to delete this user?</p>
 						<button class="btn btn-danger" id="deleteSiteYes" onclick="deleteUser()">Delete</button>
-						<button class="btn btn-warning" onclick="toggleUserDeleteModal()">Cancel</button>
+						<button class="btn btn-secondary" onclick="toggleUserDeleteModal()">Cancel</button>
 					</div>
 				</div>
 			</div>
@@ -102,7 +102,7 @@
 		$(document).ready(function () {
 			var buttonCommon = {
 				exportOptions: {
-					columns: [0, 1, 2, 3]
+					columns: [0, 1, 2]
 				}
 			};
 
@@ -150,6 +150,7 @@
 				"autoWidth": false,
 				"scrollX": true,
 				"columns": [
+					{ "sTitle": "ID", "data": "ID" },
 					{ "sTitle": "DisplayName", "data": "DisplayName" },
 					{ "sTitle": "IsAdmin", "data": "IsAdmin" },
 					{ "sTitle": "Action", "data": "Action" }

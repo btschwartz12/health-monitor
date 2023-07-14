@@ -46,13 +46,20 @@ namespace ISHealthMonitor.UI.Controllers.API
                 return NotFound();
             }
 
+            if (site.HSIDBWorkOrderCurrentObjectID == null || site.HSIDBWorkOrderLastSubmittedDate == null)
+            {
+                return Ok(new { Message = "Ok" });
+            }
+
             if (site.HSIDBWorkOrderLastSubmittedDate <= site.SSLEffectiveDate)
             {
                 return Ok(new { Message = "Ok" });
             }
 
+            var workOrderBaseUrl = _config.GetSection("UnityRestAPI")["HSIDBWorkOrderURL"];
+
             var objId = site.HSIDBWorkOrderCurrentObjectID;
-            var workOrderViewUrl = "https://example.com";
+            var workOrderViewUrl = workOrderBaseUrl + objId;
             var submittedDate = site.HSIDBWorkOrderLastSubmittedDate.ToString();
             var certEffectiveDate = site.SSLEffectiveDate.ToString();
 
@@ -81,8 +88,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 
             try
             {
-                //objectid = unityModel.GetRequestorId(employee.Email);
-                objectid = await unityModel.GetRequestorId("Nick.Susanjar@hyland.com");
+                objectid = await unityModel.GetRequestorId(employee.Email);
+                //objectid = await unityModel.GetRequestorId("Nick.Susanjar@hyland.com");
 
                 if (objectid == -1)
                 {
@@ -91,7 +98,7 @@ namespace ISHealthMonitor.UI.Controllers.API
             }
             catch (Exception ex) 
             { 
-                _logger.LogError(ex.Message);
+                _logger.LogError("Failed to get requestor id: " + ex.Message);
                 return BadRequest(ex.Message);
             }
 
@@ -109,8 +116,12 @@ namespace ISHealthMonitor.UI.Controllers.API
                                                          model.Description, model.Urgency,
                                                          model.EmergencyReason, origin);
 
-            OnbaseWorkviewObjectDTO wvObject = workOrderModel.GetWorkViewObjectDTO(workOrderObjId, appName, 
-                                                                                   className, attrList);
+
+
+
+
+            OnbaseWorkviewObjectDTO wvObject = workOrderModel.GetWorkViewObjectDTO(workOrderObjId, appName,
+                                                                                    className, attrList);
 
             var unityApi = new UnityRestAPIAccess(_logger, _config);
 
@@ -119,7 +130,7 @@ namespace ISHealthMonitor.UI.Controllers.API
                 string wvObjectJson = JsonSerializer.Serialize(wvObject);
 
                 var objectId = await unityApi.CreateWorkViewObject(wvObject.appName, wvObject.className,
-                                                       wvObjectJson);
+                                                        wvObjectJson);
 
                 _healthModel.UpdateWorkOrderForSite(model.SiteID, int.Parse(objectId));
 
@@ -129,9 +140,10 @@ namespace ISHealthMonitor.UI.Controllers.API
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError("Failed to create work order: " + ex.Message);
                 return NotFound(ex.Message);
             }
+            
         }
     }
 }

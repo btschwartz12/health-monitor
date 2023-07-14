@@ -73,6 +73,8 @@ namespace ISHealthMonitor.UI.Controllers.API
                     var formatted = string.Join(" ", Enumerable.Range(0, site.SSLThumbprint.Length / 2).Select(i => site.SSLThumbprint.Substring(i * 2, 2)));
                     site.SSLThumbprint = formatted;
                 }
+
+				site.SiteName = $"<a target='_blank' href={site.SiteURL}>{site.SiteName}</a>";
             }
 
             return JsonConvert.SerializeObject(retList);
@@ -258,7 +260,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 				siteStatus.SiteID = site.ID;
 				siteStatus.SiteURL = site.SiteURL;
-				siteStatus.SiteName = site.SiteName;
+				siteStatus.SiteName = $"<a target='_blank' href={site.SiteURL}>{site.SiteName}</a>";
 				siteStatus.SSLExpirationDate = site.SSLExpirationDate;
 				siteStatus.TimeUntilExpiration = _healthModel.GetTimeDiffString(expDate);
 				siteStatus.RowColor = _healthModel.GetTimeDiffColor(expDate);

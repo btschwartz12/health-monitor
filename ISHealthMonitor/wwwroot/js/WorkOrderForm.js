@@ -173,7 +173,7 @@ function SubmitWorkOrderForm() {
 						console.log('yes');
 						$('#resetButton').prop('disabled', false);
 						$('#submitButton').prop('disabled', false);
-						returnHome();
+						ReturnHome();
 					},
 					error: function (resp) {
 						console.log(resp);

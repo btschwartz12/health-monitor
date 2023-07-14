@@ -120,7 +120,7 @@ namespace ISHealthMonitor.Controllers
                 LogFiles = new List<LogFile>() { }, // Api will fill this in
             };
 
-            return View(model);
+            return View("~/Views/Admin/LogViewer.cshtml", model);
         }
 
 
