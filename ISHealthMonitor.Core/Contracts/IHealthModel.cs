@@ -60,6 +60,7 @@ namespace ISHealthMonitor.Core.Contracts
 		Task<bool> UserHasReminders(Guid guid);
 
 
+		DateTime GetCreatedDateForGroup(int groupId);
 
 
 		List<SiteReminderConfiguration> GetSiteReminderConfigurations(Guid guid);
@@ -78,13 +79,19 @@ namespace ISHealthMonitor.Core.Contracts
 		Task<NearExpiredSites> GetNearExpiredSites();
 		List<RemindersToSendForSite> RemoveDuplicates(List<RemindersToSendForSite> siteRemindersList);
 
+		string GetTimeDiffString(DateTime expDate);
+		string GetTimeDiffColor(DateTime expDate);
+		string GetTimeDiffStatusIcon(DateTime expDate);
+
+		Dictionary<string, List<string>> GetSubscriptionsForSite(int siteId);
+		int GetNumSubscriptionsForSite(int siteId);
+
+
+		void UpdateWorkOrderForSite(int siteId, int workOrderObjectId);
 
 
 
-
-
-
-	}
+    }
 
 	public class NearExpiredSites
 	{

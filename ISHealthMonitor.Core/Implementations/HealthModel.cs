@@ -11,6 +11,11 @@ using ISHealthMonitor.Core.Common;
 using ISHealthMonitor.Core.DataAccess;
 using ISHealthMonitor.Core.Helpers.Confluence;
 using ISHealthMonitor.Core.Helpers.Email;
+using Microsoft.Extensions.Logging;
+using ISHealthMonitor.Core.Implementations;
+using System.Security.Policy;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ISHealthMonitor.Core.Models
 {
@@ -20,13 +25,15 @@ namespace ISHealthMonitor.Core.Models
 		private readonly IEmployee _employee;
 		private readonly IRest _restModel;
 		private readonly IConfiguration _configuration;
+		private readonly ILogger<HealthModel> _logger;
 
-		public HealthModel(IACMSEntityContext context, IEmployee employee, IRest rest, IConfiguration configuration)
+		public HealthModel(IACMSEntityContext context, IEmployee employee, IRest rest, IConfiguration configuration, ILogger<HealthModel> logger)
 		{
 			_IACMSEntityContext = context;
 			_employee = employee;
 			_restModel = rest;
 			_configuration = configuration;
+			_logger = logger;
 		}
 
 
@@ -70,6 +77,12 @@ namespace ISHealthMonitor.Core.Models
 				return new SiteDTO() { ID = 0 };
 			}
 			ISHealthMonitorSiteDbSet site = GetSite(id);
+
+            if (site == null)
+			{
+				throw new Exception("Site does not exist with id: " + id);
+			}
+
 			return new SiteDTO()
 			{
 				ID = site.ID,
@@ -88,7 +101,7 @@ namespace ISHealthMonitor.Core.Models
 		public void AddSite(ISHealthMonitorSiteDbSet site)
 		{
 			_IACMSEntityContext.Add(site);
-			_IACMSEntityContext.SaveChanges();
+            _IACMSEntityContext.SaveChanges();
 		}
 
 		public void UpdateSite(ISHealthMonitorSiteDbSet site)
@@ -132,6 +145,7 @@ namespace ISHealthMonitor.Core.Models
 							  ISHealthMonitorSiteID = d.ISHealthMonitorSiteID,
 							  ISHealthMonitorIntervalID = d.ISHealthMonitorIntervalID,
 							  ISHealthMonitorGroupSubmissionID = d.ISHealthMonitorGroupSubmissionID,
+							  
 							  Site = GetSiteDTO(d.ISHealthMonitorSiteID),
 							  ReminderInterval = GetReminderIntervalDTO(d.ISHealthMonitorIntervalID),
 							  Action = "<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' " +
@@ -487,29 +501,34 @@ namespace ISHealthMonitor.Core.Models
 					site.SSLSubject = cert.Subject;
 					site.SSLCommonName = cert.CommonName;
 					site.SSLThumbprint = cert.Thumbprint;
+					site.LastUpdated = DateTime.Now;
 
-					if (cert.ErrorCommonName)
+
+                    if (cert.ErrorCommonName)
 					{
 						site.SSLCommonName = "INVALID (" + cert.CommonName + ")";
-						UpdateSite(site);
-						throw new Exception("Invalid SSL Common Name for the site.");
+                        throw new Exception("Invalid SSL Common Name for the site.");
 
 					}
-					else
-					{
-						UpdateSite(site);
-					}
 
+                    // Mark as modified so we can save later
+                    _IACMSEntityContext.Entry(site).State = EntityState.Modified;
 
-				}
+                }
 				catch (Exception ex)
 				{
-					failedSiteUrls.Add(site.URL, ex.Message);
+                    // Mark as modified so we can save later
+                    _IACMSEntityContext.Entry(site).State = EntityState.Modified;
+
+                    failedSiteUrls.Add(site.URL, ex.Message);
 				}
 
 			}
 
-			if (failedSiteUrls.Count > 0)
+			// Save all changes to the db
+            _IACMSEntityContext.SaveChanges();
+
+            if (failedSiteUrls.Count > 0)
 			{
 				return ("Success", failedSiteUrls); // Still success, even if some sites dont have certs 
 			}
@@ -521,9 +540,25 @@ namespace ISHealthMonitor.Core.Models
 
 		public async Task<(string Message, Dictionary<string, string> responseData)> UpdateConfluencePage()
 		{
-			List<SiteDTO> sites = GetSites()
+			List<ConfluenceSiteRowModel> sites = GetSites()
 				.Where(site => site.SiteCategory != "All" && site.SiteCategory != "Test")
-				.OrderBy(site => site.SiteName).ToList();
+				.OrderBy(site => site.SiteName)
+				.Select(site => new ConfluenceSiteRowModel
+				{
+					ID = site.ID,
+					SiteURL = site.SiteURL,
+					SiteName = site.SiteName,
+					SSLEffectiveDate = site.SSLEffectiveDate,
+					SSLExpirationDate = site.SSLExpirationDate,
+					SSLIssuer = site.SSLIssuer,
+					SSLSubject = site.SSLSubject,
+					SSLCommonName = site.SSLCommonName,
+					SSLThumbprint = site.SSLThumbprint,
+					TimeUntilExpiration = GetTimeDiffString(DateTime.Parse(site.SSLExpirationDate)),
+					RowColor = GetTimeDiffColor(DateTime.Parse(site.SSLExpirationDate))
+					
+				})
+				.ToList();
 
 			ConfluenceTableModel model = new ConfluenceTableModel()
 			{
@@ -563,10 +598,17 @@ namespace ISHealthMonitor.Core.Models
 					value = tableStr
 				},
 			};
-
+			//{ "errors":[{ "status":400,"code":"INVALID_REQUEST_PARAMETER","title":"Content body cannot be converted to new editor format","detail":null}]}
 			try
 			{
 				var rekt = await _restModel.PutHttpContent("/wiki/api/v2/pages/300580865", Newtonsoft.Json.JsonConvert.SerializeObject(pp), HttpContentTypes.String);
+
+				JObject resp = JsonConvert.DeserializeObject<JObject>(rekt);
+				if (resp.ContainsKey("errors"))
+				{
+					throw new Exception(rekt.ToString());
+				}
+
 
 				return ("Success", new Dictionary<string, string>
 				{
@@ -639,7 +681,7 @@ namespace ISHealthMonitor.Core.Models
 
 			var remindersSent = new Dictionary<string, Dictionary<string, List<string>>>();
 
-			foreach (var reminder in remindersList)
+			foreach (var reminder in filteredReminderList)
 			{
 				string siteUrl = reminder.Site.SiteURL;
 				string intervalDisplayName = reminder.ReminderInterval.DisplayName;
@@ -657,10 +699,11 @@ namespace ISHealthMonitor.Core.Models
 				foreach (var userReminder in reminder.Reminders)
 				{
 					remindersSent[siteUrl][intervalDisplayName].Add(userReminder.CreatedBy.ToString());
-				}
-			}
+                }
+            }
 
-			return ("Success", remindersSent);
+
+            return ("Success", remindersSent);
 		}
 
 
@@ -796,8 +839,211 @@ namespace ISHealthMonitor.Core.Models
 
 			return filteredSiteReminders;
 		}
-	}
 
+		public DateTime GetCreatedDateForGroup(int groupId)
+		{
+			var reminderGroup = _IACMSEntityContext.ISHealthMonitorUserReminders
+								.Where(r => !r.Deleted)
+								.Where(r => r.ISHealthMonitorGroupSubmissionID == groupId)
+								.ToList();
+
+			var minTime = reminderGroup.Min(r => r.CreatedDate);
+
+			return minTime;
+		}
+
+		public string GetTimeDiffString(DateTime expDate)
+		{
+			TimeSpan timeDiff = expDate - DateTime.Now;
+
+			string timeDiffReadable = "";
+			if (timeDiff.TotalSeconds < 0)
+			{
+				timeDiffReadable = "Expired";
+			}
+			else
+			{
+				int years = timeDiff.Days / 365; // get the number of years
+				int months = (timeDiff.Days % 365) / 30; // get the number of remaining months
+				int days = (timeDiff.Days % 365) % 30; // get the number of remaining days
+
+				if (years > 0)
+				{
+					timeDiffReadable += $"{(years > 0 ? $"{years} year{(years != 1 ? "s" : "")}, " : "")}";
+				}
+				if (months > 0)
+				{
+					timeDiffReadable += $"{(months > 0 ? $"{months} month{(months != 1 ? "s" : "")}, " : "")}";
+				}
+				timeDiffReadable += $"{days} day{(days != 1 ? "s" : "")}";
+			}
+			return timeDiffReadable;
+		}
+
+		public string GetTimeDiffColor(DateTime expDate)
+		{
+			TimeSpan timeDiff = expDate - DateTime.Now;
+
+			if (timeDiff.TotalDays <= 10)
+			{
+				return "red";
+				//return "#ffadad";
+			}
+			if (timeDiff.TotalDays <= 30)
+			{
+				return "yellow";
+				//return "#ffffad";
+			}
+			if (timeDiff.TotalDays > 365)
+			{
+				return "green";
+				//return "#b3ffab";
+			}
+			return "";
+		}
+
+		public string GetTimeDiffStatusIcon(DateTime expDate)
+		{
+			var color = GetTimeDiffColor(expDate);
+
+			if (color == "red")
+			{
+				return $"<div class='text-center'><span class='d-none' sort='1'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-danger mr-3'></i></div>";
+			}
+			if (color == "yellow")
+			{
+				return $"<div class='text-center'><span class='d-none' sort='2'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-warning mr-3'></i></div>";
+			}
+			if (color == "green")
+			{
+				return $"<div class='text-center'><span class='d-none' sort='3'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-success mr-3'></i></div>";
+			}
+
+			// Default is gray
+			return $"<div class='text-center'><span class='d-none' sort='4'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-secondary mr-3'></i></div>";
+
+		}
+
+
+
+		public Dictionary<string, List<string>> GetSubscriptionsForSite(int siteId)
+        {
+            SiteDTO site = GetSites()
+				.Where(s => s.ID == siteId)
+				.First();
+
+			if (site == null)
+			{
+				throw new Exception("Site does not exist");
+			}
+
+			// All reminders that exist
+            List<UserReminderDTO> allReminders = GetReminders();
+
+			// Reminders for just 'All Sites'
+            List<UserReminderDTO> remindersForAllSites = allReminders
+                .Where(r => r.ISHealthMonitorSiteID == 1)
+                .ToList();
+
+			// Get all reminder intervals for sorting and displaying in a list
+            List<ReminderIntervalDTO> allReminderIntervals = GetReminderIntervals();
+            Dictionary<int, (int, string)> reminderIntervalDictionary = allReminderIntervals.ToDictionary(x => x.ID, x => (x.DurationInMinutes, x.DisplayName));
+
+			// Get reminders specific to the site
+            List<UserReminderDTO> remindersForSite = allReminders
+                        .Where(r => r.ISHealthMonitorSiteID == site.ID)
+                        .ToList();
+
+            Dictionary<string, List<string>> usersSubscribed = new Dictionary<string, List<string>>();
+
+            Dictionary<string, List<(int, string)>> usersSubscribedTemp = new Dictionary<string, List<(int, string)>>();
+
+            foreach (var reminder in remindersForSite)
+            {
+                int duration = reminderIntervalDictionary[reminder.ISHealthMonitorIntervalID].Item1;
+                string displayName = reminderIntervalDictionary[reminder.ISHealthMonitorIntervalID].Item2;
+
+                // If the user already has reminders, add to their list. Otherwise, create a new list.
+                if (usersSubscribedTemp.ContainsKey(reminder.UserName))
+                {
+                    usersSubscribedTemp[reminder.UserName].Add((duration, displayName));
+                }
+                else
+                {
+                    usersSubscribedTemp[reminder.UserName] = new List<(int, string)> { (duration, displayName) };
+                }
+
+            }
+
+            // Do seperate stuff for all sites so that it is differentiable
+            foreach (var allSiteReminder in remindersForAllSites)
+            {
+                int duration = reminderIntervalDictionary[allSiteReminder.ISHealthMonitorIntervalID].Item1;
+                string displayName = reminderIntervalDictionary[allSiteReminder.ISHealthMonitorIntervalID].Item2;
+
+                if (usersSubscribedTemp.ContainsKey(allSiteReminder.UserName))
+                {
+                    usersSubscribedTemp[allSiteReminder.UserName].Add((duration, displayName + " (All Sites)"));
+                }
+                else
+                {
+                    usersSubscribedTemp[allSiteReminder.UserName] = new List<(int, string)> { (duration, displayName + " (All Sites)") };
+                }
+            }
+
+            // Sort the lists by duration and convert to lists of display names.
+            foreach (var userName in usersSubscribedTemp.Keys)
+            {
+                List<string> sortedDisplayNames = usersSubscribedTemp[userName]
+                    .OrderBy(x => x.Item1)
+                    .Select(x => x.Item2)
+                    .ToList();
+
+                usersSubscribed[userName] = sortedDisplayNames;
+            }
+
+            return usersSubscribed;
+        }
+
+        public void UpdateWorkOrderForSite(int siteId, int workOrderObjectId)
+        {
+			ISHealthMonitorSiteDbSet site = GetSite(siteId);
+
+			site.HSIDBWorkOrderCurrentObjectID = workOrderObjectId;
+			site.HSIDBWorkOrderLastSubmittedDate = DateTime.Now;
+
+			_IACMSEntityContext.Entry(site).State = EntityState.Modified;
+			_IACMSEntityContext.SaveChanges();
+
+
+        }
+
+        public int GetNumSubscriptionsForSite(int siteId)
+        {
+            SiteDTO site = GetSites()
+               .Where(s => s.ID == siteId)
+               .First();
+
+            if (site == null)
+            {
+				return -1;
+            }
+
+            int numSubscribers = _IACMSEntityContext.ISHealthMonitorUserReminders
+								 .Where(r => !r.Deleted && (r.ISHealthMonitorSiteID == siteId || r.ISHealthMonitorSiteID == 1))
+								 .GroupBy(r => r.CreatedBy)
+								 .Count();
+
+            return numSubscribers;
+
+
+
+
+        }
+    }
+
+
+    
 
 
 }

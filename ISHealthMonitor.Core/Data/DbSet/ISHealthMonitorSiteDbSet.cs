@@ -20,10 +20,14 @@ namespace ISHealthMonitor.Core.Data.DbSet
 		public string SiteCategory { get; set; }
 		public Guid CreatedBy { get; set; }
 		public DateTime DateCreated { get; set; }
+		public DateTime LastUpdated { get; set; }
 		public bool Active { get; set; }
 		public bool Deleted { get; set; }
 		public bool Disabled { get; set; }
-	}
+		public DateTime? HSIDBWorkOrderLastSubmittedDate { get; set; }
+		public int? HSIDBWorkOrderCurrentObjectID { get; set; }
+
+    }
 
 }
 

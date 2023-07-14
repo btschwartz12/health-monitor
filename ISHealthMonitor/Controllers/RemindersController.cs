@@ -38,6 +38,15 @@ namespace ISHealthMonitor.UI.Controllers
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
+            if (ViewBag.UserIsAdmin)
+            {
+                string username = _config.GetSection("ApiAuthConfig")["userName"];
+                string password = _config.GetSection("ApiAuthConfig")["password"];
+
+                ViewBag.ApiAuthUserName = username;
+                ViewBag.ApiAuthPassword = password;
+            }
+
             return View("~/Views/Admin/Reminders/Index.cshtml");
 		}
 
@@ -91,7 +100,7 @@ namespace ISHealthMonitor.UI.Controllers
                 ViewBag.ApiAuthPassword = password;
             }
 
-            return View("~/Views/Admin/Reminders/ConfigurationHistory.cshtml");
+            return View("~/Views/Home/ConfigurationHistory.cshtml");
 		}
 
 		public IActionResult ConfigurationBuilder(int groupID = 0)
@@ -120,13 +129,17 @@ namespace ISHealthMonitor.UI.Controllers
 					GroupID = 0,
 			        UserReminders = new List<UserReminderDTO> { },
 			    };
-			    return View("~/Views/Admin/Reminders/ConfigurationBuilder.cshtml", viewModel);
+			    return View("~/Views/Home/ConfigurationBuilder.cshtml", viewModel);
 			}
 			else
 			{
 			    List<UserReminderDTO> remindersByGroup = _healthModel.GetReminders()
 			    .Where(r => r.ISHealthMonitorGroupSubmissionID == groupID)
 			    .ToList();
+
+				
+
+				
 
 				if (remindersByGroup.Count == 0) 
 				{
@@ -145,13 +158,17 @@ namespace ISHealthMonitor.UI.Controllers
 					}
 				}
 
-			    ReminderConfiguration viewModel = new ReminderConfiguration()
+                DateTime groupCreatedDate = _healthModel.GetCreatedDateForGroup(groupID);
+                ViewBag.GroupUserName = remindersByGroup[0].UserName;
+
+                ReminderConfiguration viewModel = new ReminderConfiguration()
 			    {
 					GroupID = groupID,
-			        UserReminders = remindersByGroup
-			    };
+			        UserReminders = remindersByGroup,
+					DateCreated = groupCreatedDate.ToString("dddd, MMMM d, yyyy, HH:mm:ss")
+			};
 
-			    return View("~/Views/Admin/Reminders/ConfigurationBuilder.cshtml", viewModel);
+			    return View("~/Views/Home/ConfigurationBuilder.cshtml", viewModel);
 			}
 
 

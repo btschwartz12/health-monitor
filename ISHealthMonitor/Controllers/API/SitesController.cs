@@ -19,6 +19,7 @@ using ISHealthMonitor.Core.Implementations;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Policy;
 
 namespace ISHealthMonitor.UI.Controllers.API
 {
@@ -57,7 +58,6 @@ namespace ISHealthMonitor.UI.Controllers.API
 
             var employee = _employee.GetEmployeeByUserName(username);
 
-			_logger.LogInformation("Showing all sites to: " + employee.DisplayName);
 
 
 
@@ -73,6 +73,8 @@ namespace ISHealthMonitor.UI.Controllers.API
                     var formatted = string.Join(" ", Enumerable.Range(0, site.SSLThumbprint.Length / 2).Select(i => site.SSLThumbprint.Substring(i * 2, 2)));
                     site.SSLThumbprint = formatted;
                 }
+
+				site.SiteName = $"<a target='_blank' href={site.SiteURL}>{site.SiteName}</a>";
             }
 
             return JsonConvert.SerializeObject(retList);
@@ -82,16 +84,24 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("DeleteSite")]
 		public IActionResult DeleteSite(int id)
 		{
-			List<string> subscribedUsers = _healthModel.GetSubscribedUsersForSite(id);
+
+            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+            var employee = _employee.GetEmployeeByUserName(username);
+
+
+            List<string> subscribedUsers = _healthModel.GetSubscribedUsersForSite(id);
 
 			if (subscribedUsers.Count > 0)
 			{
-				return BadRequest(new { SubscribedUsers = subscribedUsers });
+                _logger.LogInformation($"Site ID={id.ToString()} failed to delete (existing users subscribed)");
+                return BadRequest(new { SubscribedUsers = subscribedUsers });
 			}
 			else
 			{
-				_healthModel.DeleteSite(id);
-				return Ok(id);
+                _healthModel.DeleteSite(id);
+                _logger.LogInformation($"Site ID={id.ToString()} deleted by {employee.GUID}");
+                return Ok(id);
 			}
 		}
 
@@ -121,12 +131,15 @@ namespace ISHealthMonitor.UI.Controllers.API
 					SSLThumbprint = siteDTO.SSLThumbprint,
 					CreatedBy = new Guid(employee.GUID),
 					DateCreated = DateTime.Now,
+					LastUpdated = DateTime.Now,
 					Active = true,
 					Deleted = false,
 					Disabled = false
 				};
 
-				_healthModel.AddSite(newSite);
+                _logger.LogInformation($"Site created by {employee.GUID}: ({siteDTO.SiteName} = {siteDTO.SiteURL})");
+
+                _healthModel.AddSite(newSite);
 				return Ok(newSite);
 			}
 			else
@@ -143,9 +156,13 @@ namespace ISHealthMonitor.UI.Controllers.API
 					existingSite.SSLSubject = siteDTO.SSLSubject;
 					existingSite.SSLCommonName = siteDTO.SSLCommonName;
 					existingSite.SSLThumbprint = siteDTO.SSLThumbprint;
+					existingSite.LastUpdated = DateTime.Now;
 
 					_healthModel.UpdateSite(existingSite);
-					return Ok(existingSite);
+
+                    _logger.LogInformation($"Site ID={siteDTO.ID.ToString()} updated by {employee.GUID} to: ({siteDTO.SiteName} = {siteDTO.SiteURL}, and possibly other fields) ");
+
+                    return Ok(existingSite);
 				}
 				else
 				{
@@ -210,139 +227,59 @@ namespace ISHealthMonitor.UI.Controllers.API
 		}
 
 
-		private async Task<SiteDTO> GetSiteDTO(string name, string category, string url, CertificateHandlers certHandlers)
+		[HttpGet("GetSiteStatusData")]
+		public async Task<IActionResult> GetSiteStatusData()
 		{
-			try
+			SiteStatusData model = new SiteStatusData()
 			{
-				CertificateDTO res = await certHandlers.CheckSSLSiteAsync(url);
-				if (res.Issuer == null || res.Subject == null || res.EffectiveDate == null || res.ExpDate == null)
-				{
-					throw new Exception("null value in cert");
-				}
-				return new SiteDTO()
-				{
-					SiteURL = url,
-					SiteName = name,
-					SiteCategory = category,
-					SSLEffectiveDate = res.EffectiveDate,
-					SSLExpirationDate = res.ExpDate,
-					SSLIssuer = res.Issuer,
-					SSLSubject = res.Subject,
-					SSLCommonName = res.CommonName,
-					SSLThumbprint = res.Thumbprint
-				};
-
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(ex.Message);
-			}
-		}
-
-        private async Task<List<SiteDTO>> ProcessJsonFileAsync(string filePath, string category)
-		{
-			// Prepare the result list
-			List<SiteDTO> result = new List<SiteDTO>();
-
-			// Initialize certificate handler
-			var certHandlers = new CertificateHandlers();
-
-			// Load json file
-			string json = await System.IO.File.ReadAllTextAsync(filePath);
-
-			// Parse json file
-			var sites = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
-
-
-			List<string> failedUrls = new List<string>();
-
-			// Iterate through each key-value pair
-			foreach (var site in sites)
-			{
-				string name = site.Key;
-				var urls = site.Value;
-
-
-
-
-				// Check if urls list is empty
-				if (urls.Count == 0) continue;
-
-				for (int i = 0; i < urls.Count; i++)
-				{
-					string url = urls[i];
-					string finalName = name;
-
-					// Check if url contains 'dev' and is the second url
-					if (url.Contains("dev") && urls.Count == 2)
-					{
-						finalName += " Dev";
-					}
-					// If there are more than two urls, append the URL to the end of the name
-					else if (urls.Count > 2)
-					{
-						finalName += " " + url;
-					}
-
-					// Call GetSiteDTO function and add the result to the list
-					try
-					{
-						SiteDTO siteDto = await GetSiteDTO(finalName, category, url, certHandlers);
-						result.Add(siteDto);
-					}
-					catch (Exception ex)
-					{
-						failedUrls.Add(url);
-						Console.WriteLine(ex);
-					}
-					
-				}
-			}
-
-			return result;
-		}
-
-
-        private void CreateSiteInternal(SiteDTO siteDTO)
-		{
-
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-
-			var employee = _employee.GetEmployeeByUserName(username);
-
-
-			var newSite = new ISHealthMonitorSiteDbSet()
-			{
-				URL = siteDTO.SiteURL,
-				DisplayName = siteDTO.SiteName,
-				SiteCategory = siteDTO.SiteCategory,
-				SSLEffectiveDate = DateTime.Parse(siteDTO.SSLEffectiveDate),
-				SSLExpirationDate = DateTime.Parse(siteDTO.SSLExpirationDate),
-				SSLIssuer = siteDTO.SSLIssuer,
-				SSLSubject = siteDTO.SSLSubject,
-				SSLCommonName = siteDTO.SSLCommonName,
-				SSLThumbprint = siteDTO.SSLThumbprint,
-				CreatedBy = new Guid(employee.GUID),
-				DateCreated = DateTime.Now,
-				Active = true,
-				Deleted = false,
-				Disabled = false
+				SiteStatusList = new List<SiteStatus>() { }
 			};
 
-			_healthModel.AddSite(newSite);
+            List<SiteDTO> allSites = _healthModel.GetSites();
+
+            List<SiteDTO> uniqueSiteDTOs = allSites
+                .Where(s => s.ID != 1) // Filter out all sites
+                .ToList();
+
+            List<UserReminderDTO> allReminders = _healthModel.GetReminders();
+
+            List<UserReminderDTO> remindersForAllSites = allReminders
+                .Where(s => s.ISHealthMonitorSiteID == 1)
+                .ToList();
+
+            List<ReminderIntervalDTO> allReminderIntervals = _healthModel.GetReminderIntervals();
+            Dictionary<int, (int, string)> reminderIntervalDictionary = allReminderIntervals.ToDictionary(x => x.ID, x => (x.DurationInMinutes, x.DisplayName));
+
+
+
+            foreach (SiteDTO site in uniqueSiteDTOs)
+			{
+				SiteStatus siteStatus = new SiteStatus();
+
+				DateTime expDate = DateTime.Parse(site.SSLExpirationDate);
+
+				siteStatus.SiteID = site.ID;
+				siteStatus.SiteURL = site.SiteURL;
+				siteStatus.SiteName = $"<a target='_blank' href={site.SiteURL}>{site.SiteName}</a>";
+				siteStatus.SSLExpirationDate = site.SSLExpirationDate;
+				siteStatus.TimeUntilExpiration = _healthModel.GetTimeDiffString(expDate);
+				siteStatus.RowColor = _healthModel.GetTimeDiffColor(expDate);
+				siteStatus.Action = $"<div class='text-center'><i style='cursor: pointer;' class='fa fa-info fa-lg text-primary mr-3' " +
+					$"onclick='showSiteSubscriptionsModal({site.ID})'></i></div>";
+                siteStatus.WorkOrderAction = $"<div class='text-center'><a href='/Home/WorkOrderBuilder/?siteId={site.ID}'><i style='cursor: pointer;' class='fa fa-solid fa-wrench mr-3'></i></a></div>";
+                siteStatus.StatusIcon = _healthModel.GetTimeDiffStatusIcon(expDate);
+
+
+
+                siteStatus.NumSubscribedUsers = _healthModel.GetNumSubscriptionsForSite(site.ID);
+
+				model.SiteStatusList.Add(siteStatus);
+
+			}
+
+			return Ok(JsonConvert.SerializeObject(model));
 		}
 
 
-
-
-
-
-
-
-
-
-
-
-
-	}
+    }
 }

@@ -20,19 +20,30 @@
             <th>
                 <p><strong>Expiration Date</strong></p>
             </th>
+            <th>
+                <p><strong>Time Until Exp</strong></p>
+            </th>
+            <th>
+                <p><strong>Action</strong></p>
+            </th>
         </tr>
         @foreach (var site in Model.sites)
         {
-            <tr>
-                <td>
-                    <a href="@site.SiteURL">@site.SiteName</a>
-                </td>
-                <td>@site.SSLThumbprint</td>
-                <td>@site.SSLCommonName</td>
-                <td>@site.SSLIssuer</td>
-                <td>@site.SSLEffectiveDate</td>
-                <td>@site.SSLExpirationDate</td>
-            </tr>
+        <tr>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">
+                <a href="@site.SiteURL">@site.SiteName</a>
+            </td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLThumbprint</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLCommonName</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLIssuer</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLEffectiveDate</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLExpirationDate</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.TimeUntilExpiration</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">
+                <a href="https://dev.healthmonitor.hyland.com/Home/WorkOrderBuilder?siteId=@site.ID" style="display: inline-block; padding: 10px 20px; text-align: center; text-decoration: none; color: #ffffff; background-color: #007BFF; border-radius: 4px;">Create Work Order</a>
+            </td>
+
+        </tr>
         }
     </tbody>
 </table>

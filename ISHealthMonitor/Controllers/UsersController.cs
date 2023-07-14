@@ -4,6 +4,7 @@ using ISHealthMonitor.Core.Data.DTO;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace ISHealthMonitor.UI.Controllers
@@ -15,11 +16,13 @@ namespace ISHealthMonitor.UI.Controllers
 
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
+		private readonly IConfiguration _config;
 
-		public UsersController(IHealthModel healthModel, IEmployee employee)
+		public UsersController(IHealthModel healthModel, IEmployee employee, IConfiguration config)
 		{
 			_healthModel = healthModel;
 			_employee = employee;
+			_config = config;
 		}
 		public IActionResult Index()
 		{
@@ -29,6 +32,15 @@ namespace ISHealthMonitor.UI.Controllers
 
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
+
+            if (ViewBag.UserIsAdmin)
+            {
+                string username = _config.GetSection("ApiAuthConfig")["userName"];
+                string password = _config.GetSection("ApiAuthConfig")["password"];
+
+                ViewBag.ApiAuthUserName = username;
+                ViewBag.ApiAuthPassword = password;
+            }
 
             return View("~/Views/Admin/Users/Index.cshtml");
 		}

@@ -1,0 +1,156 @@
+﻿@model ISHealthMonitor.Core.Data.Models.ReminderConfiguration
+
+@{
+    ViewData["Title"] = "Configuration Builder";
+    ViewData["UserName"] = ViewBag.UserName;
+    ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
+}
+
+
+<form id="configurationBuilderForm" onsubmit="return SubmitConfigurationForm()">
+
+    <div class="container text-center">
+
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <h2 class="animate__animated animate__flipInX" style="margin-right: 10px;">Configuration Builder</h2>
+            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#infoSections" aria-expanded="false" aria-controls="infoSections">
+                <i id="expandIcon" class="fad fa-angle-double-down"></i>
+            </button>
+
+        </div>
+
+
+
+        <div class="collapse" id="infoSections">
+            <div class="row justify-content-center animate__animated animate__fadeInRight my-4">
+                <div class="col-1 d-flex justify-content-center align-items-start pt-1">
+                    <i class="fas fa-tools fa-3x"></i>
+                </div>
+                <div class="col-11 col-md-8 text-left">
+                    <p>Select sites that you would like to be reminded about when their certificates expire. You may choose as many as you'd like, and also select different reminder intervals for each site.</p>
+                </div>
+            </div>
+
+            <div class="row justify-content-center animate__animated animate__fadeInLeft my-4">
+                <div class="col-1 d-flex justify-content-center align-items-start pt-1">
+                    <i class="fas fa-info-circle fa-3x"></i>
+                </div>
+                <div class="col-11 col-md-8 text-left">
+                    <p>Note that after submitting, you may go back and edit or delete this exact form by viewing the Configuration History from the home page.</p>
+                </div>
+            </div>
+
+            @if (Model.DateCreated != null)
+            {
+                <div class="row justify-content-center animate__animated animate__fadeInRight my-4">
+                    <div class="col-1 d-flex justify-content-center align-items-start pt-1">
+                        <i class="fas fa-pencil-alt fa-3x"></i>
+                    </div>
+                    <div class="col-11 col-md-8 text-left">
+                        <p>This reminder configuration was created by <strong>@ViewBag.GroupUserName</strong> on <strong>@Model.DateCreated</strong></p>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-12">
+                <div class="form-group text-center">
+                    <i class="fas fa-globe mr-2"></i>
+                    <label for="select-sites"><strong>Sites</strong></label>
+                    <select id="select-sites" class="" placeholder="Loading..."></select>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-12">
+
+                <div class="form-group text-center">
+                    <i class="fas fa-bell mr-2"></i>
+                    <label for="select-reminders"><strong>Reminders</strong></label>
+
+                    <div class="d-flex justify-content-center align-items-center">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="sameReminder" >
+                            <label class="form-check-label" for="sameReminder">Same for each site?</label>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="same-reminder-row" style="text-align: center; padding: 10px;">
+                        <select id="select-reminders" class="" placeholder="Select reminders..."></select>
+                    </div>
+
+                    
+
+                    <div class="site-reminder-section">
+                        <!-- This is where player-specific reminder selectors will be added -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
+
+
+        <div class="form-group d-flex justify-content-center">
+            <button type="submit" class="btn btn-success mr-3">Submit</button>
+            <button type="reset" onclick="ReturnHome()" class="btn btn-secondary mr-3">Cancel</button>
+
+        </div>
+
+        
+
+    </div>
+</form>
+
+@section Scripts {
+
+    <script>
+
+        function ReturnHome(url) {
+            if (!url) {
+                window.location = "/";
+            }
+            else {
+                window.location = url;
+            }
+            
+        }
+
+
+        $(document).ready(function () {
+
+            let modelData = @Html.Raw(Json.Serialize(Model));
+
+            initSelectize(modelData);
+        });
+
+
+
+        $(document).ready(function () {
+     
+            $('#infoSections').on('show.bs.collapse', function () {
+                $('#expandIcon').attr("class", "fad fa-angle-double-up")
+
+            });
+
+            $('#infoSections').on('hide.bs.collapse', function () {
+                $('#expandIcon').attr("class", "fad fa-angle-double-down")
+
+            });
+        });
+    </script>
+}
+
+
+      

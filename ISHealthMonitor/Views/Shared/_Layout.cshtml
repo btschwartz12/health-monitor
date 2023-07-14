@@ -12,41 +12,60 @@
     <link rel="stylesheet" href="~/css/selectize.bootstrap2.css" />
     <link rel="stylesheet" href="~/css/animate.min.css"  />
     <link rel="stylesheet" href="~/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="~/lib/daterangepicker/daterangepicker.css" />
+
      
     <script src="https://kit.fontawesome.com/b38e3673b1.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav style="background-color: #e6f4f7 !important; " class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+
             <div class="container">
-                <a class="navbar-brand custom-navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><strong>IS Health Monitor</strong></a>
+                <a class="navbar-brand custom-navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">IS Health Monitor</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="Index">Sites</a>
-                        </li>
-
                         @{
                             bool isAdmin = ViewData.ContainsKey("UserIsAdmin") && bool.TryParse(ViewData["UserIsAdmin"].ToString(), out bool isAdmin2) && isAdmin2;
                             string displayName = ViewData["UserName"].ToString() + (isAdmin ? " (admin)" : "");
                         }
+
+                        <li class="nav-item" id="navItemCertStatus">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Sites" asp-action="SiteStatusViewer">Cert Statuses</a>
+                        </li>
+
+                        <li class="nav-item" id="navItemConfigBuilder">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="ConfigurationBuilder">Config Builder</a>
+                        </li>
+
+                        <li class="nav-item" id="navItemConfigHistory">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="ConfigurationHistory">Config History</a>
+                        </li>
+
+                        <li class="nav-item" >
+                            <a class="nav-link text-dark" target="_blank" href="https://hyland-sandbox-342.atlassian.net/wiki/spaces/ICAS/pages/300580865/IS+Health+Monitor+Resource">Confluence</a>
+                        </li>
+
+                        
+
                         @if (isAdmin)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Reminders" asp-action="Index">Reminders</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ReminderIntervals" asp-action="Index">Intervals</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                            <li class="nav-item dropdown" id="navItemAdmin">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarAdminDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Admin
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarAdminDropdown">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Sites" asp-action="Index">Sites</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Reminders" asp-action="Index">Reminders</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="ReminderIntervals" asp-action="Index">Intervals</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                </div>
                             </li>
                         }
-                        
 
                         <li class="nav-item ml-auto">
                             @if (isAdmin)
@@ -61,9 +80,9 @@
 
                     </ul>
                 </div>
-
             </div>
         </nav>
+
     </header>
     <div class="container">
 
@@ -77,23 +96,31 @@
                     <div class="modal-body">
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
-                                <button onclick="FireReminders()" type="button" class="btn btn-danger btn-block mt-3">
-                                    <i id="spinnerFireReminders" class="fa fa-spinner fa-spin d-none"></i> Fire Reminders
+                                <button onclick="FireReminders()" type="button" id="fireRemindersBtn" class="btn btn-danger btn-block mt-3">
+                                    Fire Reminders  <i id="spinnerFireReminders" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
-                                <button onclick="RefreshCerts()" type="button" class="btn btn-info btn-block mt-3">
-                                    <i id="spinnerRefreshCerts" class="fa fa-spinner fa-spin d-none"></i> Update Certs
+                                <button onclick="RefreshCerts()" type="button" id="refreshCertsBtn" class="btn btn-warning btn-block mt-3">
+                                    Update Certs <i id="spinnerRefreshCerts" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
                             </div>
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
-                                <button onclick="UpdateConfluence()" type="button" class="btn btn-warning btn-block mt-3">
-                                    <i id="spinnerUpdateConfluence" class="fa fa-spinner fa-spin d-none"></i> Update Confluence
+                                <button onclick="UpdateConfluence()" type="button" id="updateConfluenceBtn" class="btn btn-info btn-block mt-3">
+                                    Update Confluence <i id="spinnerUpdateConfluence" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
+                            </div>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-8">
+                                <a class="btn btn-dark btn-block mt-3" sp-area="" asp-controller="Home" asp-action="LogViewer"
+                                   onclick="$('#spinnerViewLog').removeClass('d-none');">
+                                    View Logs <i id="spinnerViewLog" class="fa fa-spinner fa-spin d-none"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -120,20 +147,26 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - ISHealthMonitor - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2023 - ISHealthMonitor
         </div>
     </footer>
+    
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/ConfigurationForm.js" asp-append-version="true"></script>
+    <script src="~/js/AddEditForms.js" asp-append-version="true"></script>
+    <script src="~/js/AdminFunctions.js" asp-append-version="true"></script>
+
+
+
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrapV5/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="~/js/selectize.js" asp-append-version="true"></script>
-    <script src="~/js/ConfigurationForm.js" asp-append-version="true"></script>
     <script src="~/lib/datatables/jquery.dataTables.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
     <link href="//code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet" type="text/css" />
-
     <script src="//code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/dataTables.buttons.min.js"></script>
@@ -143,11 +176,12 @@
     <script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.32/vfs_fonts.js"></script>
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/buttons.html5.min.js"></script>
     <script type="text/javascript" language="javascript" src="//nightly.datatables.net/buttons/js/buttons.print.min.js"></script>
-    <script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    @*<script type="text/javascript" language="javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>*@
+    <script type="text/javascript" language="javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
     <script type="text/javascript" language="javascript" src="//cdn.datatables.net/plug-ins/1.13.4/sorting/datetime-moment.js"></script>
 
 
-    <script src="~/js/AddEditForms.js" asp-append-version="true"></script>
+    
 
     @RenderSection("Scripts", required: false)
 </body>
@@ -155,6 +189,42 @@
 
     
 </html>
+
+
+@*<script type="text/javascript" language="javascript" src="https://threejs.org/build/three.js"></script>
+
+<script>
+
+    
+
+    $(document).ready(function () {
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true }); // alpha true makes the background transparent
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.querySelector('.navbar').appendChild(renderer.domElement);
+
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        camera.position.z = 5;
+
+        const animate = function () {
+            requestAnimationFrame(animate);
+            cube.rotation.x += 0.01;
+            cube.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+        
+    });
+
+</script>*@
 
 <script> 
 
@@ -171,167 +241,47 @@
 
         if (userIsAdmin) {
             apiAuthUsername = @Html.Raw(Json.Serialize(ViewBag.ApiAuthUsername));
-            apiAuthPassword = @Html.Raw(Json.Serialize(ViewBag.ApiAuthPassword));
-
-            
+            apiAuthPassword = @Html.Raw(Json.Serialize(ViewBag.ApiAuthPassword)); 
         }
+
+        
 
     });
 </script>
 
 <script>
-    function showAdminModal(id) {
-        $('#adminModal').modal('show');
-    }
+    $(document).ready(function () {
+        var title = '@ViewData["Title"]';
+        switch (title) {
+            case 'Configuration History':
+                $('#navItemConfigHistory').css({ "color": "gold !important", "font-weight": "bold" });
+                break;
+            case 'Configuration Builder':
+                $('#navItemConfigBuilder').css({ "color": "gold !important", "font-weight": "bold" });
+                break;
+            case 'Site Status':
+                $('#navItemCertStatus').css({ "color": "gold !important", "font-weight": "bold" });
+                break;
 
-    
+            // Admin dropdown
 
-    function FireReminders() {
-        $('#spinnerFireReminders').removeClass('d-none');
-        $.ajax({
-            type: "POST",
-            url: `/rest/api/jwToken?grant_type=token&userName=${apiAuthUsername}&password=${apiAuthPassword}`,
-            async: true,
-            cache: false
-        })
-            .done(function (tokenData) {
+            case "Users":
+                $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
+                break;
+            case "Reminders":
+                $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
+                break;
+            case "Reminder Intervals":
+                $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
+                break;
+            case 'Sites':
+                $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
+                break;
 
-                var token = 'invalid'
-
-                try {
-                    tokenData = JSON.parse(tokenData);
-                    token = tokenData.access_token;
-                }
-                catch {}
-
-
-                // The second request to fire reminders
-                $.ajax({
-                    type: "GET",
-                    url: '/api/adminfunctions/firereminders',
-                    async: true,
-                    cache: false,
-                    contentType: false,
-                    enctype: 'multipart/form-data',
-                    processData: false,
-                    beforeSend: function (xhr) {
-                        // Include the bearer token in the header
-                        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                    }
-                }).done(function (data) {
-                    console.log(data);
-                    $('#alertFireReminders').removeClass('d-none').text('Successfully sent reminders!');
-                }).fail(function (error) {
-                    console.log('Error:', error);
-                    $('#alertFireReminders').removeClass('d-none').text('Failed to send reminders :(');
-                }).always(function () {
-                    $('#spinnerFireReminders').addClass('d-none');
-                });
-            })
-            .fail(function (error) {
-                console.log('Failed to get token:', error);
-            });
-    }
-
-    function RefreshCerts() {
-        $('#spinnerRefreshCerts').removeClass('d-none');
-
-        $.ajax({
-            type: "POST",
-            url: `/rest/api/jwToken?grant_type=token&userName=${apiAuthUsername}&password=${apiAuthPassword}`,
-            async: true,
-            cache: false
-        })
-            .done(function (tokenData) {
-
-                var token = 'invalid'
-
-                try {
-                    tokenData = JSON.parse(tokenData);
-                    token = tokenData.access_token;
-                }
-                catch { }
-
-                // The second request to refresh certificates
-                $.ajax({
-                    type: "GET",
-                    url: '/api/adminfunctions/refreshcerts',
-                    async: true,
-                    cache: false,
-                    contentType: 'application/json',
-                    processData: false,
-                    beforeSend: function (xhr) {
-                        // Include the bearer token in the header
-                        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                    }
-                }).done(function (data) {
-                    console.log(data);
-                    if (data.message === "Success") {
-                        $('#alertRefreshCerts').removeClass('d-none').text('Successfully refreshed certificates!');
-                    }
-                    else if (data.message === "Failed") {
-                        var failedUrlCount = Object.keys(data.failedSiteUrls).length;
-
-                        $('#alertRefreshCerts').removeClass('d-none').text('Successfully refreshed some certificates (' + failedUrlCount + ' failed)');
-                    }
-
-                }).fail(function (error) {
-                    console.log('Error:', error);
-                    $('#alertRefreshCerts').removeClass('d-none').text('Failed to refresh certificates :(');
-                }).always(function () {
-                    $('#spinnerRefreshCerts').addClass('d-none');
-                });
-            })
-            .fail(function (error) {
-                console.log('Failed to get token:', error);
-            });
-    }
-
-    function UpdateConfluence() {
-        $('#spinnerUpdateConfluence').removeClass('d-none');
-
-        $.ajax({
-            type: "POST",
-            url: `/rest/api/jwToken?grant_type=token&userName=${apiAuthUsername}&password=${apiAuthPassword}`,
-            async: true,
-            cache: false
-        })
-            .done(function (tokenData) {
-
-                var token = 'invalid'
-
-                try {
-                    tokenData = JSON.parse(tokenData);
-                    token = tokenData.access_token;
-                }
-                catch { }
-
-                // The second request to update confluence
-                $.ajax({
-                    type: "GET",
-                    url: '/api/adminfunctions/updateconfluence',
-                    async: true,
-                    cache: false,
-                    contentType: 'application/json',
-                    processData: false,
-                    beforeSend: function (xhr) {
-                        // Include the bearer token in the header
-                        xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                    }
-                }).done(function (data) {
-                    console.log(data);
-                    $('#alertUpdateConfluence').removeClass('d-none').text('Successfully updated the Confluence page!');
-                }).fail(function (error) {
-                    console.log('Error:', error);
-                    $('#alertUpdateConfluence').removeClass('d-none').text('Failed to update the Confluence page :(');
-                }).always(function () {
-                    $('#spinnerUpdateConfluence').addClass('d-none');
-                });
-            })
-            .fail(function (error) {
-                console.log('Failed to get token:', error);
-            });
-    }
-
+            default:
+                break;
+        }
+    });
 
 </script>
+

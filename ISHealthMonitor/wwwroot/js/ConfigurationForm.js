@@ -502,7 +502,7 @@ function SubmitConfigurationForm() {
             contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if (data) {
-                    returnHome();
+                    ReturnHome();
                 }
             }
         });

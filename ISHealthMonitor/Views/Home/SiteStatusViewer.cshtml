@@ -1,0 +1,243 @@
+﻿@{
+	ViewData["Title"] = "Site Status";
+	ViewData["UserName"] = ViewBag.UserName;
+	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
+}
+
+
+
+<div class="container">
+	<div id="siteSubscriptionModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Site Subscriptions</b>
+				</div>
+
+				<div class="modal-body">
+					<div class="text-center">
+						
+						@*here will go a scrollable table of the subscribed users*@
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="text-center" style="font-size: 11px">
+						Note: "All Sites" indicates that this user has chosen to be reminded about the expiration for every certificate, not this site specifically.
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+
+<div class="container text-center">
+
+	<div style="display: flex; justify-content: center; align-items: center;">
+		<h2 class="animate__animated animate__flipInX" style="margin-right: 10px;">Certificate Statuses</h2>
+		<button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#infoSections" aria-expanded="false" aria-controls="infoSections">
+			<i id="expandIcon" class="fad fa-angle-double-down"></i>
+		</button>
+
+	</div>
+
+
+
+	<div class="collapse" id="infoSections">
+
+
+		<div class="row justify-content-center animate__animated animate__fadeInLeft my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fas fa-info-circle fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>Here are the statuses for each tracked site, including the expiration date, and the number of users who are subscribed to its expiration.</p>
+			</div>
+		</div>
+
+		<div class="row justify-content-center animate__animated animate__fadeInRight my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fa fa-solid fa-wrench fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>If you would like to submit a work order for the renewal of a certificate, simply click this icon on the row of the desired site.</p>
+			</div>
+		</div>
+
+	</div>
+
+	<hr />
+</div>
+
+<div class="container" id="divLoading">
+	<div class="row">
+		<div class="form-group col-12">
+			<div style="display:inline-block; margin-left: 20px;">
+				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container text-center">
+
+	<table id="siteStatusTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+
+</div>
+
+
+
+@section Scripts{
+
+	<script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
+
+
+	<script>
+		
+	</script>
+
+	<script>
+		var buttonCommon = {
+			exportOptions: {
+				columns: [0, 1, 2, 3]
+			}
+		};
+
+
+		var columns = [
+			//{
+			//	"sTitle": "ID",
+			//	"data": "SiteID"
+			//},
+			//{
+			//	"sTitle": "Status",
+			//	"data": "StatusIcon"
+			//},
+			{
+				"sTitle": "Name",
+				"data": "SiteName",
+				"orderable": true,
+			},
+			//{
+			//	"sTitle": "URL",
+			//	"data": "SiteURL"
+			//},
+			{
+				"sTitle": "Expiration\nDate",
+				"data": "SSLExpirationDate",
+				"orderable": true,
+			},
+			{
+				"sTitle": "Expires",
+				"data": "TimeUntilExpiration",
+				"orderable": false
+			},
+			{
+				"sTitle": "# Subscribers",
+				"data": "NumSubscribedUsers",
+				"orderable": true,
+			},
+			{
+				"sTitle": "Create\nWork Order",
+				"data": "WorkOrderAction",
+				"orderable": false,
+			},
+		];
+
+
+		var userIsAdmin = @Html.Raw(Json.Serialize(ViewBag.UserIsAdmin));
+
+		if (userIsAdmin) {
+			columns.push({ "sTitle": "Subscription\nInfo", "data": "Action", "orderable": false, });
+		}
+
+		var buttons = [
+			'pageLength',
+			$.extend(true, {}, buttonCommon, {
+				extend: 'copyHtml5',
+				title: "Training Billing Discounts",
+				className: "btn btn-outline-secondary"
+			}),
+			$.extend(true, {}, buttonCommon, {
+				extend: 'excelHtml5',
+				title: "Training Billing Discounts",
+				className: "btn btn-outline-secondary"
+			}),
+			$.extend(true, {}, buttonCommon, {
+				extend: 'pdfHtml5',
+				title: "Training Billing Discounts",
+				orientation: 'landscape',
+				customize: function (doc) {
+					doc.pageMargins = [5, 5, 0, 0];
+					doc.defaultStyle.fontSize = 8;
+					doc.styles.tableHeader.fontSize = 9;
+				},
+				className: "btn btn-outline-secondary"
+
+			})
+		];
+
+
+		siteStatusDataTable = $('#siteStatusTable').DataTable({
+
+			"autoWidth": false,
+			"scrollX": true,
+			"columns": columns,
+			
+
+
+			dom: 'Bfrtip',
+			lengthMenu: [
+				[10, 50, 100, -1],
+				['10', '50', '100', 'All']
+			],
+			initComplete: function () {
+				var btns = $('.dt-button');
+				btns.removeClass('dt-button');
+				$(".buttons-collection.buttons-page-length").addClass("btn btn-dark");
+			},
+			buttons: buttons,
+			"createdRow": function (row, data, dataIndex) {
+				// assign color based on the RowColor data
+				switch (data.RowColor) {
+					case 'green':
+						$(row).css('background-color', '#90EE90'); // light green
+						break;
+					case 'yellow':
+						$(row).css('background-color', '#FFFF00'); // yellow
+						break;
+					case 'red':
+						$(row).css('background-color', '#fc8d8d'); // red
+						break;
+					default:
+						$(row).css('background-color', '#FFFFFF'); // white (or any default color)
+				}
+			},
+		});
+
+		DATATABLE_REQUESTS.LoadSiteStatusTable();
+	</script>
+
+
+	<script>
+
+
+		function showSiteSubscriptionsModal(id) {
+			var formDiv = $('#siteSubscriptionModal .modal-body');
+			var url = "@Url.Action("SiteSubscriptions", "Sites")" + "?siteId=" + id;
+
+			$.get(url)
+				.done(function (response) {
+					formDiv.html(response);
+					$('#siteSubscriptionModal').modal('show');
+				});
+		}
+
+		
+
+	</script>
+}

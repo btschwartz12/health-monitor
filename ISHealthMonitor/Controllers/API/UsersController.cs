@@ -23,26 +23,42 @@ namespace ISHealthMonitor.UI.Controllers.API
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IHealthModel healthModel, IEmployee employee)
+        public UsersController(IHealthModel healthModel, IEmployee employee, ILogger<UsersController> logger)
         {
             _employee = employee;
-			_healthModel = healthModel;
+            _healthModel = healthModel;
+            _logger = logger;
         }
 
-		[HttpGet("GetUsers")]
+        [HttpGet("GetUsers")]
 		public string GetUsers()
 		{
 			var retList = _healthModel.GetUsers();
 			return JsonConvert.SerializeObject(retList);
 		}
 
+        [HttpGet("GetLoggedInUser")]
+        public string GetLoggedInUser()
+        {
+            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+            return username;
+        }
+
 		[HttpPut]
 		[Route("DeleteUser")]
 		public IActionResult DeleteUser(int id)
 		{
+
+			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+			var employee = _employee.GetEmployeeByUserName(username);
+
 			_healthModel.DeleteUser(id);
-			return Ok(id);
+            _logger.LogInformation($"User ID={id.ToString()} deleted by {employee.GUID}");
+            return Ok(id);
 		}
 
 		[HttpGet]
@@ -58,6 +74,11 @@ namespace ISHealthMonitor.UI.Controllers.API
         [Route("CreateUser")]
         public IActionResult CreateUser([FromBody] List<UserDTO> userDTOs)
         {
+            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+
+            var employee = _employee.GetEmployeeByUserName(username);
+
+
             if (userDTOs.All(u => u.ID == 0)) // When configuring multiple users at once
             {
                 List<string> existingUsers = new List<string>();
@@ -89,6 +110,9 @@ namespace ISHealthMonitor.UI.Controllers.API
                         Deleted = false,
                         DateCreated = DateTime.Now,
                     };
+
+                    _logger.LogInformation($"User ({userDTO.Guid.ToString()}={userDTO.DisplayName}) created by {employee.GUID} with IsAdmin={userDTO.IsAdmin.ToString()}");
+
                     _healthModel.AddUser(newUser);
                 }
 
@@ -100,6 +124,9 @@ namespace ISHealthMonitor.UI.Controllers.API
                 if (existingUser != null)
                 {
                     existingUser.IsAdmin = userDTOs[0].IsAdmin;
+                    
+                    _logger.LogInformation($"User ({existingUser.Guid.ToString()}={existingUser.DisplayName}) updated to IsAdmin={existingUser.IsAdmin.ToString()} by {employee.GUID}");
+
                     _healthModel.UpdateUser(existingUser);
                     return Ok(existingUser);
                 }

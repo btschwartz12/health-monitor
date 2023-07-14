@@ -16,7 +16,6 @@ namespace ISHealthMonitor.Core.Data.Contexts
         {
         }
 
-        public DbSet<SiteDbSet> Site { get; set; }
 
         public DbSet<ISHealthMonitorSiteDbSet> ISHealthMonitorSites { get; set; }
         public DbSet<ISHealthMonitorIntervalDbSet> ISHealthMonitorReminderIntervals { get; set; }

@@ -62,8 +62,13 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("DeleteReminder")]
 		public IActionResult DeleteReminder(int id)
 		{
+			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var employee = _employee.GetEmployeeByUserName(username);
+
+
 			_healthModel.DeleteReminder(id);
-			return Ok(id);
+            _logger.LogInformation($"Reminder ID={id.ToString()} deleted by {employee.GUID}");
+            return Ok(id);
 		}
 
 
@@ -71,8 +76,12 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("DeleteReminderGroup")]
 		public IActionResult DeleteReminderGroup(int groupId)
 		{
+			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var employee = _employee.GetEmployeeByUserName(username);
+
 			_healthModel.DeleteReminderGroup(groupId);
-			return Ok(groupId);
+            _logger.LogInformation($"Reminder Group groupID={groupId.ToString()} deleted by {employee.GUID}");
+            return Ok(groupId);
 		}
 
 		[HttpPut]
@@ -84,7 +93,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 
 			_healthModel.DeleteRemindersBySite(new Guid(employee.GUID), siteId);
-			return Ok(siteId);
+            _logger.LogInformation("Reminders for Site siteID=" + siteId.ToString() + " deleted by" + employee.GUID);
+            return Ok(siteId);
 		}
 
 
@@ -115,6 +125,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 				};
 
 				_healthModel.AddReminder(newReminder);
+				_logger.LogInformation($"Reminder created by {employee.GUID}: (siteID={reminderDTO.ISHealthMonitorSiteID} intervalID={reminderDTO.ISHealthMonitorIntervalID} groupID={reminderDTO.ISHealthMonitorGroupSubmissionID})");
 				return Ok(newReminder);
 			}
 			else
@@ -129,7 +140,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 					
 
 					_healthModel.UpdateReminder(existingReminder);
-					return Ok(existingReminder);
+
+                    _logger.LogInformation($"Reminder ID={reminderDTO.ID} updated by {employee.GUID} to: (siteID={reminderDTO.ISHealthMonitorSiteID} intervalID={reminderDTO.ISHealthMonitorIntervalID} groupID={reminderDTO.ISHealthMonitorGroupSubmissionID})");
+                    return Ok(existingReminder);
 				}
 				else
 				{
@@ -171,13 +184,17 @@ namespace ISHealthMonitor.UI.Controllers.API
 				_healthModel.AddReminder(reminderDbSet);
 			}
 
+			_logger.LogInformation($"Reminder Group created by {employee.GUID}: (groupID={nextGroupID.ToString()})");
+
 			// Delete old group
 			int prevGroupID = reminderConfiguration.GroupID;
 
 			_healthModel.DeleteReminderGroup(prevGroupID);
 
+            _logger.LogInformation($"Reminder Group automatically deleted by {employee.GUID}: (groupID={prevGroupID.ToString()})");
 
-			return Ok(reminderConfiguration);
+
+            return Ok(reminderConfiguration);
 		}
 
 
