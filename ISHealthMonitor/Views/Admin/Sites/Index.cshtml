@@ -54,7 +54,7 @@
 	<div class="collapse" id="infoSections">
 		
 
-		<div class="row justify-content-center animate__animated animate__fadeInLeft my-4">
+		<div class="row justify-content-center animate__animated animate__lightSpeedInLeft my-4">
 			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
 				<i class="fas fa-info-circle fa-3x"></i>
 			</div>
@@ -238,5 +238,20 @@
 		}
 
 
+	</script>
+
+	<script>
+		$(document).ready(function () {
+
+			$('#infoSections').on('show.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-up")
+
+			});
+
+			$('#infoSections').on('hide.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-down")
+
+			});
+		});
 	</script>
 }

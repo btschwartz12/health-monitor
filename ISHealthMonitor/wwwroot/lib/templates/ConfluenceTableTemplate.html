@@ -20,9 +20,7 @@
             <th>
                 <p><strong>Expiration Date</strong></p>
             </th>
-            <th>
-                <p><strong>Time Until Exp</strong></p>
-            </th>
+
             <th>
                 <p><strong>Action</strong></p>
             </th>
@@ -37,8 +35,7 @@
             <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLCommonName</td>
             <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLIssuer</td>
             <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLEffectiveDate</td>
-            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLExpirationDate</td>
-            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.TimeUntilExpiration</td>
+            <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">@site.SSLExpirationDate<br/>(@site.TimeUntilExpiration)</td>
             <td class="highlight-@site.RowColor" data-highlight-colour="@site.RowColor">
                 <a href="https://dev.healthmonitor.hyland.com/Home/WorkOrderBuilder?siteId=@site.ID" style="display: inline-block; padding: 10px 20px; text-align: center; text-decoration: none; color: #ffffff; background-color: #007BFF; border-radius: 4px;">Create Work Order</a>
             </td>

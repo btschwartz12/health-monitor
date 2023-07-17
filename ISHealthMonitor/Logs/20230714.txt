@@ -232,3 +232,8 @@
 2023-07-14T10:26:29.3124519-04:00  [INF] Hosting environment: "Local" (c3307c92)
 2023-07-14T10:26:29.3147670-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
 2023-07-14T10:26:33.1399096-04:00 8000010d-0007-ff00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-14T12:19:05.3474408-04:00  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-07-14T12:19:05.3579608-04:00  [INF] Hosting environment: "Local" (c3307c92)
+2023-07-14T12:19:05.3597501-04:00  [INF] Content root path: "C:\Users\bschwartz\source\repos\ishealthmonitor\ISHealthMonitor" (b5d60022)
+2023-07-14T12:19:08.6254745-04:00 80000172-0003-fc00-b63f-84710c7967bb [INF] Home Page Visitor: Ben Schwartz (has reminders: True) (063ca30f)
+2023-07-14T12:19:34.0089663-04:00 8000002a-0005-f600-b63f-84710c7967bb [INF] unityRestApiTokenURL: https://dev.salesforce.unityapi.onbase.com/token? (2457bbd9)
