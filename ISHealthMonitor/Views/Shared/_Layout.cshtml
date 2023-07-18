@@ -63,6 +63,7 @@
                                     <a class="dropdown-item" asp-area="" asp-controller="Reminders" asp-action="Index">Reminders</a>
                                     <a class="dropdown-item" asp-area="" asp-controller="ReminderIntervals" asp-action="Index">Intervals</a>
                                     <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Settings" asp-action="Index">Settings</a>
                                 </div>
                             </li>
                         }
@@ -101,6 +102,14 @@
                                 </button>
                             </div>
                         </div>
+                        
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-8">
+                                <button onclick="UpdateConfluence()" type="button" id="updateConfluenceBtn" class="btn btn-info btn-block mt-3">
+                                    Update Confluence <i id="spinnerUpdateConfluence" class="fa fa-spinner fa-spin d-none"></i>
+                                </button>
+                            </div>
+                        </div>
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
                                 <button onclick="RefreshCerts()" type="button" id="refreshCertsBtn" class="btn btn-warning btn-block mt-3">
@@ -110,8 +119,8 @@
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-8">
-                                <button onclick="UpdateConfluence()" type="button" id="updateConfluenceBtn" class="btn btn-info btn-block mt-3">
-                                    Update Confluence <i id="spinnerUpdateConfluence" class="fa fa-spinner fa-spin d-none"></i>
+                                <button onclick="SendAutoWorkOrders()" type="button" id="autoWorkOrdersBtn" class="btn btn-primary btn-block mt-3">
+                                    Send Auto Work Orders <i id="spinnerAutoWorkOrders" class="fa fa-spinner fa-spin d-none"></i>
                                 </button>
                             </div>
                         </div>
@@ -131,8 +140,10 @@
                         <div id="alertRefreshCerts" class="alert alert-warning d-block d-none" role="alert"></div>
 
                         <div id="alertUpdateConfluence" class="alert alert-info d-block d-none" role="alert"></div>
-                            
 
+                        <div id="alertAutoWorkOrders" class="alert alert-primary d-block d-none" role="alert"></div>
+                            
+                        
                     </div>
                 </div>
             </div>
@@ -191,41 +202,6 @@
 </html>
 
 
-@*<script type="text/javascript" language="javascript" src="https://threejs.org/build/three.js"></script>
-
-<script>
-
-    
-
-    $(document).ready(function () {
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true }); // alpha true makes the background transparent
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.querySelector('.navbar').appendChild(renderer.domElement);
-
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
-
-        camera.position.z = 5;
-
-        const animate = function () {
-            requestAnimationFrame(animate);
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
-            renderer.render(scene, camera);
-        };
-
-        animate();
-
-        
-    });
-
-</script>*@
-
 <script> 
 
     var apiAuthUsername = 'null';
@@ -272,6 +248,9 @@
                 $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
                 break;
             case 'Sites':
+                $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
+                break;
+            case 'Settings':
                 $('#navItemAdmin').css({ "color": "gold", "font-weight": "bold" });
                 break;
 

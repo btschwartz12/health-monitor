@@ -26,7 +26,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 	[Route("api/[Controller]")]
     [ApiController]
-	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+	//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	//[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 	//[Authorize(Policy = "Admin")]
 	public class AdminFunctionsController : ControllerBase
@@ -138,8 +138,43 @@ namespace ISHealthMonitor.UI.Controllers.API
 			}
 		}
 
+        [HttpGet]
+        [Route("sendautoworkorders")]
+        public async Task<IActionResult> SendAutoWorkOrders(string username)
+        {
 
-	}
+            var employee = _employee.GetEmployeeByUserName(username);
+
+            try
+            {
+				var (Message, workOrdersCreated, sitesWithExistingWorkOrders) = await _healthModel.AutoCreateWorkOrders(employee);
+
+                if (Message == "Success")
+                {
+                    _logger.LogInformation($"Automatic work orders successfully created (initiated by {employee.GUID})");
+
+                    string WOCreatedjsonString = JsonSerializer.Serialize(workOrdersCreated, new JsonSerializerOptions { WriteIndented = true });
+					string ExistingWOjsonString = JsonSerializer.Serialize(sitesWithExistingWorkOrders, new JsonSerializerOptions { WriteIndented = true });
+
+                    _logger.LogInformation($"Created Work Order Data: {WOCreatedjsonString}");
+                    _logger.LogInformation($"Existing Work Order Data: {ExistingWOjsonString}");
+                    return Ok(new { Message = Message, WorkOrdersCreated = workOrdersCreated, SitesWithExistingWorkOrders = sitesWithExistingWorkOrders });
+                }
+                else
+                {
+                    _logger.LogInformation($"Automatic work orders failed to fire (initiated by {employee.GUID}). Message: " + Message);
+                    return BadRequest();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in automatic work orders endpoint (initiated by {employee.GUID})");
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+    }
 
 
 

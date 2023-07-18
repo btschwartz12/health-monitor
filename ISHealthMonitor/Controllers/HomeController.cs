@@ -17,7 +17,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.IO;
-using ISHealthMonitor.Core.Helpers.WorkOrder;
 using ISHealthMonitor.Core.Model;
 using ISHealthMonitor.Core.Data.DTO;
 using System.Security.Policy;
@@ -134,19 +133,7 @@ namespace ISHealthMonitor.Controllers
             }
             catch (Exception ex) 
             {
-                //WorkOrderDTO model = new WorkOrderDTO()
-                //{
-                //    SiteID = siteId,
-                //    SiteName = "___",
-                //    SiteURL = "about:blank",
-                //    IssueType = "Other",
-                //    Category = "Help Desk",
-                //    System = "Help Desk",
-                //    ShortDescription = $"Update certificate for _____",
-                //    Urgency = "2",
-                //    Description = ""
-                //};
-                //return View(model);
+
                 return BadRequest(ex.Message);
             }
             

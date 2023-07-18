@@ -1,6 +1,6 @@
 ﻿using ISHealthMonitor.Core.Contracts;
 using ISHealthMonitor.Core.Data.DbSet;
-using ISHealthMonitor.Core.Helpers.WorkOrder;
+using ISHealthMonitor.Core.Data.DTO;
 using ISHealthMonitor.Core.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -82,68 +82,21 @@ namespace ISHealthMonitor.UI.Controllers.API
             var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
             var employee = _employee.GetEmployeeByUserName(username);
 
-            var unityModel = new UnityRestAPIAccess(_logger, _config);
 
-            int objectid = -1;
+            Dictionary<string, string> resp = await _healthModel.CreateWorkOrder(model, employee);
 
-            try
+
+            if (resp["Message"] == "Success")
             {
-                //objectid = await unityModel.GetRequestorId(employee.Email);
-                objectid = await unityModel.GetRequestorId("Nick.Susanjar@hyland.com");
-
-                if (objectid == -1)
-                {
-                    throw new Exception("Response does not contain a valid objectid");
-                }
-            }
-            catch (Exception ex) 
-            { 
-                _logger.LogError("Failed to get requestor id: " + ex.Message);
-                return BadRequest(ex.Message);
-            }
-
-            var workOrderModel = new WorkOrderModel(_logger);
-
-            int linkToWorkOrderCategory = 36942305;
-            int linkToSystemProfile = 34237289;
-            string origin = "IS Health Monitor Site";
-            string appName = "HSI CM";
-            string className = "ISWorkOrder";
-            int workOrderObjId = 0;
-
-            var attrList = workOrderModel.CreateAttrList(objectid, linkToWorkOrderCategory,
-                                                         linkToSystemProfile, model.ShortDescription,
-                                                         model.Description, model.Urgency,
-                                                         model.EmergencyReason, origin);
-
-
-
-
-
-            OnbaseWorkviewObjectDTO wvObject = workOrderModel.GetWorkViewObjectDTO(workOrderObjId, appName,
-                                                                                    className, attrList);
-
-            var unityApi = new UnityRestAPIAccess(_logger, _config);
-
-            try
-            {
-                string wvObjectJson = JsonSerializer.Serialize(wvObject);
-
-                var objectId = await unityApi.CreateWorkViewObject(wvObject.appName, wvObject.className,
-                                                        wvObjectJson);
-
-                _healthModel.UpdateWorkOrderForSite(model.SiteID, int.Parse(objectId));
-
-                _logger.LogInformation($"Work Order created by {employee.GUID} for siteID={model.SiteID}. Work Order object ID = {objectId}");
-
+                var objectId = int.Parse(resp["ObjectID"]);
                 return Ok(objectId);
             }
-            catch (Exception ex)
+            if (resp["Message"] == "Failed")
             {
-                _logger.LogError("Failed to create work order: " + ex.Message);
-                return BadRequest(ex.Message);
+                return BadRequest(resp["Description"]);
             }
-            
+
+            return BadRequest();
         }
     }
 }

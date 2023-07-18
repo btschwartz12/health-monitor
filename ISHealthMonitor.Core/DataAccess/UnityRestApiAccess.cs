@@ -1,11 +1,11 @@
-﻿using ISHealthMonitor.Core.Helpers.WorkOrder;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ISHealthMonitor.Core.DataAccess;
 using System.Runtime;
 using System.Text;
 using System.Text.Json;
+using ISHealthMonitor.Core.Data.DTO;
 
 namespace ISHealthMonitor.Core.Model
 {

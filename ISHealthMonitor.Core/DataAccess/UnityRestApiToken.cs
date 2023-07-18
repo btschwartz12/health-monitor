@@ -45,7 +45,6 @@ namespace ISHealthMonitor.Core.DataAccess
 
         private void GetBearerToken()
         {
-            _logger.LogInformation("unityRestApiTokenURL: " + unityRestApiTokenURL);
             try
             {
                 using (var client = new HttpClient())

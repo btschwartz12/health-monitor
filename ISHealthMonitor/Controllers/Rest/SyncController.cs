@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
+using ISHealthMonitor.Core.Implementations;
 
 namespace ISHealthMonitor.UI.Controllers.Rest
 {
@@ -26,10 +27,12 @@ namespace ISHealthMonitor.UI.Controllers.Rest
         
         private readonly ILogger<SyncController> _logger;
         private readonly IHealthModel _healthModel;
-        public SyncController(ILogger<SyncController> logger, IHealthModel healthModel)
+		public readonly IEmployee _employee;
+        public SyncController(ILogger<SyncController> logger, IHealthModel healthModel, IEmployee employee)
         {
             _logger = logger;
             _healthModel = healthModel;
+			_employee = employee;
         }
 
         [HttpGet]
@@ -142,9 +145,48 @@ namespace ISHealthMonitor.UI.Controllers.Rest
 				});
 
 				_logger.LogError("FireReminders threw an exception: {exception}", ex);
-			}
+            }
 
-			if (responseModel.TaskResults.All(r => r.Status == "Success"))
+
+            try
+            {
+                var username = "nsusanjar"; // make GUID instead?
+
+                var employee = _employee.GetEmployeeByUserName(username);
+
+                var (Message, workOrdersCreated, sitesWithExistingWorkOrders) = await _healthModel.AutoCreateWorkOrders(employee);
+
+                var autoCreateWorkOrdersResult = new AutoCreateWorkOrdersResult
+                {
+                    WorkOrdersAttempted = workOrdersCreated,
+                    SitesWithExistingWorkOrders = sitesWithExistingWorkOrders
+                };
+
+                responseModel.TaskResults.Add(new TaskResult
+                {
+                    TaskName = "AutoCreateWorkOrders",
+                    Status = Message,
+                    ErrorMessage = Message == "Success" ? null : "AutoCreateWorkOrders failed",
+                    Data = autoCreateWorkOrdersResult
+                });
+
+                _logger.LogInformation("AutoCreateWorkOrders completed with status: {status}", Message);
+            }
+            catch (Exception ex)
+            {
+                responseModel.TaskResults.Add(new TaskResult
+                {
+                    TaskName = "AutoCreateWorkOrders",
+                    Status = "Failed",
+                    ErrorMessage = ex.Message
+                });
+
+                _logger.LogError("AutoCreateWorkOrders threw an exception: {exception}", ex);
+            }
+
+
+
+            if (responseModel.TaskResults.All(r => r.Status == "Success"))
 			{
 				responseModel.Status = "Success";
 				responseModel.Message = "All tasks completed successfully";
@@ -196,5 +238,11 @@ namespace ISHealthMonitor.UI.Controllers.Rest
 	{
 		public Dictionary<string, Dictionary<string, List<string>>> RemindersSent { get; set; }
 	}
+
+	public class AutoCreateWorkOrdersResult
+	{
+        public List<Dictionary<string, string>> WorkOrdersAttempted { get; set; }
+		public List<Dictionary<string, string>> SitesWithExistingWorkOrders { get; set; }
+    }
 
 }

@@ -1,0 +1,225 @@
+﻿@{
+	ViewData["Title"] = "Settings";
+	ViewData["UserName"] = ViewBag.UserName;
+	ViewData["UserIsAdmin"] = ViewBag.UserIsAdmin;
+}
+
+<div class="container">
+	<div id="settingAddEditModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Settings Wizard</b>
+				</div>
+
+				<div class="modal-body">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="settingDeleteModal" class="modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<b>Delete Setting</b>
+				</div>
+
+				<div class="modal-body">
+					<input type="hidden" value="" id="settingToDeleteId" />
+					<div class="text-center">
+						<p>Are you sure you want to delete this setting?</p>
+						<button class="btn btn-danger" id="deleteSettingYes" onclick="deleteSetting()">Delete</button>
+						<button class="btn btn-secondary" onclick="toggleSettingDeleteModal()">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container text-center">
+
+	<div style="display: flex; justify-content: center; align-items: center;">
+		<h2 class="animate__animated animate__flipInX" style="margin-right: 10px;">Settings Manager</h2>
+		<button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#infoSections" aria-expanded="false" aria-controls="infoSections">
+			<i id="expandIcon" class="fad fa-angle-double-down"></i>
+		</button>
+
+	</div>
+
+	<div class="collapse" id="infoSections">
+
+
+		<div class="row justify-content-center animate__animated animate__lightSpeedInLeft my-4">
+			<div class="col-1 d-flex justify-content-center align-items-start pt-1">
+				<i class="fas fa-info-circle fa-3x"></i>
+			</div>
+			<div class="col-11 col-md-8 text-left">
+				<p>This is the Settings Manager, where you can add, delete, rename, or update the settings that are used throughout the application.</p>
+			</div>
+		</div>
+
+	</div>
+
+	<hr />
+</div>
+
+<div class="container" id="divLoading">
+	<div class="row">
+		<div class="form-group col-12">
+			<div style="display:inline-block; margin-left: 20px;">
+				Loading... <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+
+	<div class="row">
+		<div class="col-12" style="margin-left:50px;">
+			<table id="settingsTable" class="table table-striped display compact wrap" style="border: 1px solid #aaa;"></table>
+		</div>
+	</div>
+</div>
+
+
+@section Scripts{
+
+	<script src="~/js/DatatableRequests.js" asp-append-version="true"></script>
+	<script>
+		var buttonCommon = {
+			exportOptions: {
+				columns: [0, 1, 2, 3]
+			}
+		};
+
+		var buttons = [
+			'pageLength',
+			$.extend(true, {}, buttonCommon, {
+				extend: 'copyHtml5',
+				title: "Training Billing Discounts",
+				className: "btn btn-outline-secondary"
+			}),
+			$.extend(true, {}, buttonCommon, {
+				extend: 'excelHtml5',
+				title: "Training Billing Discounts",
+				className: "btn btn-outline-secondary"
+			}),
+			$.extend(true, {}, buttonCommon, {
+				extend: 'pdfHtml5',
+				title: "Training Billing Discounts",
+				orientation: 'landscape',
+				customize: function (doc) {
+					doc.pageMargins = [5, 5, 0, 0];
+					doc.defaultStyle.fontSize = 8;
+					doc.styles.tableHeader.fontSize = 9;
+				},
+				className: "btn btn-outline-secondary"
+
+			})
+		];
+
+		buttons.push({
+			text: 'Add Setting',
+			className: 'btn btn-info',
+			action: function (e, dt, node, config) {
+				showSettingAddEditModal(0);
+			},
+			attr: {
+				id: 'addSettingBtn'
+			}
+		});
+
+		settingsDataTable = $('#settingsTable').DataTable({
+
+			"autoWidth": false,
+			"scrollX": true,
+			"columns": [
+				{ "sTitle": "ID", "data": "ID" },
+				{ "sTitle": "Name", "data": "Name" },
+				{ "sTitle": "Display Name", "data": "DisplayName" },
+				{ "sTitle": "Value", "data": "Value" },
+				{ "sTitle": "Action", "data": "Action" }
+
+			],
+			dom: 'Bfrtip',
+
+			lengthMenu: [
+				[10, 50, 100, -1],
+				['10', '50', '100', 'All']
+			],
+			initComplete: function () {
+				var btns = $('.dt-button');
+				btns.removeClass('dt-button');
+				$(".buttons-collection.buttons-page-length").addClass("btn btn-dark");
+			},
+			buttons: buttons
+		});
+
+		DATATABLE_REQUESTS.LoadSettingsTable('all');
+	</script>
+
+
+	<script>
+		$(document).ready(function () {
+
+			$('#infoSections').on('show.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-up")
+
+			});
+
+			$('#infoSections').on('hide.bs.collapse', function () {
+				$('#expandIcon').attr("class", "fad fa-angle-double-down")
+
+			});
+		});
+	</script>
+
+	<script>
+
+
+		function showSettingAddEditModal(id) {
+			var formDiv = $('#settingAddEditModal .modal-body');
+			var url = "@Url.Action("AddEdit", "Settings")" + "?id=" + id;
+
+			$.get(url)
+				.done(function (response) {
+					formDiv.html(response);
+					$('#settingAddEditModal').modal('show');
+				});
+		}
+
+		function hideSettingAddEditModal() {
+			$("#settingAddEditModal").modal('hide');
+		}
+
+		function showSettingDeleteModal(id) {
+			$('#settingToDeleteId').val(id);
+			$('#settingDeleteModal').modal('show');
+		}
+
+		function toggleSettingDeleteModal(id) {
+			$('#settingDeleteModal').modal('toggle');
+		}
+
+		function deleteSetting() {
+			var id = $('#settingToDeleteId').val();
+			$.ajax({
+				type: "PUT",
+				url: '/api/Settings/DeleteSetting?id=' + id,
+				success: function (data) {
+					if (data) {
+						$("#settingDeleteModal").modal('hide');
+						DATATABLE_REQUESTS.LoadSettingsTable();
+					}
+				}
+			});
+		}
+
+
+
+	</script>
+
+
+}

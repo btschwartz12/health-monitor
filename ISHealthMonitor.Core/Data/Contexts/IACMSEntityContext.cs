@@ -21,6 +21,7 @@ namespace ISHealthMonitor.Core.Data.Contexts
         public DbSet<ISHealthMonitorIntervalDbSet> ISHealthMonitorReminderIntervals { get; set; }
         public DbSet<ISHealthMonitorUserReminderDbSet> ISHealthMonitorUserReminders { get; set; }
         public DbSet<ISHealthMonitorUserDbSet> ISHealthMonitorUsers { get; set;}
+        public DbSet<ISHealthMonitorSettingDbSet> ISHealthMonitorSettings { get; set; }
 
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)

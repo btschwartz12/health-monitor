@@ -126,7 +126,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
         [HttpGet]
         [Route("GetIntervalsToSelect")]
-        public async Task<IActionResult> GetSitesToSelect()
+        public async Task<IActionResult> GetIntervalsToSelect()
         {
 			List<ReminderIntervalDTO> retList = _healthModel.GetReminderIntervals();
 

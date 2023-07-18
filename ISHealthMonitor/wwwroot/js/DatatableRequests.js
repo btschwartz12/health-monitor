@@ -14,6 +14,8 @@ var configurationHistoryDataTable;
 
 var siteStatusDataTable;
 
+var settingsTable;
+
 
 DATATABLE_REQUESTS.LoadSiteTable = function () {
 
@@ -102,6 +104,37 @@ DATATABLE_REQUESTS.LoadReminderIntervalsTable = function () {
 
 DATATABLE_REQUESTS.ClearReminderIntervalsTable = function () {
     var table = $('#reminderIntervalsTable').DataTable();
+    table
+        .search('')
+        .columns().search('')
+        .draw();
+
+    table.clear();
+}
+
+DATATABLE_REQUESTS.LoadSettingsTable = function () {
+
+    DATATABLE_REQUESTS.ClearSettingsTable();
+    var sitelocation = "/api/Settings/GetSettings";
+
+    $.ajax({
+        type: "GET",
+        url: sitelocation,
+        async: false,
+        cache: false,
+        contentType: false,
+        enctype: 'multipart/form-data',
+        processData: false
+    }).done(function (data) {
+        var json = JSON.parse(data);
+
+        settingsDataTable.rows.add(json).draw();
+        $("#divLoading").hide();
+    });
+}
+
+DATATABLE_REQUESTS.ClearSettingsTable = function () {
+    var table = $('#settingsTable').DataTable();
     table
         .search('')
         .columns().search('')

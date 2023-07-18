@@ -20,9 +20,88 @@
         placement: 'right'
     });
 
+    $('#autoWorkOrdersBtn').tooltip({
+        title: "Automatically create work orders for sites about to expire",
+        placement: 'right'
+    });
+
+
 }
+// alertAutoWorkOrders spinnerAutoWorkOrders autoWorkOrdersBtn SendAutoWorkOrders()
 
 
+function SendAutoWorkOrders() {
+    $('#spinnerAutoWorkOrders').removeClass('d-none');
+
+    $.ajax({
+        type: "GET",
+        url: `/api/users/getloggedinuser`,
+        async: true,
+        cache: false,
+        contentType: 'application/json',
+        processData: false,
+    })
+        .done(function (userData) {
+
+            if (userData.isAdmin === "false") {
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: `/rest/api/jwToken?grant_type=token&userName=${userData.apiAuthUsername}&password=${userData.apiAuthPassword}`,
+                async: true,
+                cache: false
+            })
+                .done(function (tokenData) {
+
+                    var token = 'invalid'
+
+                    try {
+                        tokenData = JSON.parse(tokenData);
+                        token = tokenData.access_token;
+                    }
+                    catch { }
+
+
+                    // The second request to fire reminders
+                    $.ajax({
+                        type: "GET",
+                        url: '/api/adminfunctions/sendautoworkorders?username=' + userData.username,
+                        async: true,
+                        cache: false,
+                        contentType: false,
+                        enctype: 'multipart/form-data',
+                        processData: false,
+                        //beforeSend: function (xhr) {
+                        //    // Include the bearer token in the header
+                        //    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                        //}
+                    }).done(function (data) {
+                        console.log(data);
+                        $('#alertAutoWorkOrders').removeClass('d-none').text('Successfully created work orders!');
+                    }).fail(function (error) {
+                        console.log('Error:', error);
+                        $('#alertAutoWorkOrders').removeClass('d-none').text('Failed to create work orders :(');
+                    }).always(function () {
+                        $('#spinnerAutoWorkOrders').addClass('d-none');
+                    });
+                })
+                .fail(function (error) {
+                    console.log('Failed to get token:', error);
+                    $('#spinnerAutoWorkOrders').addClass('d-none');
+                });
+        })
+        .fail(function (error) {
+            console.log(error);
+            $('#spinnerAutoWorkOrders').addClass('d-none');
+        }).
+        always(function () {
+
+        });
+
+
+}
 
 function FireReminders() {
     $('#spinnerFireReminders').removeClass('d-none');

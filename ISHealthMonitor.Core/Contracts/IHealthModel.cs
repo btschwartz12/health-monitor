@@ -11,7 +11,7 @@ using ISHealthMonitor.Core.Models;
 
 namespace ISHealthMonitor.Core.Contracts
 {
-   public interface IHealthModel
+    public interface IHealthModel
     {
 
 		// Sites
@@ -60,6 +60,19 @@ namespace ISHealthMonitor.Core.Contracts
 		Task<bool> UserHasReminders(Guid guid);
 
 
+		// Settings
+
+		List<SettingDTO> GetSettings();
+		ISHealthMonitorSettingDbSet GetSetting(int id);
+		SettingDTO GetSettingDTO(int id);
+		void AddSetting(ISHealthMonitorSettingDbSet setting);
+		void UpdateSetting(ISHealthMonitorSettingDbSet setting);
+		void DeleteSetting(int id);
+
+		string? GetSettingValue(string key);
+
+
+
 		DateTime GetCreatedDateForGroup(int groupId);
 
 
@@ -72,10 +85,12 @@ namespace ISHealthMonitor.Core.Contracts
 		Task<(string Message, Dictionary<string, string> FailedSiteUrls)> UpdateCerts();
 		Task<(string Message, Dictionary<string, string> responseData)> UpdateConfluencePage();
 		Task<(string Message, Dictionary<string, Dictionary<string, List<string>>> remindersSent)> FireReminders();
+        Task<(string Message, List<Dictionary<string, string>> workOrdersAttempted, List<Dictionary<string, string>> sitesWithExistingWorkOrders)> AutoCreateWorkOrders(EmployeeDTO requestor);
 
-		// Helpers for FireReminders()
 
-		Task<List<RemindersToSendForSite>> GetRemindersForNearExpiredSites(NearExpiredSites nearExpiredSites);
+        // Helpers for FireReminders()
+
+        Task<List<RemindersToSendForSite>> GetRemindersForNearExpiredSites(NearExpiredSites nearExpiredSites);
 		Task<NearExpiredSites> GetNearExpiredSites();
 		List<RemindersToSendForSite> RemoveDuplicates(List<RemindersToSendForSite> siteRemindersList);
 
@@ -88,6 +103,12 @@ namespace ISHealthMonitor.Core.Contracts
 
 
 		void UpdateWorkOrderForSite(int siteId, int workOrderObjectId);
+        Task<Dictionary<string, string>> CreateWorkOrder(WorkOrderDTO workOrderDTO, EmployeeDTO employee);
+
+
+
+
+
 
 
 

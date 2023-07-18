@@ -1,0 +1,39 @@
+﻿@model ISHealthMonitor.Core.Data.DTO.SettingDTO
+
+@{
+    Layout = null;
+}
+
+
+<form id="settingForm" onsubmit="return SubmitCreateSettingForm()">
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="DisplayName" class="control-label"></label>
+            <input asp-for="DisplayName" class="form-control" />
+            <span asp-validation-for="DisplayName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label asp-for="Value" class="control-label"></label>
+            <input asp-for="Value" class="form-control" />
+            <span asp-validation-for="Value" class="text-danger"></span>
+        </div>
+    </div>
+
+    <input asp-for="ID" type="hidden" />
+
+    <div class="form-group d-flex justify-content-center">
+        <button type="submit" class="btn btn-success mr-3">Submit</button>
+        <button type="reset" onclick="hideSettingAddEditModal()" class="btn btn-secondary mr-3">Cancel</button>
+    </div>
+</form>

@@ -290,3 +290,36 @@ function SubmitCreateReminderIntervalForm() {
 
 	return false;
 }
+
+
+function SubmitCreateSettingForm() {
+	var form = $('#settingForm');
+	$.validator.unobtrusive.parse(form);
+
+	var data = {
+		'ID': $('#ID').val(),
+		"Name": $('#Name').val(),
+		"DisplayName": $('#DisplayName').val(),
+		"Value": $('#Value').val(),
+		'Action': "x"
+	};
+
+	console.log(data);
+
+	if ($(form).valid()) {
+		$.ajax({
+			type: "POST",
+			url: '/api/Settings/CreateSetting',
+			contentType: "application/json",
+			data: JSON.stringify(data),
+			success: function (data) {
+				if (data) {
+					$('#settingAddEditModal').modal('hide');
+					DATATABLE_REQUESTS.LoadSettingsTable();
+				}
+			}
+			
+		});
+	}
+	return false;
+}

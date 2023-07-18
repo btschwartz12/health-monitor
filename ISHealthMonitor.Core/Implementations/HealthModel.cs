@@ -16,15 +16,18 @@ using ISHealthMonitor.Core.Implementations;
 using System.Security.Policy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ISHealthMonitor.Core.Model;
+using System.Text.Json;
+using System;
 
 namespace ISHealthMonitor.Core.Models
 {
-	public class HealthModel : IHealthModel
+    public class HealthModel : IHealthModel
 	{
 		private readonly IACMSEntityContext _IACMSEntityContext;
 		private readonly IEmployee _employee;
 		private readonly IRest _restModel;
-		private readonly IConfiguration _configuration;
+		private readonly IConfiguration _config;
 		private readonly ILogger<HealthModel> _logger;
 
 		public HealthModel(IACMSEntityContext context, IEmployee employee, IRest rest, IConfiguration configuration, ILogger<HealthModel> logger)
@@ -32,7 +35,7 @@ namespace ISHealthMonitor.Core.Models
 			_IACMSEntityContext = context;
 			_employee = employee;
 			_restModel = rest;
-			_configuration = configuration;
+			_config = configuration;
 			_logger = logger;
 		}
 
@@ -566,7 +569,7 @@ namespace ISHealthMonitor.Core.Models
 			};
 
 
-			string rootDir = _configuration.GetSection("TemplatePaths")["ConfluenceTable"];
+			string rootDir = _config.GetSection("TemplatePaths")["ConfluenceTable"];
 
 
 			var tableStr = ConfluenceTableHelper.GetSiteTableHTML(model, rootDir);
@@ -627,7 +630,7 @@ namespace ISHealthMonitor.Core.Models
 
 		public async Task<(string Message, Dictionary<string, Dictionary<string, List<string>>> remindersSent)> FireReminders()
 		{
-			string rootDir = _configuration.GetSection("TemplatePaths")["EmailReminder"];
+			string rootDir = _config.GetSection("TemplatePaths")["EmailReminder"];
 
 			List<EmailReminderModel> emailModels = new List<EmailReminderModel>() { };
 
@@ -706,11 +709,184 @@ namespace ISHealthMonitor.Core.Models
             return ("Success", remindersSent);
 		}
 
+		public async Task<(string Message, List<Dictionary<string, string>> workOrdersAttempted, List<Dictionary<string, string>> sitesWithExistingWorkOrders)> AutoCreateWorkOrders(EmployeeDTO requestor)
+		{
+            var workOrdersAttempted = new List<Dictionary<string, string>>() { };
+            var sitesWithExistingWorkOrders = new List<Dictionary<string, string>>() { };
+
+
+            var enabledStatus = GetSettingValue("autoWorkOrderStatus");
+
+			if (enabledStatus == null || enabledStatus != "enabled")
+			{
+                return ("Disabled", workOrdersAttempted, sitesWithExistingWorkOrders);
+            }
+
+			var thresholdDays = GetSettingValue("autoWorkOrderThresholdDays");
+
+			if (thresholdDays == null)
+			{
+				return ("No Threshold Specified", workOrdersAttempted, sitesWithExistingWorkOrders);
+			}
+
+			var threshold = new TimeSpan();
+
+            if (int.TryParse(thresholdDays, out int days))
+            {
+                threshold = TimeSpan.FromDays(days);
+            }
+            else
+            {
+                return ("Invalid Threshold Format", workOrdersAttempted, sitesWithExistingWorkOrders);
+            }
+
+            DateTime thresholdDate = DateTime.Now + threshold;
+
+            List<ISHealthMonitorSiteDbSet> sitesWithinThreshold = _IACMSEntityContext.ISHealthMonitorSites
+													.Where(s => !s.Deleted && s.ID != 1)
+													.Where(s => s.SSLExpirationDate < thresholdDate)
+													.ToList();
+
+
+            var workOrderBaseUrl = _config.GetSection("UnityRestAPI")["HSIDBWorkOrderURL"];
+
+
+            foreach (var site in sitesWithinThreshold)
+            {
+                if (site.HSIDBWorkOrderLastSubmittedDate != null && site.SSLEffectiveDate < site.HSIDBWorkOrderLastSubmittedDate)
+				{
+					sitesWithExistingWorkOrders.Add(new Dictionary<string, string>
+					{
+						{ "siteName", site.DisplayName },
+						{ "siteURL", site.URL },
+						{ "sslEffectiveDate", site.SSLEffectiveDate.ToShortDateString() },
+                        { "sslExpirationDate", site.SSLExpirationDate.ToShortDateString() },
+                        { "workOrderSubmittedDate", site.HSIDBWorkOrderLastSubmittedDate?.ToShortDateString() ?? "N/A" },
+                        { "workOrderObjectID", site.HSIDBWorkOrderCurrentObjectID?.ToString() ?? "N/A" },
+                        { "workOrderURL", (workOrderBaseUrl + site.HSIDBWorkOrderCurrentObjectID?.ToString()) ?? "N/A"},
+                    });
+				}
+				else
+				{
+                    WorkOrderDTO model = new WorkOrderDTO()
+                    {
+                        SiteID = site.ID,
+                        SiteName = site.DisplayName,
+                        SiteURL = site.URL,
+                        IssueType = "Other",
+                        Category = "Help Desk",
+                        System = "Help Desk",
+                        ShortDescription = $"Update certificate for {site.DisplayName} ({site.URL})",
+                        Urgency = "2",
+                        Description = $"The SSL Certificate is going to expire on: {site.SSLExpirationDate}. PLEASE NOTE: this work order was automatically generated by healthmonitor.hyland.com"
+                    };
+
+					Dictionary<string, string> resp = await CreateWorkOrder(model, requestor);
+
+                    if (resp["Message"] == "Success")
+                    {
+                        var objectId = int.Parse(resp["ObjectID"]);
+						workOrdersAttempted.Add(new Dictionary<string, string>
+						{
+							{ "result", "Success" },
+                            { "siteName", site.DisplayName },
+							{ "siteURL", site.URL },
+							{ "sslEffectiveDate", site.SSLEffectiveDate.ToShortDateString() },
+							{ "sslExpirationDate", site.SSLExpirationDate.ToShortDateString() },
+                            { "workOrderObjectID", objectId.ToString() },
+							{ "workOrderURL", workOrderBaseUrl + objectId.ToString() }
+						});
+                    }
+                    else if (resp["Message"] == "Failed")
+                    {
+                        workOrdersAttempted.Add(new Dictionary<string, string>
+                        {
+                            { "result", "Failed" },
+                            { "siteName", site.DisplayName },
+                            { "siteURL", site.URL },
+                            { "sslEffectiveDate", site.SSLEffectiveDate.ToShortDateString() },
+                            { "sslExpirationDate", site.SSLExpirationDate.ToShortDateString() },
+                            { "errorReason", resp["Description"] }
+                        });
+                    }
+
+                }
+            }
+            return ("Success", workOrdersAttempted, sitesWithExistingWorkOrders);
+        }
+
+        public async Task<Dictionary<string, string>> CreateWorkOrder(WorkOrderDTO model, EmployeeDTO employee)
+		{
+			var res = new Dictionary<string, string>() { };
+
+            var unityModel = new UnityRestAPIAccess(_logger, _config);
+
+            int objectid;
+            try
+            {
+                //objectid = await unityModel.GetRequestorId(employee.Email);
+                objectid = await unityModel.GetRequestorId("Nick.Susanjar@hyland.com");
+
+                if (objectid == -1)
+                {
+                    throw new Exception("Response does not contain a valid objectid");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to get requestor id: " + ex.Message);
+				res.Add("Message", "Failed");
+				res.Add("Description", ex.Message);
+				return res;
+            }
+
+            int linkToWorkOrderCategory = 36942305;
+            int linkToSystemProfile = 34237289;
+            string origin = "IS Health Monitor Site";
+            string appName = "HSI CM";
+            string className = "ISWorkOrder";
+            int workOrderObjId = 0;
+
+            var attrList = WorkOrderModel.CreateAttrList(objectid, linkToWorkOrderCategory,
+                                                         linkToSystemProfile, model.ShortDescription,
+                                                         model.Description, model.Urgency,
+                                                         model.EmergencyReason, origin);
 
 
 
 
-		public async Task<NearExpiredSites> GetNearExpiredSites()
+            OnbaseWorkviewObjectDTO wvObject = WorkOrderModel.GetWorkViewObjectDTO(workOrderObjId, appName,
+                                                                                    className, attrList);
+
+            var unityApi = new UnityRestAPIAccess(_logger, _config);
+
+            try
+            {
+                string wvObjectJson = System.Text.Json.JsonSerializer.Serialize(wvObject);
+
+                var objectId = await unityApi.CreateWorkViewObject(wvObject.appName, wvObject.className,
+                                                        wvObjectJson);
+
+                UpdateWorkOrderForSite(model.SiteID, int.Parse(objectId));
+
+                _logger.LogInformation($"Work Order created by {employee.GUID} for siteID={model.SiteID}. Work Order object ID = {objectId}");
+                res.Add("Message", "Success");
+                res.Add("ObjectID", objectId.ToString());
+				return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Failed to create work order: " + ex.Message);
+                res.Add("Message", "Failed");
+                res.Add("Description", ex.Message);
+				return res;
+            }
+
+		}
+
+
+
+        public async Task<NearExpiredSites> GetNearExpiredSites()
 		{
 			var nearExpiredSites = new NearExpiredSites
 			{
@@ -1040,12 +1216,92 @@ namespace ISHealthMonitor.Core.Models
 
 
         }
-    }
+
+		public List<SettingDTO> GetSettings()
+		{
+			var settings = _IACMSEntityContext.ISHealthMonitorSettings.Where(s => !s.Deleted).ToList();
+			var result = settings.Select(d => new SettingDTO()
+			{
+				ID = d.ID,
+				Name = d.Name,
+				DisplayName = d.DisplayName,
+				Value = d.Value,
+				Action = "<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' " +
+						"onclick=showSettingAddEditModal(" + d.ID + ")></i><i style='cursor: pointer;' class='fa fa-trash fa-lg " +
+						" text-danger' onclick=showSettingDeleteModal(" + d.ID + ")></i></div>"
+			}).ToList();
+			return result;
+		}
+
+		public ISHealthMonitorSettingDbSet GetSetting(int id)
+		{
+			var setting = _IACMSEntityContext.ISHealthMonitorSettings.FirstOrDefault(i => i.ID == id);
+			return setting;
+		}
+
+		public SettingDTO GetSettingDTO(int id)
+		{
+			ISHealthMonitorSettingDbSet setting = GetSetting(id);
+			return new SettingDTO()
+			{
+				ID = setting.ID,
+				Name = setting.Name,
+				DisplayName = setting.DisplayName,
+				Value = setting.Value,
+			};
+		}
+
+		public void AddSetting(ISHealthMonitorSettingDbSet setting)
+		{
+			_IACMSEntityContext.ISHealthMonitorSettings.Add(setting);
+			_IACMSEntityContext.SaveChanges();
+		}
+
+		public void UpdateSetting(ISHealthMonitorSettingDbSet setting)
+		{
+			_IACMSEntityContext.Entry(setting).State = EntityState.Modified;
+			_IACMSEntityContext.SaveChanges();
+		}
+
+		public void DeleteSetting(int id)
+		{
+			var setting = _IACMSEntityContext.ISHealthMonitorSettings.FirstOrDefault(i => i.ID == id);
+			setting.Deleted = true;
+			_IACMSEntityContext.Entry(setting).State = EntityState.Modified;
+			_IACMSEntityContext.SaveChanges();
+		}
 
 
-    
+		public string? GetSettingValue(string key)
+		{
+			var setting = _IACMSEntityContext.ISHealthMonitorSettings.FirstOrDefault(s => s.Name == key);
+			if (setting == null)
+			{
+				return null;
+			}
+			return setting.Value;
+		}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	}
 }
 
 
