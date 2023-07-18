@@ -83,13 +83,15 @@ function FireReminders() {
                 })
                 .fail(function (error) {
                     console.log('Failed to get token:', error);
+                    $('#spinnerFireReminders').addClass('d-none');
                 });
         })
         .fail(function (error) {
-            console.log(error)
+            console.log(error);
+            $('#spinnerFireReminders').addClass('d-none');
         }).
         always(function () {
-            $('#spinnerFireReminders').addClass('d-none');
+            
         });
 
     
@@ -160,13 +162,15 @@ function RefreshCerts() {
                 })
                 .fail(function (error) {
                     console.log('Failed to get token:', error);
+                    $('#spinnerRefreshCerts').addClass('d-none');
                 });
         })
         .fail(function (error) {
             console.log(error)
+            $('#spinnerRefreshCerts').addClass('d-none');
         }).
         always(function () {
-            $('#spinnerRefreshCerts').addClass('d-none');
+            
         });
     
 }
@@ -228,13 +232,15 @@ function UpdateConfluence() {
                 })
                 .fail(function (error) {
                     console.log('Failed to get token:', error);
+                    $('#spinnerUpdateConfluence').addClass('d-none');
                 });
         })
         .fail(function (error) {
             console.log(error);
+            $('#spinnerUpdateConfluence').addClass('d-none');
         }).
         always(function () {
-            $('#spinnerUpdateConfluence').addClass('d-none');
+           
         });
 
 
