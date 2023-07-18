@@ -58,29 +58,7 @@ namespace ISHealthMonitor.Controllers
             _logger.LogInformation("Home Page Visitor: " + CurrentEmployee.DisplayName + " (has reminders: " + userHasReminders.ToString() + ")");
 
 
-			if (ViewBag.UserIsAdmin)
-            {
-                string username = _config.GetSection("ApiAuthConfig")["userName"];
-                string password = _config.GetSection("ApiAuthConfig")["password"];
-				
-
-				ViewBag.ApiAuthUserName = username;
-                ViewBag.ApiAuthPassword = password;
-            }
-
-
-
-
-            //var token = new UnityRestAPIToken(_logger, _config);
-
-            //var f = token.AuthenticationToken;
-
-            //var unity = new UnityRestAPIAccess(_logger, _config);
-
-            //var email = "Nick.Susanjar@hyland.com";
-            //var id = unity.GetRequestorId(email);
-
-
+	
 
             HomeViewModel model = new()
             {
@@ -104,14 +82,7 @@ namespace ISHealthMonitor.Controllers
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-            if (ViewBag.UserIsAdmin)
-            {
-                string username = _config.GetSection("ApiAuthConfig")["userName"];
-                string password = _config.GetSection("ApiAuthConfig")["password"];
-
-                ViewBag.ApiAuthUserName = username;
-                ViewBag.ApiAuthPassword = password;
-            }
+            
 
 
             LogViewerModel model = new LogViewerModel()
@@ -134,14 +105,7 @@ namespace ISHealthMonitor.Controllers
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-            if (ViewBag.UserIsAdmin)
-            {
-                string username = _config.GetSection("ApiAuthConfig")["userName"];
-                string password = _config.GetSection("ApiAuthConfig")["password"];
-
-                ViewBag.ApiAuthUserName = username;
-                ViewBag.ApiAuthPassword = password;
-            }
+            
 
 
             try

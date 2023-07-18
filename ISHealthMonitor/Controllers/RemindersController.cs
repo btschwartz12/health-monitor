@@ -38,14 +38,7 @@ namespace ISHealthMonitor.UI.Controllers
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-            if (ViewBag.UserIsAdmin)
-            {
-                string username = _config.GetSection("ApiAuthConfig")["userName"];
-                string password = _config.GetSection("ApiAuthConfig")["password"];
-
-                ViewBag.ApiAuthUserName = username;
-                ViewBag.ApiAuthPassword = password;
-            }
+           
 
             return View("~/Views/Admin/Reminders/Index.cshtml");
 		}
@@ -91,15 +84,6 @@ namespace ISHealthMonitor.UI.Controllers
             ViewBag.SiteDTO = _healthModel.GetSiteDTO(siteID);
 
 
-            if (ViewBag.UserIsAdmin)
-            {
-                string username = _config.GetSection("ApiAuthConfig")["userName"];
-                string password = _config.GetSection("ApiAuthConfig")["password"];
-
-                ViewBag.ApiAuthUserName = username;
-                ViewBag.ApiAuthPassword = password;
-            }
-
             return View("~/Views/Home/ConfigurationHistory.cshtml");
 		}
 
@@ -113,14 +97,7 @@ namespace ISHealthMonitor.UI.Controllers
 			ViewBag.UserName = CurrentEmployee.DisplayName;
 			ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
-            if (ViewBag.UserIsAdmin)
-            {
-                string username = _config.GetSection("ApiAuthConfig")["userName"];
-                string password = _config.GetSection("ApiAuthConfig")["password"];
-
-                ViewBag.ApiAuthUserName = username;
-                ViewBag.ApiAuthPassword = password;
-            }
+            
 
             if (groupID == 0)
 			{

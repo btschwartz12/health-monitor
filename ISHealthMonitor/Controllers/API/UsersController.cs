@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -23,13 +24,15 @@ namespace ISHealthMonitor.UI.Controllers.API
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
+        private readonly IConfiguration _config;
         private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IHealthModel healthModel, IEmployee employee, ILogger<UsersController> logger)
+        public UsersController(IHealthModel healthModel, IEmployee employee, ILogger<UsersController> logger, IConfiguration config)
         {
             _employee = employee;
             _healthModel = healthModel;
             _logger = logger;
+            _config = config;
         }
 
         [HttpGet("GetUsers")]
@@ -40,11 +43,33 @@ namespace ISHealthMonitor.UI.Controllers.API
 		}
 
         [HttpGet("GetLoggedInUser")]
-        public string GetLoggedInUser()
+        public IActionResult GetLoggedInUser()
         {
             var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
-            return username;
+			Dictionary<string, string> res = new Dictionary<string, string>() { };
+			res.Add("username", username);
+
+			var CurrentEmployee = _employee.GetEmployeeByUserName(username);
+
+			var userIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
+
+			if (userIsAdmin)
+			{
+				string apiUsername = _config.GetSection("ApiAuthConfig")["userName"];
+				string apiPassword = _config.GetSection("ApiAuthConfig")["password"];
+
+                res.Add("apiAuthUsername", apiUsername);
+                res.Add("apiAuthPassword", apiPassword);
+                res.Add("isAdmin", "true");
+
+            }
+            else
+            {
+                res.Add("isAdmin", "false");
+            }
+
+            return Ok(res);
         }
 
 		[HttpPut]

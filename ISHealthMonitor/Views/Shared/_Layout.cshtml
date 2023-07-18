@@ -239,10 +239,7 @@
 
         var userIsAdmin = @Html.Raw(Json.Serialize(ViewBag.UserIsAdmin));
 
-        if (userIsAdmin) {
-            apiAuthUsername = @Html.Raw(Json.Serialize(ViewBag.ApiAuthUsername));
-            apiAuthPassword = @Html.Raw(Json.Serialize(ViewBag.ApiAuthPassword)); 
-        }
+        
 
         
 

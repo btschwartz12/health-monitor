@@ -31,12 +31,19 @@ function FireReminders() {
         type: "GET",
         url: `/api/users/getloggedinuser`,
         async: true,
-        cache: false
+        cache: false,
+        contentType: 'application/json',
+        processData: false,
     })
-        .done(function (userName) {
+        .done(function (userData) {
+
+            if (userData.isAdmin === "false") {
+                return;
+            }
+
             $.ajax({
                 type: "POST",
-                url: `/rest/api/jwToken?grant_type=token&userName=${apiAuthUsername}&password=${apiAuthPassword}`,
+                url: `/rest/api/jwToken?grant_type=token&userName=${userData.apiAuthUsername}&password=${userData.apiAuthPassword}`,
                 async: true,
                 cache: false
             })
@@ -54,7 +61,7 @@ function FireReminders() {
                     // The second request to fire reminders
                     $.ajax({
                         type: "GET",
-                        url: '/api/adminfunctions/firereminders?username=' + userName,
+                        url: '/api/adminfunctions/firereminders?username=' + userData.username,
                         async: true,
                         cache: false,
                         contentType: false,
@@ -80,6 +87,9 @@ function FireReminders() {
         })
         .fail(function (error) {
             console.log(error)
+        }).
+        always(function () {
+            $('#spinnerFireReminders').addClass('d-none');
         });
 
     
@@ -91,13 +101,19 @@ function RefreshCerts() {
         type: "GET",
         url: `/api/users/getloggedinuser`,
         async: true,
-        cache: false
+        cache: false,
+        contentType: 'application/json',
+        processData: false,
     })
-        .done(function (userName) { 
+        .done(function (userData) {
+
+            if (userData.isAdmin === "false") {
+                return;
+            }
 
             $.ajax({
                 type: "POST",
-                url: `/rest/api/jwToken?grant_type=token&userName=${apiAuthUsername}&password=${apiAuthPassword}`,
+                url: `/rest/api/jwToken?grant_type=token&userName=${userData.apiAuthUsername}&password=${userData.apiAuthPassword}`,
                 async: true,
                 cache: false
             })
@@ -114,7 +130,7 @@ function RefreshCerts() {
                     // The second request to refresh certificates
                     $.ajax({
                         type: "GET",
-                        url: '/api/adminfunctions/refreshcerts?username=' + userName,
+                        url: '/api/adminfunctions/refreshcerts?username=' + userData.username,
                         async: true,
                         cache: false,
                         contentType: 'application/json',
@@ -148,6 +164,9 @@ function RefreshCerts() {
         })
         .fail(function (error) {
             console.log(error)
+        }).
+        always(function () {
+            $('#spinnerRefreshCerts').addClass('d-none');
         });
     
 }
@@ -159,12 +178,19 @@ function UpdateConfluence() {
         type: "GET",
         url: `/api/users/getloggedinuser`,
         async: true,
-        cache: false
+        cache: false,
+        contentType: 'application/json',
+        processData: false,
     })
-        .done(function (userName) {
+        .done(function (userData) {
+
+            if (userData.isAdmin === "false") {
+                return;
+            }
+
             $.ajax({
                 type: "POST",
-                url: `/rest/api/jwToken?grant_type=token&userName=${apiAuthUsername}&password=${apiAuthPassword}`,
+                url: `/rest/api/jwToken?grant_type=token&userName=${userData.apiAuthUsername}&password=${userData.apiAuthPassword}`,
                 async: true,
                 cache: false
             })
@@ -181,7 +207,7 @@ function UpdateConfluence() {
                     // The second request to update confluence
                     $.ajax({
                         type: "GET",
-                        url: '/api/adminfunctions/updateconfluence?username=' + userName,
+                        url: '/api/adminfunctions/updateconfluence?username=' + userData.username,
                         async: true,
                         cache: false,
                         contentType: 'application/json',
@@ -205,7 +231,10 @@ function UpdateConfluence() {
                 });
         })
         .fail(function (error) {
-
+            console.log(error);
+        }).
+        always(function () {
+            $('#spinnerUpdateConfluence').addClass('d-none');
         });
 
 

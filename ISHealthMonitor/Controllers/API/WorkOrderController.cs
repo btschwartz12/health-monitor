@@ -88,8 +88,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 
             try
             {
-                objectid = await unityModel.GetRequestorId(employee.Email);
-                //objectid = await unityModel.GetRequestorId("Nick.Susanjar@hyland.com");
+                //objectid = await unityModel.GetRequestorId(employee.Email);
+                objectid = await unityModel.GetRequestorId("Nick.Susanjar@hyland.com");
 
                 if (objectid == -1)
                 {
@@ -141,7 +141,7 @@ namespace ISHealthMonitor.UI.Controllers.API
             catch (Exception ex)
             {
                 _logger.LogError("Failed to create work order: " + ex.Message);
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
             
         }
