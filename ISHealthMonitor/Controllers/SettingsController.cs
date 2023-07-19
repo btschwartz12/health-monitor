@@ -1,13 +1,17 @@
 ﻿using ISHealthMonitor.Core.Contracts;
 using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-	public class SettingsController : Controller
+    [Authorize(Policy = "Admin")]
+    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    public class SettingsController : Controller
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
