@@ -295,9 +295,10 @@ function UpdateConfluence() {
                         cache: false,
                         contentType: 'application/json',
                         processData: false,
-                        beforesend: function (xhr) {
-                            // include the bearer token in the header
+                        beforeSend: function (xhr) {
+                            // Include the bearer token in the header
                             xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                            console.log(xhr);
                         }
                     }).done(function (data) {
                         console.log(data);
