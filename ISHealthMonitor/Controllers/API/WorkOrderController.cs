@@ -82,14 +82,37 @@ namespace ISHealthMonitor.UI.Controllers.API
             var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
             var employee = _employee.GetEmployeeByUserName(username);
 
+            var manualRequestorEnabled = _healthModel.GetSettingValue("manualWorkOrderRequestorEnabled");
+
+            if (manualRequestorEnabled != null && manualRequestorEnabled == "true")
+            {
+                var manualRequestorGuid = _healthModel.GetSettingValue("manualWorkOrderRequestorGUID");
+
+                if (manualRequestorGuid != null)
+                {
+                    var newEmployee = _employee.GetEmployeeByGuid(new Guid(manualRequestorGuid));
+
+                    if (newEmployee != null)
+                    {
+                        employee = newEmployee;
+                    }
+                }
+            }
+
 
             Dictionary<string, string> resp = await _healthModel.CreateWorkOrder(model, employee);
-
+            var workOrderBaseUrl = _config.GetSection("UnityRestAPI")["HSIDBWorkOrderURL"];
 
             if (resp["Message"] == "Success")
             {
-                var objectId = int.Parse(resp["ObjectID"]);
-                return Ok(objectId);
+                string objectId = resp["ObjectID"];
+                Dictionary<string, string> response = new Dictionary<string, string>()
+                {
+                    { "objectID", objectId },
+                    { "workOrderURL", workOrderBaseUrl + objectId }
+                };
+                string jsonString = JsonSerializer.Serialize(response);
+                return Ok(jsonString);
             }
             if (resp["Message"] == "Failed")
             {

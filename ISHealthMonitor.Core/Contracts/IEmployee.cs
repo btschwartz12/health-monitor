@@ -10,10 +10,13 @@ namespace ISHealthMonitor.Core.Contracts
 	public interface IEmployee
 	{
 		EmployeeDTO GetEmployeeByUserName(string userName);
+		EmployeeDTO GetEmployeeByGuid(Guid guid);
 
-	    List<EmployeeDTO> GetAll();
+        List<EmployeeDTO> GetAll();
 
 
 		string GetEmailByGuid(Guid guid);
+
+
 	}
 }

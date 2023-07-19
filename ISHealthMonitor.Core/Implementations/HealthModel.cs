@@ -632,7 +632,7 @@ namespace ISHealthMonitor.Core.Models
 		{
 			string rootDir = _config.GetSection("TemplatePaths")["EmailReminder"];
 
-			List<EmailReminderModel> emailModels = new List<EmailReminderModel>() { };
+            List<EmailReminderModel> emailModels = new List<EmailReminderModel>() { };
 
 			var nearExpiredSites = await GetNearExpiredSites();
 			var remindersList = await GetRemindersForNearExpiredSites(nearExpiredSites);
@@ -658,6 +658,7 @@ namespace ISHealthMonitor.Core.Models
 					var model = new EmailReminderModel
 					{
 						Emails = emailList,
+						SiteID = siteReminders.Site.ID,
 						SiteURL = siteReminders.Site.SiteURL,
 						SiteName = siteReminders.Site.SiteName,
 						SSLEffectiveDate = siteReminders.Site.SSLEffectiveDate,
@@ -666,7 +667,7 @@ namespace ISHealthMonitor.Core.Models
 						SSLSubject = siteReminders.Site.SSLSubject,
 						SSLCommonName = siteReminders.Site.SSLCommonName,
 						SSLThumbprint = siteReminders.Site.SSLThumbprint,
-						IntervalDisplayName = siteReminders.ReminderInterval.DisplayName
+						IntervalDisplayName = siteReminders.ReminderInterval.DisplayName,
 					};
 
 					emailModels.Add(model);
@@ -714,44 +715,38 @@ namespace ISHealthMonitor.Core.Models
             var workOrdersAttempted = new List<Dictionary<string, string>>() { };
             var sitesWithExistingWorkOrders = new List<Dictionary<string, string>>() { };
 
+			bool creationEnabled = true;
+			string respMessage = "Success";
 
-            var enabledStatus = GetSettingValue("autoWorkOrderStatus");
+            var workOrderBaseUrl = _config.GetSection("UnityRestAPI")["HSIDBWorkOrderURL"];
 
-			if (enabledStatus == null || enabledStatus != "enabled")
+
+            var enabledStatus = GetSettingValue("autoWorkOrderEnabled");
+            var threshold = new TimeSpan();
+
+            if (enabledStatus == null || enabledStatus != "true")
 			{
-                return ("Disabled", workOrdersAttempted, sitesWithExistingWorkOrders);
+				creationEnabled = false;
+				respMessage = "Disabled";
             }
-
-			var thresholdDays = GetSettingValue("autoWorkOrderThresholdDays");
-
-			if (thresholdDays == null)
-			{
-				return ("No Threshold Specified", workOrdersAttempted, sitesWithExistingWorkOrders);
-			}
-
-			var threshold = new TimeSpan();
-
-            if (int.TryParse(thresholdDays, out int days))
+            else if (int.TryParse(GetSettingValue("autoWorkOrderThresholdDays"), out int days))
             {
                 threshold = TimeSpan.FromDays(days);
             }
             else
             {
-                return ("Invalid Threshold Format", workOrdersAttempted, sitesWithExistingWorkOrders);
+                creationEnabled = false;
+                respMessage = "Invalid Threshold";
             }
 
             DateTime thresholdDate = DateTime.Now + threshold;
 
-            List<ISHealthMonitorSiteDbSet> sitesWithinThreshold = _IACMSEntityContext.ISHealthMonitorSites
+            List<ISHealthMonitorSiteDbSet> allSites = _IACMSEntityContext.ISHealthMonitorSites
 													.Where(s => !s.Deleted && s.ID != 1)
-													.Where(s => s.SSLExpirationDate < thresholdDate)
 													.ToList();
 
 
-            var workOrderBaseUrl = _config.GetSection("UnityRestAPI")["HSIDBWorkOrderURL"];
-
-
-            foreach (var site in sitesWithinThreshold)
+            foreach (var site in allSites)
             {
                 if (site.HSIDBWorkOrderLastSubmittedDate != null && site.SSLEffectiveDate < site.HSIDBWorkOrderLastSubmittedDate)
 				{
@@ -766,7 +761,7 @@ namespace ISHealthMonitor.Core.Models
                         { "workOrderURL", (workOrderBaseUrl + site.HSIDBWorkOrderCurrentObjectID?.ToString()) ?? "N/A"},
                     });
 				}
-				else
+				else if (creationEnabled && site.SSLExpirationDate < thresholdDate)
 				{
                     WorkOrderDTO model = new WorkOrderDTO()
                     {
@@ -812,7 +807,7 @@ namespace ISHealthMonitor.Core.Models
 
                 }
             }
-            return ("Success", workOrdersAttempted, sitesWithExistingWorkOrders);
+            return (respMessage, workOrdersAttempted, sitesWithExistingWorkOrders);
         }
 
         public async Task<Dictionary<string, string>> CreateWorkOrder(WorkOrderDTO model, EmployeeDTO employee)
@@ -822,10 +817,12 @@ namespace ISHealthMonitor.Core.Models
             var unityModel = new UnityRestAPIAccess(_logger, _config);
 
             int objectid;
+
+		
+
             try
             {
-                //objectid = await unityModel.GetRequestorId(employee.Email);
-                objectid = await unityModel.GetRequestorId("Nick.Susanjar@hyland.com");
+				objectid = await unityModel.GetRequestorId(employee.Email);
 
                 if (objectid == -1)
                 {
@@ -834,7 +831,7 @@ namespace ISHealthMonitor.Core.Models
             }
             catch (Exception ex)
             {
-                _logger.LogError("Failed to get requestor id: " + ex.Message);
+                _logger.LogError($"Failed to get requestor id for ({employee.Email}): " + ex.Message);
 				res.Add("Message", "Failed");
 				res.Add("Description", ex.Message);
 				return res;
@@ -1060,17 +1057,41 @@ namespace ISHealthMonitor.Core.Models
 		{
 			TimeSpan timeDiff = expDate - DateTime.Now;
 
-			if (timeDiff.TotalDays <= 10)
+            string redThresholdSetting = GetSettingValue("redExpirationStatusMaxDaysAway");
+            string yellowThresholdSetting = GetSettingValue("yellowExpirationStatusMaxDaysAway");
+            string greenThresholdSetting = GetSettingValue("greenExpirationStatusMinDaysAway");
+            int redThreshold, yellowThreshold, greenThreshold;
+
+            if (!int.TryParse(redThresholdSetting, out redThreshold))
+            {
+				_logger.LogError("Invalid red threshold");
+                redThreshold = 10;
+            }
+            if (!int.TryParse(yellowThresholdSetting, out yellowThreshold))
+            {
+                _logger.LogError("Invalid yellow threshold");
+
+                yellowThreshold = 30;
+            }
+
+            if (!int.TryParse(greenThresholdSetting, out greenThreshold))
+            {
+                _logger.LogError("Invalid green threshold");
+                greenThreshold = 365;
+            }
+
+
+            if (timeDiff.TotalDays <= redThreshold)
 			{
 				return "red";
 				//return "#ffadad";
 			}
-			if (timeDiff.TotalDays <= 30)
+			if (timeDiff.TotalDays <= yellowThreshold)
 			{
 				return "yellow";
 				//return "#ffffad";
 			}
-			if (timeDiff.TotalDays > 365)
+			if (timeDiff.TotalDays > greenThreshold)
 			{
 				return "green";
 				//return "#b3ffab";

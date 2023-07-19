@@ -11,6 +11,7 @@ namespace ISHealthMonitor.Core.Helpers.Email
     public class EmailReminderModel
     {
         public List<string> Emails { get; set; }
+        public int SiteID { get; set; }
         public string SiteURL { get; set; }
         public string SiteName { get; set; }
         public string SSLEffectiveDate { get; set; }

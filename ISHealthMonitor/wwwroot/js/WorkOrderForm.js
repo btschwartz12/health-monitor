@@ -173,8 +173,17 @@ function SubmitWorkOrderForm() {
 						console.log('yes');
 						$('#resetButton').prop('disabled', false);
 						$('#submitButton').prop('disabled', false);
-						ReturnHome();
+
+						var objectId = data.objectID;
+						var workOrderUrl = data.workOrderURL;
+
+						$('#objectId').text(objectId);
+						$('#workOrderUrl').attr('href', workOrderUrl);
+						$('#successModal').modal('show');
+
+						
 					},
+
 					error: function (resp) {
 						console.log(resp);
 						var errorMessage = resp.responseJSON && resp.responseJSON.message ? resp.responseJSON.message : 'Error creating work order.';
@@ -197,3 +206,8 @@ function SubmitWorkOrderForm() {
 
 	
 }
+
+$('#returnHomeBtn').click(function () {
+	$('#successModal').modal('hide');
+	ReturnHome('/Sites/SiteStatusViewer');
+});

@@ -73,10 +73,10 @@ function SendAutoWorkOrders() {
                         contentType: false,
                         enctype: 'multipart/form-data',
                         processData: false,
-                        //beforeSend: function (xhr) {
-                        //    // Include the bearer token in the header
-                        //    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-                        //}
+                        beforeSend: function (xhr) {
+                            // Include the bearer token in the header
+                            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+                        }
                     }).done(function (data) {
                         console.log(data);
                         $('#alertAutoWorkOrders').removeClass('d-none').text('Successfully created work orders!');

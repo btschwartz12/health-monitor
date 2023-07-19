@@ -80,5 +80,29 @@ namespace ISHealthMonitor.Core.Implementations
 
             return email;
 		}
-	}
+
+        public EmployeeDTO GetEmployeeByGuid(Guid guid)
+        {
+            var guidStr = guid.ToString();
+            var emp = _datawarehouseContext.Employee.Where(x => x.GUID.Trim() == guidStr).FirstOrDefault();
+
+            var employeeDTO = new EmployeeDTO()
+
+            {
+                Company = emp.Company.Trim(),
+                Department = emp.Department.Trim(),
+                DisplayName = emp.DisplayName.Trim(),
+                Email = emp.Email.Trim(),
+                FirstName = emp.FirstName.Trim(),
+                GUID = emp.GUID.Trim(),
+                LastName = emp.LastName.Trim(),
+                Manager = emp.Manager.Trim(),
+                NetworkLogon = emp.NetworkLogon.Trim(),
+                Office = emp.Office.Trim(),
+                Title = emp.Title.Trim()
+            };
+
+            return employeeDTO;
+        }
+    }
 }

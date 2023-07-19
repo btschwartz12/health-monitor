@@ -42,6 +42,24 @@ namespace ISHealthMonitor.UI.Controllers.Rest
 			return Ok("Hello Nick");
 		}
 
+        [HttpPost]
+        [Route("TestPost")]
+        public async Task<IActionResult> TestPost([FromBody] TestModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                return Ok(new { message = $"Received string: {model.StringValue} and integer: {model.IntValue}" });
+            }
+
+            return BadRequest("Invalid model");
+        }
+
+        public class TestModel
+        {
+            public string StringValue { get; set; }
+            public int IntValue { get; set; }
+        }
+
         [HttpGet]
 		[Route("Start")]
 		public async Task<IActionResult> Get()
@@ -150,9 +168,9 @@ namespace ISHealthMonitor.UI.Controllers.Rest
 
             try
             {
-                var username = "nsusanjar"; // make GUID instead?
+				var guid = _healthModel.GetSettingValue("autoWorkOrderRequestorGUID");
 
-                var employee = _employee.GetEmployeeByUserName(username);
+				var employee = _employee.GetEmployeeByGuid(new Guid(guid));
 
                 var (Message, workOrdersCreated, sitesWithExistingWorkOrders) = await _healthModel.AutoCreateWorkOrders(employee);
 

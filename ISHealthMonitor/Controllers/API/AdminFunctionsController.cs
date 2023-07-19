@@ -26,7 +26,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 	[Route("api/[Controller]")]
     [ApiController]
-	//[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 	//[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 	//[Authorize(Policy = "Admin")]
 	public class AdminFunctionsController : ControllerBase
