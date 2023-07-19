@@ -558,7 +558,7 @@ namespace ISHealthMonitor.Core.Models
 					SSLCommonName = site.SSLCommonName,
 					SSLThumbprint = site.SSLThumbprint,
 					TimeUntilExpiration = GetTimeDiffString(DateTime.Parse(site.SSLExpirationDate)),
-					RowColor = GetTimeDiffColor(DateTime.Parse(site.SSLExpirationDate))
+					RowColor = GetTimeDiffColor(DateTime.Parse(site.SSLExpirationDate), site.SSLCommonName)
 					
 				})
 				.ToList();
@@ -1053,7 +1053,7 @@ namespace ISHealthMonitor.Core.Models
 			return timeDiffReadable;
 		}
 
-		public string GetTimeDiffColor(DateTime expDate)
+		public string GetTimeDiffColor(DateTime expDate, string? commonName)
 		{
 			TimeSpan timeDiff = expDate - DateTime.Now;
 
@@ -1083,43 +1083,29 @@ namespace ISHealthMonitor.Core.Models
 
             if (timeDiff.TotalDays <= redThreshold)
 			{
-				return "red";
+				return "#ff8f73";
 				//return "#ffadad";
 			}
+			
 			if (timeDiff.TotalDays <= yellowThreshold)
 			{
-				return "yellow";
+				return "orange";
 				//return "#ffffad";
+			}
+			if (commonName != null && commonName.StartsWith("INVALID"))
+			{
+				return "yellow";
 			}
 			if (timeDiff.TotalDays > greenThreshold)
 			{
 				return "green";
 				//return "#b3ffab";
 			}
+			
 			return "";
 		}
 
-		public string GetTimeDiffStatusIcon(DateTime expDate)
-		{
-			var color = GetTimeDiffColor(expDate);
-
-			if (color == "red")
-			{
-				return $"<div class='text-center'><span class='d-none' sort='1'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-danger mr-3'></i></div>";
-			}
-			if (color == "yellow")
-			{
-				return $"<div class='text-center'><span class='d-none' sort='2'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-warning mr-3'></i></div>";
-			}
-			if (color == "green")
-			{
-				return $"<div class='text-center'><span class='d-none' sort='3'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-success mr-3'></i></div>";
-			}
-
-			// Default is gray
-			return $"<div class='text-center'><span class='d-none' sort='4'></span><i style='cursor: pointer;' class='fas fa-circle fa-lg text-secondary mr-3'></i></div>";
-
-		}
+	
 
 
 

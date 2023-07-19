@@ -95,8 +95,7 @@ namespace ISHealthMonitor.Core.Contracts
 		List<RemindersToSendForSite> RemoveDuplicates(List<RemindersToSendForSite> siteRemindersList);
 
 		string GetTimeDiffString(DateTime expDate);
-		string GetTimeDiffColor(DateTime expDate);
-		string GetTimeDiffStatusIcon(DateTime expDate);
+		string GetTimeDiffColor(DateTime expDate, string? commonName);
 
 		Dictionary<string, List<string>> GetSubscriptionsForSite(int siteId);
 		int GetNumSubscriptionsForSite(int siteId);

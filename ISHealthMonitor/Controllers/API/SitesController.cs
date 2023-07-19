@@ -262,12 +262,12 @@ namespace ISHealthMonitor.UI.Controllers.API
 				siteStatus.SiteURL = site.SiteURL;
 				siteStatus.SiteName = $"<a target='_blank' href={site.SiteURL}>{site.SiteName}</a>";
 				siteStatus.SSLExpirationDate = site.SSLExpirationDate;
+				siteStatus.SSLCommonName = site.SSLCommonName;
 				siteStatus.TimeUntilExpiration = _healthModel.GetTimeDiffString(expDate);
-				siteStatus.RowColor = _healthModel.GetTimeDiffColor(expDate);
+				siteStatus.RowColor = _healthModel.GetTimeDiffColor(expDate, site.SSLCommonName);
 				siteStatus.Action = $"<div class='text-center'><i style='cursor: pointer;' class='fa fa-info fa-lg text-primary mr-3' " +
 					$"onclick='showSiteSubscriptionsModal({site.ID})'></i></div>";
                 siteStatus.WorkOrderAction = $"<div class='text-center'><a href='/Home/WorkOrderBuilder/?siteId={site.ID}'><i style='cursor: pointer;' class='fa fa-solid fa-wrench mr-3'></i></a></div>";
-                siteStatus.StatusIcon = _healthModel.GetTimeDiffStatusIcon(expDate);
 
 
 

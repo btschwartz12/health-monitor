@@ -17,6 +17,7 @@ namespace ISHealthMonitor.Core.Data.Models
 		public string SiteName { get; set; }
 		public string SiteURL { get; set; }
 		public string SSLExpirationDate { get; set; }
+		public string SSLCommonName { get; set; }
 		public string TimeUntilExpiration { get; set; }
 		public int NumSubscribedUsers { get; set; }
 		public string Action { get; set; }

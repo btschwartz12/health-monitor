@@ -210,8 +210,11 @@
 					case 'yellow':
 						$(row).css('background-color', '#FFFF00'); // yellow
 						break;
-					case 'red':
-						$(row).css('background-color', '#fc8d8d'); // red
+					case '#ff8f73': // red
+						$(row).css('background-color', '#ffbdbd'); // red
+						break;
+					case 'orange':
+						$(row).css('background-color', '#ffd5a1'); // orange
 						break;
 					default:
 						$(row).css('background-color', '#FFFFFF'); // white (or any default color)
@@ -251,6 +254,38 @@
 		});
 
 		
+
+	</script>
+
+
+
+	<script>
+		$(document).ready(function () {
+			var table = $('#siteStatusTable').DataTable();
+
+			$('#siteStatusTable tbody').on('mouseenter', 'tr', function () {
+				// Access the TooltipInfo data
+				var data = table.row(this).data();
+
+				var commonName = data.SSLCommonName;
+
+				if (commonName.startsWith("INVALID")) {
+
+					var tooltipText = "This site currently has an invalid common name: " + commonName;
+
+					$(this).attr('title', tooltipText);
+					$(this).attr('data-toggle', 'tooltip');
+					$(this).tooltip({
+						placement: 'left',
+						html: true
+					});
+					$(this).tooltip('show');
+
+				}
+				
+			});
+
+		});
 
 	</script>
 }
