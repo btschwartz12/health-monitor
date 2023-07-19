@@ -831,7 +831,7 @@ namespace ISHealthMonitor.Core.Models
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to get requestor id for ({employee.Email}): " + ex.Message);
+                _logger.LogError($"Failed to get requestor id for ({employee.Email}): {ex}");
 				res.Add("Message", "Failed");
 				res.Add("Description", ex.Message);
 				return res;
@@ -873,7 +873,7 @@ namespace ISHealthMonitor.Core.Models
             }
             catch (Exception ex)
             {
-                _logger.LogError("Failed to create work order: " + ex.Message);
+				_logger.LogError($"Failed to create work order: {ex}");
                 res.Add("Message", "Failed");
                 res.Add("Description", ex.Message);
 				return res;

@@ -67,7 +67,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 			}
 			catch (Exception ex)
 			{
-				_logger.LogError($"Error in Confluence Update endpoint (initiated by {employee.GUID})");
+				_logger.LogError($"Error in Confluence Update endpoint (initiated by {employee.GUID}): {ex}");
 				return BadRequest(ex.Message);
 			}
 
@@ -97,7 +97,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 			}
 			catch (Exception ex)
 			{
-                _logger.LogError($"Error in Refresh Certs endpoint (initiated by {employee.GUID})");
+                _logger.LogError($"Error in Refresh Certs endpoint (initiated by {employee.GUID}): {ex}");
                 return BadRequest(ex.Message);
 			}
 			
@@ -133,7 +133,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 			}
 			catch (Exception ex)
 			{
-                _logger.LogError($"Error in Fire Reminders endpoint (initiated by {employee.GUID})");
+                _logger.LogError($"Error in Fire Reminders endpoint (initiated by {employee.GUID}): {ex}");
                 return BadRequest(ex.Message);
 			}
 		}
@@ -168,7 +168,7 @@ namespace ISHealthMonitor.UI.Controllers.API
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error in automatic work orders endpoint (initiated by {employee.GUID})");
+                _logger.LogError($"Error in automatic work orders endpoint (initiated by {employee.GUID}): {ex}");
                 return BadRequest(ex.Message);
             }
         }
