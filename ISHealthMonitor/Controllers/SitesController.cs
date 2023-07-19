@@ -35,7 +35,6 @@ namespace ISHealthMonitor.UI.Controllers
         public IActionResult Index()
         {
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-
 			var employee = _employee.GetEmployeeByUserName(user);
 
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(employee.GUID));
@@ -91,9 +90,6 @@ namespace ISHealthMonitor.UI.Controllers
 
 			ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(employee.GUID));
 			ViewBag.UserName = employee.DisplayName;
-
-
-			
 
 
             return View("~/Views/Home/SiteStatusViewer.cshtml");

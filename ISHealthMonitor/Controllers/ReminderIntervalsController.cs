@@ -10,8 +10,7 @@ using System;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-    [Authorize(Policy = "Admin")]
-    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    [Authorize(Policy = "Admin", AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class ReminderIntervalsController : Controller
 	{
 
