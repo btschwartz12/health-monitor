@@ -297,7 +297,7 @@ function UpdateConfluence() {
                         processData: false,
                         beforesend: function (xhr) {
                             // include the bearer token in the header
-                            xhr.setrequestheader('authorization', `Bearer ${token}`);
+                            xhr.setRequestHeader('Authorization', `Bearer ${token}`);
                         }
                     }).done(function (data) {
                         console.log(data);
