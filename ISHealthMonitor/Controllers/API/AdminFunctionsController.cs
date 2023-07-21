@@ -27,8 +27,6 @@ namespace ISHealthMonitor.UI.Controllers.API
 	[Route("api/[Controller]")]
     [ApiController]
 	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-	//[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-	//[Authorize(Policy = "Admin")]
 	public class AdminFunctionsController : ControllerBase
     {
         private readonly IHealthModel _healthModel;
@@ -145,7 +143,24 @@ namespace ISHealthMonitor.UI.Controllers.API
 
             var employee = _employee.GetEmployeeByUserName(username);
 
-            try
+			var manualRequestorEnabled = _healthModel.GetSettingValue("manualWorkOrderRequestorEnabled");
+
+			if (manualRequestorEnabled != null && manualRequestorEnabled == "true")
+			{
+				var manualRequestorGuid = _healthModel.GetSettingValue("manualWorkOrderRequestorGUID");
+
+				if (manualRequestorGuid != null)
+				{
+					var newEmployee = _employee.GetEmployeeByGuid(new Guid(manualRequestorGuid));
+
+					if (newEmployee != null)
+					{
+						employee = newEmployee;
+					}
+				}
+			}
+
+			try
             {
 				var (Message, workOrdersCreated, sitesWithExistingWorkOrders) = await _healthModel.AutoCreateWorkOrders(employee);
 
