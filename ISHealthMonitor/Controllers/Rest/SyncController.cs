@@ -16,7 +16,6 @@ using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using ISHealthMonitor.Core.Implementations;
-using Newtonsoft.Json;
 
 namespace ISHealthMonitor.UI.Controllers.Rest
 {
@@ -71,7 +70,7 @@ namespace ISHealthMonitor.UI.Controllers.Rest
 			try
 			{
 				CertificateDTO res = await certHandlers.CheckSSLSiteAsync(url);
-				return Ok(JsonConvert.SerializeObject(res));
+				return Ok(JsonSerializer.Serialize(res));
 			}
 			catch (Exception ex)
 			{
