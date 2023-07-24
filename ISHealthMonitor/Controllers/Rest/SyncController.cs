@@ -16,6 +16,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using ISHealthMonitor.Core.Implementations;
+using Newtonsoft.Json;
 
 namespace ISHealthMonitor.UI.Controllers.Rest
 {
@@ -60,7 +61,25 @@ namespace ISHealthMonitor.UI.Controllers.Rest
             public int IntValue { get; set; }
         }
 
-        [HttpGet]
+		[HttpPost]
+		[Route("GetSiteCertificate")]
+		public async Task<IActionResult> GetSiteCertificate([FromBody] string url)
+		{
+
+			var certHandlers = new CertificateHandlers();
+
+			try
+			{
+				CertificateDTO res = await certHandlers.CheckSSLSiteAsync(url);
+				return Ok(JsonConvert.SerializeObject(res));
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpGet]
 		[Route("Start")]
 		public async Task<IActionResult> Get()
 		{
