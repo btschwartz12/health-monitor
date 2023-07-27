@@ -580,6 +580,8 @@ namespace ISHealthMonitor.Core.Models
 
 			var tableStr = ConfluenceTableHelper.GetSiteTableHTML(model, rootDir);
 
+			tableStr = "test";
+
 
 			//example to get Page Source
 			var action = wikiEndpoint + "?body-format=storage";

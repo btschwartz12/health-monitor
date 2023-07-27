@@ -15,7 +15,7 @@ using System.Security.Policy;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class SitesController : Controller
     {
 
@@ -31,7 +31,7 @@ namespace ISHealthMonitor.UI.Controllers
             _config = config;
         }
 
-        [Authorize(Policy = "Admin")]
+        //[Authorize(Policy = "Admin")]
         public IActionResult Index()
         {
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
@@ -45,7 +45,7 @@ namespace ISHealthMonitor.UI.Controllers
             return View("~/Views/Admin/Sites/Index.cshtml");
         }
 
-        [Authorize(Policy = "Admin")]
+        //[Authorize(Policy = "Admin")]
         [HttpGet]
         public IActionResult AddEdit(int id = 0)
         {
@@ -95,7 +95,7 @@ namespace ISHealthMonitor.UI.Controllers
             return View("~/Views/Home/SiteStatusViewer.cshtml");
 		}
 
-        [Authorize(Policy = "Admin")]
+        //[Authorize(Policy = "Admin")]
         public IActionResult SiteSubscriptions(int siteId)
         {
             SiteDTO site = _healthModel.GetSiteDTO(siteId);

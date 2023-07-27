@@ -22,6 +22,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.Extensions.Logging;
 using ISHealthMonitor.Core.Helpers.Cache;
+using Microsoft.AspNetCore.Authentication.WsFederation;
 
 namespace ISHealthMonitor
 {
@@ -34,6 +35,8 @@ namespace ISHealthMonitor
         public ConfluenceAPI ConfluenceAPISettingsConfig { get; private set; } = new ConfluenceAPI(); 
         public IConfiguration Configuration { get; }
 
+        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -43,13 +46,25 @@ namespace ISHealthMonitor
 
             // Auth
 
-           // services.AddAuthentication(IISDefaults.AuthenticationScheme);
-            services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
-            services.AddAuthorization(options =>
+            services.AddAuthentication(sharedOptions =>
             {
-                options.AddPolicy("Admin", policy => policy.Requirements.Add(new AdminRequirement()));
-            });
-            services.AddScoped<IAuthorizationHandler, AdminRequirementHandler>();
+                sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                sharedOptions.DefaultChallengeScheme = WsFederationDefaults.AuthenticationScheme;
+            })
+            .AddWsFederation(options =>
+            {
+                options.Wtrealm = Configuration.GetSection("AzureAD")["RealmID"];
+                options.MetadataAddress = Configuration.GetSection("AzureAD")["Metadata"];
+            })
+            .AddCookie();
+
+            //services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
+            //         services.AddAuthorization(options =>
+            //         {
+            //             options.AddPolicy("Admin", policy => policy.Requirements.Add(new AdminRequirement()));
+            //         });
+            //         services.AddScoped<IAuthorizationHandler, AdminRequirementHandler>();
 
             services.AddTokenAuthentication(Configuration);
 

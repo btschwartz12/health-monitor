@@ -25,7 +25,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class SitesController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;

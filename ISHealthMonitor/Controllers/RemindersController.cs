@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class RemindersController : Controller
 	{
 
@@ -28,7 +28,7 @@ namespace ISHealthMonitor.UI.Controllers
 			_employee = employee;
 			_config = config;
         }
-		[Authorize(Policy = "Admin")]
+		//[Authorize(Policy = "Admin")]
 		public IActionResult Index()
 		{
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
@@ -44,7 +44,7 @@ namespace ISHealthMonitor.UI.Controllers
 		}
 
 
-		[Authorize(Policy = "Admin")]
+		//[Authorize(Policy = "Admin")]
 		[HttpGet]
 		public IActionResult AddEdit(int id = 0)
 		{

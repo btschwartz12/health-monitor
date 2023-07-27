@@ -20,10 +20,12 @@ using System.IO;
 using ISHealthMonitor.Core.Model;
 using ISHealthMonitor.Core.Data.DTO;
 using System.Security.Policy;
+using System.Security.Claims;
+using ISHealthMonitor.Core.Helpers.Auth;
 
 namespace ISHealthMonitor.Controllers
 {
-    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -43,6 +45,10 @@ namespace ISHealthMonitor.Controllers
 
         public async Task<IActionResult> Index()
         {
+
+            //var userName = User.Identity.Name;
+            await _healthModel.UpdateConfluencePage();
+
             var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
 
             var CurrentEmployee = _employee.GetEmployeeByUserName(user);
@@ -56,8 +62,8 @@ namespace ISHealthMonitor.Controllers
 
             _logger.LogInformation("Home Page Visitor: " + CurrentEmployee.DisplayName + " (has reminders: " + userHasReminders.ToString() + ")");
 
+            
 
-	
 
             HomeViewModel model = new()
             {
