@@ -1,0 +1,94 @@
+﻿@{
+}
+<h1>SQL Query Builder</h1>
+
+<div class="form-group">
+    <label for="tableSelect">Select Table:</label>
+    <select class="form-control" id="tableSelect"></select>
+</div>
+
+<div class="form-group">
+    <h2>Filters</h2>
+    <div id="filtersContainer"></div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterModal">
+        Add Filter
+    </button>
+</div>
+<div class="form-group">
+    <h2>Sort</h2>
+    <div id="sortContainer"></div>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#sortModal">
+        Add Sorting
+    </button>
+</div>
+
+<button class="btn btn-primary" id="buildQueryBtn">Build Query</button>
+
+<div id="queryResult"></div>
+
+<!-- Filter Modal -->
+<div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterModalLabel">Add Filter</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="filterColumn">Column</label>
+                    <input type="text" class="form-control" id="filterColumn" placeholder="Column">
+                </div>
+                <div class="form-group">
+                    <label for="filterOperation">Operation</label>
+                    <select class="form-control" id="filterOperation"></select>
+                </div>
+                <div class="form-group">
+                    <label for="filterValue">Value</label>
+                    <input type="text" class="form-control" id="filterValue" placeholder="Value">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="addFilterBtn">Add Filter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sort Modal -->
+<div class="modal fade" id="sortModal" tabindex="-1" role="dialog" aria-labelledby="sortModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sortModalLabel">Add Sorting</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="sortColumn">Column</label>
+                    <input type="text" class="form-control" id="sortColumn" placeholder="Column">
+                </div>
+                <div class="form-group">
+                    <label for="sortOrder">Order</label>
+                    <select class="form-control" id="sortOrder">
+                        <option>ASC</option>
+                        <option>DESC</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="addSortBtn">Add Sorting</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/SplunkBuilder.js" asp-append-version="true"></script>
+}

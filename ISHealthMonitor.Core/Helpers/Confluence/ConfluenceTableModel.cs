@@ -15,7 +15,12 @@ namespace ISHealthMonitor.Core.Helpers.Confluence
 		public readonly string TemplateRelativePath = "wwwroot\\lib\\templates\\ConfluenceTableTemplate.html";
 
 
-	}
+
+		public Dictionary<string, string> Colors { get; set; }
+		public Dictionary<string, int> Thresholds { get; set; }
+
+
+    }
 
     public class ConfluenceSiteRowModel
     {
@@ -30,6 +35,9 @@ namespace ISHealthMonitor.Core.Helpers.Confluence
 		public string? SSLThumbprint { get; set; }
 		public string? TimeUntilExpiration { get; set; }
 		public string? RowColor { get; set; }
+		public bool PendingWorkOrder { get; set; }
+		public string? WorkOrderURL { get; set; }
+		public string? WorkOrderSubmittedDate { get; set; }
 		
 	}
 

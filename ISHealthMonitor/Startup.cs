@@ -83,6 +83,7 @@ namespace ISHealthMonitor
             services.AddTransient<IEmployee, Employee>();
             services.AddTransient<IHealthModel, HealthModel>();
             services.AddTransient<IRest, Rest>();
+            services.AddTransient<ISplunkModel, SplunkModel>();
 
 
 

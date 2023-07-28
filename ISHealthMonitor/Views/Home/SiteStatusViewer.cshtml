@@ -203,22 +203,7 @@
 			buttons: buttons,
 			"createdRow": function (row, data, dataIndex) {
 				// assign color based on the RowColor data
-				switch (data.RowColor) {
-					case 'green':
-						$(row).css('background-color', '#90EE90'); // light green
-						break;
-					case 'yellow':
-						$(row).css('background-color', '#FFFF00'); // yellow
-						break;
-					case '#ff8f73': // red
-						$(row).css('background-color', '#ffbdbd'); // red
-						break;
-					case 'orange':
-						$(row).css('background-color', '#ffd5a1'); // orange
-						break;
-					default:
-						$(row).css('background-color', '#FFFFFF'); // white (or any default color)
-				}
+				$(row).css('background-color', data.RowColor);
 			},
 		});
 

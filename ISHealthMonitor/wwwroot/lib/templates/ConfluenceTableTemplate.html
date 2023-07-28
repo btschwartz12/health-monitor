@@ -1,4 +1,35 @@
-﻿<table data-layout="full-width" ac:local-id="10fea502-e105-47a1-8476-486ae919b919">
+﻿
+
+<table data-layout="default" ac:local-id="legend">
+    <tbody>
+        <tr>
+            <td class="confluenceTd" style="text-align: center;" data-highlight-colour="@Model.Colors["RED_COLOR"]">
+                <p>Less than @Model.Thresholds["RED_THRESHOLD"] days until expiration</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="confluenceTd" style="text-align: center;" data-highlight-colour="@Model.Colors["YELLOW_COLOR"]">
+                <p>Less than @Model.Thresholds["YELLOW_THRESHOLD"] days until expiration</p>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="confluenceTd" style="text-align: center;" data-highlight-colour="@Model.Colors["GREEN_COLOR"]">
+                <p>At least @Model.Thresholds["GREEN_THRESHOLD"] days until expiration</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="confluenceTd" style="text-align: center;" data-highlight-colour="@Model.Colors["GRAY_COLOR"]">
+                <p>Invalid common name in certificate</p>
+            </td>
+        </tr>
+
+    </tbody>
+</table>
+
+
+
+<table data-layout="full-width" ac:local-id="10fea502-e105-47a1-8476-486ae919b919">
 
     <tbody>
         <tr>
@@ -35,9 +66,15 @@
             <td class="confluenceTd" data-highlight-colour="@site.RowColor">@site.SSLCommonName</td>
             <td class="confluenceTd" data-highlight-colour="@site.RowColor">@site.SSLIssuer</td>
             <td class="confluenceTd" data-highlight-colour="@site.RowColor">@site.SSLEffectiveDate</td>
-            <td class="confluenceTd" data-highlight-colour="@site.RowColor">@site.SSLExpirationDate<br/>(@site.TimeUntilExpiration)</td>
+            <td class="confluenceTd" data-highlight-colour="@site.RowColor">@site.SSLExpirationDate<br />(@site.TimeUntilExpiration)</td>
             <td class="confluenceTd" data-highlight-colour="@site.RowColor">
-                <a target="_blank" href="https://healthmonitor.hyland.com/Home/WorkOrderBuilder?siteId=@site.ID" style="display: inline-block; padding: 10px 20px; text-align: center; text-decoration: none; color: #ffffff; background-color: #007BFF; border-radius: 4px;">Create Work Order</a>
+                <div>
+                    <a target="_blank" href="https://healthmonitor.hyland.com/Home/WorkOrderBuilder?siteId=@site.ID">Create Work Order</a>
+                    @if (site.PendingWorkOrder)
+                    {
+                    <p>Existing work order submmited <a target="_blank" href="@site.WorkOrderURL">@site.WorkOrderSubmittedDate</a></p>
+                    }
+                </div>
             </td>
 
         </tr>
