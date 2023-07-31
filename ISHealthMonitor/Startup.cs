@@ -44,29 +44,31 @@ namespace ISHealthMonitor
             services.AddSwaggerGen();
 
 
-   //         services.AddAuthentication(sharedOptions =>
-   //         {
-   //             sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-   //             sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-   //             sharedOptions.DefaultChallengeScheme = WsFederationDefaults.AuthenticationScheme;
-   //         })
-   //         .AddWsFederation(wsFedOptions =>
-   //         {
-   //             //RP realm – normally this is the client FQDN unless a realm is given to the RP by the STS
-   //             wsFedOptions.Wtrealm = "spn:_b0144165-412d-46e4-87ad-c62f32c0a7c0";
-   //             //url to sts metadata
-   //             wsFedOptions.MetadataAddress = "https://login.microsoftonline.com/8ca5db88-a5ab-48f7-a5e0-4ce50935f807/federationmetadata/2007-06/federationmetadata.xml?appid=_b0144165-412d-46e4-87ad-c62f32c0a7c0";
+			//         services.AddAuthentication(sharedOptions =>
+			//         {
+			//             sharedOptions.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+			//             sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+			//             sharedOptions.DefaultChallengeScheme = WsFederationDefaults.AuthenticationScheme;
+			//         })
+			//         .AddWsFederation(wsFedOptions =>
+			//         {
+			//             //RP realm – normally this is the client FQDN unless a realm is given to the RP by the STS
+			//             wsFedOptions.Wtrealm = "spn:_b0144165-412d-46e4-87ad-c62f32c0a7c0";
+			//             //url to sts metadata
+			//             wsFedOptions.MetadataAddress = "https://login.microsoftonline.com/8ca5db88-a5ab-48f7-a5e0-4ce50935f807/federationmetadata/2007-06/federationmetadata.xml?appid=_b0144165-412d-46e4-87ad-c62f32c0a7c0";
 			//	wsFedOptions.CallbackPath = "/Federation";
 
 			//})
-   //         .AddCookie(cookieOptions =>
-   //         {
-   //             cookieOptions.Cookie.Name = "FedAuth"; //the name of the cookie you wish to use
-   //             cookieOptions.Cookie.HttpOnly = true; //indicates the cookie can not be accessed by client scripts
+			//         .AddCookie(cookieOptions =>
+			//         {
+			//             cookieOptions.Cookie.Name = "FedAuth"; //the name of the cookie you wish to use
+			//             cookieOptions.Cookie.HttpOnly = true; //indicates the cookie can not be accessed by client scripts
 
-   //         });
+			//         });
 
-            services.AddTokenAuthentication(Configuration);
+			services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
+
+			services.AddTokenAuthentication(Configuration);
 
             // Cache
             services.AddSingleton<LogCache>();
