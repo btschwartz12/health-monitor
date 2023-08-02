@@ -10,8 +10,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-	public class SplunkBuilderController : ControllerBase
+    [Authorize]
+    public class SplunkBuilderController : ControllerBase
     {
         private readonly ISplunkModel _splunk;
 

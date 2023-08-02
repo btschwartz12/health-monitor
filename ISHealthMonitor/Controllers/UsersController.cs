@@ -9,7 +9,7 @@ using System;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+	[Authorize(Policy = "Admin")]
 	public class UsersController : Controller
 	{
 
@@ -25,9 +25,9 @@ namespace ISHealthMonitor.UI.Controllers
 		}
 		public IActionResult Index()
 		{
-            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var username = HttpContext.User.Identity.Name;
 
-            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+            var CurrentEmployee = _employee.GetEmployeeByEmail(username);
 
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));

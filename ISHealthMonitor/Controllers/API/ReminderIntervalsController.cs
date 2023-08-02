@@ -19,9 +19,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    [Authorize]
 
-	public class ReminderIntervalsController : ControllerBase
+    public class ReminderIntervalsController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
@@ -48,8 +48,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public IActionResult DeleteReminderInterval(int id)
 		{
 
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-            var employee = _employee.GetEmployeeByUserName(username);
+            var username = HttpContext.User.Identity.Name;
+            var employee = _employee.GetEmployeeByEmail(username);
 
 
             List<string> subscribedUsers = _healthModel.GetSubscribedUsersForInterval(id);
@@ -76,8 +76,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public IActionResult CreateReminderInterval([FromBody] ReminderIntervalDTO reminderIntervalDTO)
 		{
 
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-			var employee = _employee.GetEmployeeByUserName(username);
+			var username = HttpContext.User.Identity.Name;
+			var employee = _employee.GetEmployeeByEmail(username);
 
 
 			if (reminderIntervalDTO.ID == 0)

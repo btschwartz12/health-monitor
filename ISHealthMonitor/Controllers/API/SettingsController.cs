@@ -13,8 +13,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-	public class SettingsController : ControllerBase
+    [Authorize]
+    public class SettingsController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
@@ -40,8 +40,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("DeleteSetting")]
 		public IActionResult DeleteSetting(int id)
 		{
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-			var employee = _employee.GetEmployeeByUserName(username);
+			var username = HttpContext.User.Identity.Name;
+			var employee = _employee.GetEmployeeByEmail(username);
 
 			_healthModel.DeleteSetting(id);
 			_logger.LogInformation($"Setting ID={id.ToString()} deleted by {employee.GUID}");
@@ -52,8 +52,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("CreateSetting")]
 		public IActionResult CreateSetting([FromBody] SettingDTO settingDTO)
 		{
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-			var employee = _employee.GetEmployeeByUserName(username);
+			var username = HttpContext.User.Identity.Name;
+			var employee = _employee.GetEmployeeByEmail(username);
 
 			if (settingDTO.ID == 0)
 			{

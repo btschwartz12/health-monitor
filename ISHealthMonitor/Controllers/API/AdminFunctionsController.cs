@@ -26,8 +26,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 	[Route("api/[Controller]")]
     [ApiController]
-	[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-	public class AdminFunctionsController : ControllerBase
+    [Authorize(AuthenticationSchemes = "JWT")]
+    public class AdminFunctionsController : ControllerBase
     {
         private readonly IHealthModel _healthModel;
         private readonly IEmployee _employee;
@@ -46,7 +46,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public async Task<IActionResult> UpdateConfluence(string username)
 		{
 
-            var employee = _employee.GetEmployeeByUserName(username);
+            var employee = _employee.GetEmployeeByEmail(username);
 
             try
 			{
@@ -77,7 +77,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("refreshcerts")]
 		public async Task<IActionResult> RefreshCerts(string username)
 		{
-            var employee = _employee.GetEmployeeByUserName(username);
+            var employee = _employee.GetEmployeeByEmail(username);
 
             try
 			{
@@ -108,7 +108,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public async Task<IActionResult> FireReminders(string username)
 		{
 
-            var employee = _employee.GetEmployeeByUserName(username);
+            var employee = _employee.GetEmployeeByEmail(username);
 
             try
 			{
@@ -141,7 +141,7 @@ namespace ISHealthMonitor.UI.Controllers.API
         public async Task<IActionResult> SendAutoWorkOrders(string username)
         {
 
-            var employee = _employee.GetEmployeeByUserName(username);
+            var employee = _employee.GetEmployeeByEmail(username);
 
 			var manualRequestorEnabled = _healthModel.GetSettingValue("manualWorkOrderRequestorEnabled");
 

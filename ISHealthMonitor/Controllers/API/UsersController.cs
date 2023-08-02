@@ -19,7 +19,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    [Authorize]
     public class UsersController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
@@ -45,12 +45,12 @@ namespace ISHealthMonitor.UI.Controllers.API
         [HttpGet("GetLoggedInUser")]
         public IActionResult GetLoggedInUser()
         {
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var username = HttpContext.User.Identity.Name;
 
 			Dictionary<string, string> res = new Dictionary<string, string>() { };
 			res.Add("username", username);
 
-			var CurrentEmployee = _employee.GetEmployeeByUserName(username);
+			var CurrentEmployee = _employee.GetEmployeeByEmail(username);
 
 			var userIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
@@ -77,9 +77,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public IActionResult DeleteUser(int id)
 		{
 
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var username = HttpContext.User.Identity.Name;
 
-			var employee = _employee.GetEmployeeByUserName(username);
+			var employee = _employee.GetEmployeeByEmail(username);
 
 			_healthModel.DeleteUser(id);
             _logger.LogInformation($"User ID={id.ToString()} deleted by {employee.GUID}");
@@ -99,9 +99,9 @@ namespace ISHealthMonitor.UI.Controllers.API
         [Route("CreateUser")]
         public IActionResult CreateUser([FromBody] List<UserDTO> userDTOs)
         {
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var username = HttpContext.User.Identity.Name;
 
-            var employee = _employee.GetEmployeeByUserName(username);
+            var employee = _employee.GetEmployeeByEmail(username);
 
 
             if (userDTOs.All(u => u.ID == 0)) // When configuring multiple users at once

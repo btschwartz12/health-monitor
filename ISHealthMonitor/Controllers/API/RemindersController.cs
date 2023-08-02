@@ -19,8 +19,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-	public class RemindersController : ControllerBase
+    [Authorize]
+    public class RemindersController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
@@ -62,8 +62,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("DeleteReminder")]
 		public IActionResult DeleteReminder(int id)
 		{
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-			var employee = _employee.GetEmployeeByUserName(username);
+			var username = HttpContext.User.Identity.Name;
+			var employee = _employee.GetEmployeeByEmail(username);
 
 
 			_healthModel.DeleteReminder(id);
@@ -76,8 +76,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("DeleteReminderGroup")]
 		public IActionResult DeleteReminderGroup(int groupId)
 		{
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-			var employee = _employee.GetEmployeeByUserName(username);
+			var username = HttpContext.User.Identity.Name;
+			var employee = _employee.GetEmployeeByEmail(username);
 
 			_healthModel.DeleteReminderGroup(groupId);
             _logger.LogInformation($"Reminder Group groupID={groupId.ToString()} deleted by {employee.GUID}");
@@ -88,8 +88,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("DeleteRemindersForSite")]
 		public IActionResult DeleteRemindersForSite(int siteId)
 		{
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-			var employee = _employee.GetEmployeeByUserName(username);
+			var username = HttpContext.User.Identity.Name;
+			var employee = _employee.GetEmployeeByEmail(username);
 
 
 			_healthModel.DeleteRemindersBySite(new Guid(employee.GUID), siteId);
@@ -104,10 +104,10 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public IActionResult CreateReminder([FromBody] UserReminderDTO reminderDTO)
 		{
 
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var username = HttpContext.User.Identity.Name;
 
 
-			var employee = _employee.GetEmployeeByUserName(username);
+			var employee = _employee.GetEmployeeByEmail(username);
 
 
 			if (reminderDTO.ID == 0)
@@ -154,9 +154,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("CreateConfiguration")]
 		public IActionResult CreateConfiguration([FromBody] ReminderConfiguration reminderConfiguration)
 		{
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var username = HttpContext.User.Identity.Name;
 
-			var employee = _employee.GetEmployeeByUserName(username);
+			var employee = _employee.GetEmployeeByEmail(username);
 
 			int nextGroupID = _healthModel.GetNextReminderGroupID();
 
@@ -201,9 +201,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[HttpGet("GetReminderConfigurationData")]
 		public async Task<IActionResult> GetReminderConfigurationData(int siteID)
 		{
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var username = HttpContext.User.Identity.Name;
 
-			var employee = _employee.GetEmployeeByUserName(username);
+			var employee = _employee.GetEmployeeByEmail(username);
 
 			List<ReminderConfigurationData> reminderConfigurationDataList = _healthModel.GetReminderConfigurationsData(new Guid(employee.GUID), siteID);
 

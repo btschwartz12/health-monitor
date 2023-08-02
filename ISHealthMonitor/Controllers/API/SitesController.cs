@@ -25,8 +25,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-	public class SitesController : ControllerBase
+    [Authorize]
+    public class SitesController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
@@ -54,9 +54,9 @@ namespace ISHealthMonitor.UI.Controllers.API
             //	CreateSiteInternal(site);
             //}
 
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var username = HttpContext.User.Identity.Name;
 
-            var employee = _employee.GetEmployeeByUserName(username);
+            var employee = _employee.GetEmployeeByEmail(username);
 
 
 
@@ -80,14 +80,14 @@ namespace ISHealthMonitor.UI.Controllers.API
             return JsonConvert.SerializeObject(retList);
 		}
 
-		[HttpPut]
+        [HttpPut]
 		[Route("DeleteSite")]
 		public IActionResult DeleteSite(int id)
 		{
 
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var username = HttpContext.User.Identity.Name;
 
-            var employee = _employee.GetEmployeeByUserName(username);
+            var employee = _employee.GetEmployeeByEmail(username);
 
 
             List<string> subscribedUsers = _healthModel.GetSubscribedUsersForSite(id);
@@ -104,16 +104,15 @@ namespace ISHealthMonitor.UI.Controllers.API
                 return Ok(id);
 			}
 		}
-
-
+        
 		[HttpPost]
 		[Route("CreateSite")]
 		public IActionResult CreateSite([FromBody] SiteDTO siteDTO)
 		{
 
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var username = HttpContext.User.Identity.Name;
 
-			var employee = _employee.GetEmployeeByUserName(username);
+			var employee = _employee.GetEmployeeByEmail(username);
 
 
 			if (siteDTO.ID == 0)
@@ -196,9 +195,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 		[Route("GetSiteReminderConfigurations")]
 		public async Task<IActionResult> GetSiteReminderConfigurations()
 		{
-			var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var username = HttpContext.User.Identity.Name;
 
-			var employee = _employee.GetEmployeeByUserName(username);
+			var employee = _employee.GetEmployeeByEmail(username);
 
 			List<SiteReminderConfiguration> siteReminderConfigurations = _healthModel.GetSiteReminderConfigurations(new Guid(employee.GUID));
 

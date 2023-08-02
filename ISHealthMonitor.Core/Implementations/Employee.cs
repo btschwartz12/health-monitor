@@ -44,6 +44,29 @@ namespace ISHealthMonitor.Core.Implementations
             return employeeDTO;
         }
 
+        public EmployeeDTO GetEmployeeByEmail(string email)
+        {
+            var emp = _datawarehouseContext.Employee.Where(x => x.Email == email).FirstOrDefault();
+
+            var employeeDTO = new EmployeeDTO()
+
+            {
+                Company = emp.Company.Trim(),
+                Department = emp.Department.Trim(),
+                DisplayName = emp.DisplayName.Trim(),
+                Email = emp.Email.Trim(),
+                FirstName = emp.FirstName.Trim(),
+                GUID = emp.GUID.Trim(),
+                LastName = emp.LastName.Trim(),
+                Manager = emp.Manager.Trim(),
+                NetworkLogon = emp.NetworkLogon.Trim(),
+                Office = emp.Office.Trim(),
+                Title = emp.Title.Trim()
+            };
+
+            return employeeDTO;
+        }
+
         public List<EmployeeDTO> GetAll()
         {
             var employees = _datawarehouseContext.Employee

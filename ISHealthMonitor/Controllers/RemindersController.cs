@@ -14,8 +14,8 @@ using System.Text.RegularExpressions;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-	public class RemindersController : Controller
+    [Authorize]
+    public class RemindersController : Controller
 	{
 
 		private readonly IHealthModel _healthModel;
@@ -28,12 +28,12 @@ namespace ISHealthMonitor.UI.Controllers
 			_employee = employee;
 			_config = config;
         }
-		//[Authorize(Policy = "Admin")]
+		[Authorize(Policy = "Admin")]
 		public IActionResult Index()
 		{
-            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var username = HttpContext.User.Identity.Name;
 
-            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+            var CurrentEmployee = _employee.GetEmployeeByEmail(username);
 
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
@@ -44,7 +44,7 @@ namespace ISHealthMonitor.UI.Controllers
 		}
 
 
-		//[Authorize(Policy = "Admin")]
+		[Authorize(Policy = "Admin")]
 		[HttpGet]
 		public IActionResult AddEdit(int id = 0)
 		{
@@ -75,9 +75,9 @@ namespace ISHealthMonitor.UI.Controllers
 
 		public IActionResult ConfigurationHistory(int siteID = 0)
 		{
-            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var username = HttpContext.User.Identity.Name;
 
-            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+            var CurrentEmployee = _employee.GetEmployeeByEmail(username);
 
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
@@ -90,9 +90,9 @@ namespace ISHealthMonitor.UI.Controllers
 		public IActionResult ConfigurationBuilder(int groupID = 0)
         {
 
-			var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var username = HttpContext.User.Identity.Name;
 
-			var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+			var CurrentEmployee = _employee.GetEmployeeByEmail(username);
 
 			ViewBag.UserName = CurrentEmployee.DisplayName;
 			ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
@@ -114,9 +114,6 @@ namespace ISHealthMonitor.UI.Controllers
 			    .Where(r => r.ISHealthMonitorGroupSubmissionID == groupID)
 			    .ToList();
 
-				
-
-				
 
 				if (remindersByGroup.Count == 0) 
 				{
@@ -128,8 +125,8 @@ namespace ISHealthMonitor.UI.Controllers
 				if (!ViewBag.UserIsAdmin)
 				{
 					var firstReminder = remindersByGroup[0];
-					// Should I be using GUID instead?
-					if (firstReminder.UserName != user)
+					
+					if (firstReminder.CreatedBy.ToString() != CurrentEmployee.GUID)
 					{
 						return RedirectToAction("Index", "Home");
 					}

@@ -17,8 +17,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-	public class WorkOrderController: ControllerBase
+    [Authorize]
+    public class WorkOrderController: ControllerBase
     {
         private readonly IHealthModel _healthModel;
         private readonly IEmployee _employee;
@@ -82,8 +82,8 @@ namespace ISHealthMonitor.UI.Controllers.API
         [Route("CreateWorkOrder")]
         public async Task<IActionResult> CreateWorkOrder([FromBody] WorkOrderDTO model)
         {
-            var username = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-            var employee = _employee.GetEmployeeByUserName(username);
+            var username = HttpContext.User.Identity.Name;
+            var employee = _employee.GetEmployeeByEmail(username);
 
             var manualRequestorEnabled = _healthModel.GetSettingValue("manualWorkOrderRequestorEnabled");
 

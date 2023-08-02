@@ -15,7 +15,7 @@ using System.Security.Policy;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    [Authorize]
 	public class SitesController : Controller
     {
 
@@ -31,11 +31,11 @@ namespace ISHealthMonitor.UI.Controllers
             _config = config;
         }
 
-        //[Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")]
         public IActionResult Index()
         {
-            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-			var employee = _employee.GetEmployeeByUserName(user);
+            var username = HttpContext.User.Identity.Name;
+			var employee = _employee.GetEmployeeByEmail(username);
 
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(employee.GUID));
             ViewBag.UserName = employee.DisplayName;
@@ -45,7 +45,7 @@ namespace ISHealthMonitor.UI.Controllers
             return View("~/Views/Admin/Sites/Index.cshtml");
         }
 
-        //[Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")]
         [HttpGet]
         public IActionResult AddEdit(int id = 0)
         {
@@ -84,9 +84,9 @@ namespace ISHealthMonitor.UI.Controllers
 
         public IActionResult SiteStatusViewer()
         {
-			var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+			var username = HttpContext.User.Identity.Name;
 
-			var employee = _employee.GetEmployeeByUserName(user);
+			var employee = _employee.GetEmployeeByEmail(username);
 
 			ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(employee.GUID));
 			ViewBag.UserName = employee.DisplayName;
@@ -95,7 +95,7 @@ namespace ISHealthMonitor.UI.Controllers
             return View("~/Views/Home/SiteStatusViewer.cshtml");
 		}
 
-        //[Authorize(Policy = "Admin")]
+        [Authorize(Policy = "Admin")]
         public IActionResult SiteSubscriptions(int siteId)
         {
             SiteDTO site = _healthModel.GetSiteDTO(siteId);

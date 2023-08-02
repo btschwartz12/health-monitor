@@ -21,7 +21,7 @@ namespace ISHealthMonitor.UI.Controllers.Rest
 {
     [Route("rest/api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = "JWT")]
     public class SyncController : ControllerBase
     {
         

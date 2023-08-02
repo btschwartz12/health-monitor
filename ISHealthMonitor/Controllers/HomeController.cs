@@ -25,7 +25,7 @@ using ISHealthMonitor.Core.Helpers.Auth;
 
 namespace ISHealthMonitor.Controllers
 {
-    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -46,13 +46,10 @@ namespace ISHealthMonitor.Controllers
         public async Task<IActionResult> Index()
         {
 
-            //var userName = User.Identity.Name;
+            var username = HttpContext.User.Identity.Name;
 
-            //var resp = await _healthModel.UpdateConfluencePage();
 
-            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
-
-            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+            var CurrentEmployee = _employee.GetEmployeeByEmail(username);
 
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
@@ -68,7 +65,7 @@ namespace ISHealthMonitor.Controllers
 
             HomeViewModel model = new()
             {
-                Username = user,
+                Username = username,
                 DisplayName = CurrentEmployee.DisplayName,
             };
 
@@ -81,9 +78,9 @@ namespace ISHealthMonitor.Controllers
         public async Task<IActionResult> LogViewer()
         {
 
-            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var username = HttpContext.User.Identity.Name;
 
-            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+            var CurrentEmployee = _employee.GetEmployeeByEmail(username);
 
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
@@ -104,16 +101,14 @@ namespace ISHealthMonitor.Controllers
 
         public async Task<IActionResult> WorkOrderBuilder(int siteId = 0)
         {
-            var user = HttpContext.User.Identity.Name.Replace("ONBASE\\", "");
+            var username = HttpContext.User.Identity.Name;
 
-            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+            var CurrentEmployee = _employee.GetEmployeeByEmail(username);
 
             ViewBag.UserName = CurrentEmployee.DisplayName;
             ViewBag.UserIsAdmin = _healthModel.UserIsAdmin(new Guid(CurrentEmployee.GUID));
 
             
-
-
             try
             {
 

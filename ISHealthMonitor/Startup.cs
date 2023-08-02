@@ -22,6 +22,13 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.Extensions.Logging;
 using ISHealthMonitor.Core.Helpers.Cache;
+using Microsoft.AspNetCore.Authentication.WsFederation;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ISHealthMonitor
 {
@@ -31,21 +38,67 @@ namespace ISHealthMonitor
         {
             Configuration = configuration;
         }
-        public ConfluenceAPI ConfluenceAPISettingsConfig { get; private set; } = new ConfluenceAPI(); 
+        public ConfluenceAPI ConfluenceAPISettingsConfig { get; private set; } = new ConfluenceAPI();
         public IConfiguration Configuration { get; }
 
-        
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
-            services.AddSwaggerGen();
 
-			services.AddAuthentication(IISDefaults.AuthenticationScheme);
-			services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
+            services.AddTransient<IAuthorizationHandler, AdminRequirementHandler>();
 
-			services.AddTokenAuthentication(Configuration);
+
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                options.DefaultScheme = OpenIdConnectDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer("JWT", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["TokenConfig:Secret"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            })
+            .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+            .EnableTokenAcquisitionToCallDownstreamApi()
+            .AddInMemoryTokenCaches();
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.Requirements.Add(new AdminRequirement()));
+            });
+            
+
+            services.AddControllersWithViews(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            });
+            services.AddRazorPages()
+                //.AddMvcOptions(options =>
+                //{
+                //    var policy = new AuthorizationPolicyBuilder()
+                //                     .RequireAuthenticatedUser()
+                //                     .Build();
+                //    options.Filters.Add(new AuthorizeFilter(policy));
+                //})
+                .AddMicrosoftIdentityUI();
+
+
+            //services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
+
+            //services.AddTokenAuthentication(Configuration);
 
             // Cache
             services.AddSingleton<LogCache>();
@@ -53,16 +106,19 @@ namespace ISHealthMonitor
             // Confluence
             Configuration.Bind("ConfluenceCloudApp", ConfluenceAPISettingsConfig);
             services.AddSingleton(ConfluenceAPISettingsConfig);
- 
+
             // Db
             services.AddDbContext<IACMSEntityContext>(options => options.UseSqlServer(Configuration.GetConnectionString("ISHealthCheckDatabase")));
             services.AddDbContext<DatawarehouseContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DatawarehouseConnection")));
-            
+
             // Interfaces
             services.AddTransient<IEmployee, Employee>();
             services.AddTransient<IHealthModel, HealthModel>();
             services.AddTransient<IRest, Rest>();
             services.AddTransient<ISplunkModel, SplunkModel>();
+
+
+            services.AddSwaggerGen();
 
 
 
@@ -106,7 +162,7 @@ namespace ISHealthMonitor
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-            
-         }
+
+        }
     }
 }

@@ -18,8 +18,8 @@ namespace ISHealthMonitor.UI.Auth
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, AdminRequirement requirement)
         {
-            var user = context.User.Identity.Name.Replace("ONBASE\\", "");
-            var CurrentEmployee = _employee.GetEmployeeByUserName(user);
+            var username = context.User.Identity.Name;
+            var CurrentEmployee = _employee.GetEmployeeByEmail(username);
             var GUID = new Guid(CurrentEmployee.GUID);
 
             if (_healthModel.UserIsAdmin(GUID))

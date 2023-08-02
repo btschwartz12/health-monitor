@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+	//[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 	public class SplunkBuilderController : Controller
 	{
 

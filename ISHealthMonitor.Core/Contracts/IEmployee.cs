@@ -11,6 +11,7 @@ namespace ISHealthMonitor.Core.Contracts
 	{
 		EmployeeDTO GetEmployeeByUserName(string userName);
 		EmployeeDTO GetEmployeeByGuid(Guid guid);
+		EmployeeDTO GetEmployeeByEmail(string email);
 
         List<EmployeeDTO> GetAll();
 
