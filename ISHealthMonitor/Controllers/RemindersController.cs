@@ -14,8 +14,8 @@ using System.Text.RegularExpressions;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-    //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-    public class RemindersController : Controller
+	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+	public class RemindersController : Controller
 	{
 
 		private readonly IHealthModel _healthModel;

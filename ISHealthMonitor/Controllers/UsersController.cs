@@ -9,8 +9,8 @@ using System;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-    //[Authorize(Policy = "Admin", AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-    public class UsersController : Controller
+	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+	public class UsersController : Controller
 	{
 
 		private readonly IHealthModel _healthModel;

@@ -1,8 +1,11 @@
 ﻿using ISHealthMonitor.Core.Contracts;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ISHealthMonitor.UI.Controllers
 {
+	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 	public class SplunkBuilderController : Controller
 	{
 

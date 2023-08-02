@@ -15,8 +15,8 @@ using System.Security.Policy;
 
 namespace ISHealthMonitor.UI.Controllers
 {
-    //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
-    public class SitesController : Controller
+	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+	public class SitesController : Controller
     {
 
         private readonly IHealthModel _healthModel;
