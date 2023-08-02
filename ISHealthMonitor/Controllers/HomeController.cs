@@ -25,7 +25,7 @@ using ISHealthMonitor.Core.Helpers.Auth;
 
 namespace ISHealthMonitor.Controllers
 {
-    //[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
