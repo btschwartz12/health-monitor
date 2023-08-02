@@ -1,5 +1,7 @@
 ﻿using ISHealthMonitor.Core.Contracts;
 using ISHealthMonitor.Core.Data.Models;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Linq;
@@ -8,7 +10,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SplunkBuilderController : ControllerBase
+	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+	public class SplunkBuilderController : ControllerBase
     {
         private readonly ISplunkModel _splunk;
 

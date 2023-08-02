@@ -2,6 +2,8 @@
 using ISHealthMonitor.Core.Data.DbSet;
 using ISHealthMonitor.Core.Data.DTO;
 using ISHealthMonitor.Core.Model;
+using Microsoft.AspNetCore.Authentication.Negotiate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -15,7 +17,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class WorkOrderController: ControllerBase
+	[Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
+	public class WorkOrderController: ControllerBase
     {
         private readonly IHealthModel _healthModel;
         private readonly IEmployee _employee;
