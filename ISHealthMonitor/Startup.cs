@@ -29,17 +29,20 @@ using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authentication;
 
 namespace ISHealthMonitor
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
         public ConfluenceAPI ConfluenceAPISettingsConfig { get; private set; } = new ConfluenceAPI();
         public IConfiguration Configuration { get; }
+        private IHostEnvironment _env { get; }
 
 
 
@@ -47,56 +50,69 @@ namespace ISHealthMonitor
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddTransient<IAuthorizationHandler, AdminRequirementHandler>();
-
-
-
-            services.AddAuthentication(options =>
+            if (_env.IsEnvironment("Local")) 
             {
-                options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-                options.DefaultScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer("JWT", options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
+                services.AddAuthentication(options =>
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["TokenConfig:Secret"])),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            })
-            .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
+                    options.DefaultAuthenticateScheme = "local";
+                    options.DefaultChallengeScheme = "local";
+                    options.DefaultScheme = "local";
+                })
+                .AddScheme<AuthenticationSchemeOptions, LocalAuthenticationHandler>("local", options => { })
+                .AddJwtBearer("JWT", options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["TokenConfig:Secret"])),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+
+                services.AddControllersWithViews();
+            }
+            else
+            {
+
+                services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                    options.DefaultScheme = OpenIdConnectDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer("JWT", options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["TokenConfig:Secret"])),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                })
+                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
 
 
+                services.AddControllersWithViews(options =>
+                {
+                    var policy = new AuthorizationPolicyBuilder()
+                        .RequireAuthenticatedUser()
+                        .Build();
+                    options.Filters.Add(new AuthorizeFilter(policy));
+                });
+
+                services.AddRazorPages()
+                    .AddMicrosoftIdentityUI();
+
+            }
+
+            services.AddTransient<IAuthorizationHandler, AdminRequirementHandler>();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", policy => policy.Requirements.Add(new AdminRequirement()));
             });
-            
 
-            services.AddControllersWithViews(options =>
-            {
-                var policy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-                options.Filters.Add(new AuthorizeFilter(policy));
-            });
-            services.AddRazorPages()
-                //.AddMvcOptions(options =>
-                //{
-                //    var policy = new AuthorizationPolicyBuilder()
-                //                     .RequireAuthenticatedUser()
-                //                     .Build();
-                //    options.Filters.Add(new AuthorizeFilter(policy));
-                //})
-                .AddMicrosoftIdentityUI();
-
-
-            //services.AddAuthentication(NegotiateDefaults.AuthenticationScheme).AddNegotiate();
-
-            //services.AddTokenAuthentication(Configuration);
 
             // Cache
             services.AddSingleton<LogCache>();
