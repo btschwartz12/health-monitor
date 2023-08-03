@@ -67,9 +67,7 @@ namespace ISHealthMonitor
                     ValidateAudience = false
                 };
             })
-            .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-            .EnableTokenAcquisitionToCallDownstreamApi()
-            .AddInMemoryTokenCaches();
+            .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"));
 
 
             services.AddAuthorization(options =>
