@@ -1,5 +1,7 @@
 ﻿using ISHealthMonitor.Core.Contracts;
 using ISHealthMonitor.Core.Data.DTO;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +14,15 @@ namespace ISHealthMonitor.Core.Implementations
     public class Employee : IEmployee
     {
         private readonly DatawarehouseContext _datawarehouseContext;
+        private readonly IConfiguration _config;
+        private readonly IHostEnvironment _env;
 
 
-
-        public Employee(DatawarehouseContext context)
+        public Employee(DatawarehouseContext context, IConfiguration config, IHostEnvironment env)
         {
             _datawarehouseContext = context;
+            _config = config;
+            _env = env;
         }
 
 
@@ -46,6 +51,11 @@ namespace ISHealthMonitor.Core.Implementations
 
         public EmployeeDTO GetEmployeeByEmail(string email)
         {
+            if (email == null && _env.IsEnvironment("Local"))
+            {
+                email = _config.GetValue<string>("LocalUser");
+            }
+
             var emp = _datawarehouseContext.Employee.Where(x => x.Email == email).FirstOrDefault();
 
             var employeeDTO = new EmployeeDTO()
