@@ -38,6 +38,7 @@ namespace ISHealthMonitor.Core.Helpers.Confluence
 		public bool PendingWorkOrder { get; set; }
 		public string? WorkOrderURL { get; set; }
 		public string? WorkOrderSubmittedDate { get; set; }
+		public string? Notes { get; set; }
 		
 	}
 
