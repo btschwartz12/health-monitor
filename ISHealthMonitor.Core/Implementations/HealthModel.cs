@@ -576,8 +576,8 @@ namespace ISHealthMonitor.Core.Models
 						RowColor = GetTimeDiffColor(DateTime.Parse(site.SSLExpirationDate), site.SSLCommonName),
 						PendingWorkOrder = pendingWorkOrder,
 						WorkOrderURL = workOrderURL,
-						//WorkOrderURL = "https://example.com?bob=job%26joe=burrow",
-						WorkOrderSubmittedDate = pendingWorkOrder ? workOrderData["SubmittedDate"] : ""
+						WorkOrderSubmittedDate = pendingWorkOrder ? workOrderData["SubmittedDate"] : "",
+						Notes = site.Notes
 					};
 				})
 				.ToList();
@@ -702,6 +702,7 @@ namespace ISHealthMonitor.Core.Models
 						SSLCommonName = siteReminders.Site.SSLCommonName,
 						SSLThumbprint = siteReminders.Site.SSLThumbprint,
 						IntervalDisplayName = siteReminders.ReminderInterval.DisplayName,
+						Notes = siteReminders.Site.Notes
 					};
 
 					emailModels.Add(model);
