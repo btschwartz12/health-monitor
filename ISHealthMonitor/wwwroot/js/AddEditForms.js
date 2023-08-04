@@ -195,6 +195,8 @@ function SubmitCreateSiteForm() {
 		'SSLSubject': $('#SSLSubject').val(),
 		'SSLCommonName': $('#SSLCommonName').val(),
 		'SSLThumbprint': $('#SSLThumbprint').val(),
+		'Notes': $('#Notes').val(),
+		'AllowWorkOrderCreation': $('#AllowWorkOrderCreation').prop('checked'),
 		'Action': "x"
 	};
 

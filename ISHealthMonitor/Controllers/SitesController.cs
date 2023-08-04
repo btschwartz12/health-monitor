@@ -54,6 +54,7 @@ namespace ISHealthMonitor.UI.Controllers
                 SiteDTO newSiteDTO = new()
                 {
                     SiteName = "New Site",
+                    AllowWorkOrderCreation = true,
 
                 };
                 return View("~/Views/Admin/Sites/AddEdit.cshtml", newSiteDTO);
@@ -73,7 +74,9 @@ namespace ISHealthMonitor.UI.Controllers
                     SSLIssuer = site.SSLIssuer,
                     SSLSubject = site.SSLSubject,
                     SSLCommonName = site.SSLCommonName,
-                    SSLThumbprint = site.SSLThumbprint
+                    SSLThumbprint = site.SSLThumbprint,
+                    Notes = site.Notes,
+                    AllowWorkOrderCreation = site.AllowWorkOrderCreation,
                 };
 
 
