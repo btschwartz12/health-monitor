@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 
-namespace ISHealthMonitor.UI.Auth
+namespace ISHealthMonitor.Core.Helpers.Auth
 {
     public class AdminRequirementHandler : AuthorizationHandler<AdminRequirement>
     {
