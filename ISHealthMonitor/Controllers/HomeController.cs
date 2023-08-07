@@ -21,11 +21,10 @@ using ISHealthMonitor.Core.Model;
 using ISHealthMonitor.Core.Data.DTO;
 using System.Security.Policy;
 using System.Security.Claims;
-using ISHealthMonitor.Core.Helpers.Auth;
 
 namespace ISHealthMonitor.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
