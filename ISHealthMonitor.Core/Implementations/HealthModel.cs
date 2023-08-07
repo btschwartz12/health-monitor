@@ -60,7 +60,9 @@ namespace ISHealthMonitor.Core.Models
 							  SSLThumbprint = d.SSLThumbprint,
 							  Action = "<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' " +
 										"onclick=showSiteAddEditModal(" + d.ID + ")></i><i style='cursor: pointer;' class='fa fa-trash fa-lg " +
-										" text-danger' onclick=showSiteDeleteModal(" + d.ID + ")></i></div>"
+										" text-danger' onclick=showSiteDeleteModal(" + d.ID + ")></i></div>",
+							  Notes = d.Notes,
+							  AllowWorkOrderCreation = d.AllowWorkOrderCreation
 						  })
 				  .ToList();
 
@@ -452,7 +454,7 @@ namespace ISHealthMonitor.Core.Models
 
 		public async Task<List<ISHealthMonitorSiteDbSet>> GetSiteDbSets()
 		{
-			List<ISHealthMonitorSiteDbSet> sites = await _IACMSEntityContext.ISHealthMonitorSites.Where(r => !r.Deleted && !r.Disabled).ToListAsync();
+			List<ISHealthMonitorSiteDbSet> sites = await _IACMSEntityContext.ISHealthMonitorSites.Where(r => !r.Deleted).ToListAsync();
 
 			return sites;
 
@@ -845,9 +847,20 @@ namespace ISHealthMonitor.Core.Models
 
         public async Task<Dictionary<string, string>> CreateWorkOrder(WorkOrderDTO model, EmployeeDTO employee)
 		{
+			
 			var res = new Dictionary<string, string>() { };
 
-            var unityModel = new UnityRestAPIAccess(_logger, _config);
+
+			SiteDTO site = GetSiteDTO(model.SiteID);
+
+			if (!site.AllowWorkOrderCreation)
+			{
+				res.Add("Message", "Failed");
+				res.Add("Description", "Unauthorized");
+				return res;
+			}
+
+			var unityModel = new UnityRestAPIAccess(_logger, _config);
 
             int objectid;
 

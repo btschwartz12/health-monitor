@@ -133,7 +133,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 					LastUpdated = DateTime.Now,
 					Active = true,
 					Deleted = false,
-					Disabled = false
+					AllowWorkOrderCreation = siteDTO.AllowWorkOrderCreation,
+					Notes = siteDTO.Notes,
 				};
 
                 _logger.LogInformation($"Site created by {employee.GUID}: ({siteDTO.SiteName} = {siteDTO.SiteURL})");
@@ -156,6 +157,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 					existingSite.SSLCommonName = siteDTO.SSLCommonName;
 					existingSite.SSLThumbprint = siteDTO.SSLThumbprint;
 					existingSite.LastUpdated = DateTime.Now;
+					existingSite.AllowWorkOrderCreation = siteDTO.AllowWorkOrderCreation;
+					existingSite.Notes = siteDTO.Notes;
 
 					_healthModel.UpdateSite(existingSite);
 
@@ -264,9 +267,38 @@ namespace ISHealthMonitor.UI.Controllers.API
 				siteStatus.SSLCommonName = site.SSLCommonName;
 				siteStatus.TimeUntilExpiration = _healthModel.GetTimeDiffString(expDate);
 				siteStatus.RowColor = _healthModel.GetTimeDiffColor(expDate, site.SSLCommonName);
-				siteStatus.Action = $"<div class='text-center'><i style='cursor: pointer;' class='fa fa-info fa-lg text-primary mr-3' " +
+				siteStatus.SubscribersAction = $"<div class='text-center'><i style='cursor: pointer;' class='fa fa-info fa-lg text-primary mr-3' " +
 					$"onclick='showSiteSubscriptionsModal({site.ID})'></i></div>";
                 siteStatus.WorkOrderAction = $"<div class='text-center'><a href='/Home/WorkOrderBuilder/?siteId={site.ID}'><i style='cursor: pointer;' class='fa fa-solid fa-wrench mr-3'></i></a></div>";
+
+				if (site.Notes != null && site.Notes != "")
+				{
+
+                    // Create unique modal ID
+                    string modalId = $"notesModal{site.ID}";
+
+                    // Create the HTML for the modal
+                    string notesModalHtml = $@"<div class='modal fade' id='{modalId}' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+						<div class='modal-dialog' role='document'>
+							<div class='modal-content'>
+								<div class='modal-header'>
+									<h5 class='modal-title' id='exampleModalLabel'>Site Notes</h5>
+									<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+										<span aria-hidden='true'>&times;</span>
+									</button>
+								</div>
+								<div class='modal-body'>
+									{site.Notes}
+								</div>
+								<div class='modal-footer'>
+									<button type='button' class='btn btn-secondary' data-dismiss='modal'>Close</button>
+								</div>
+							</div>
+						</div>
+					</div>";
+
+                    siteStatus.NotesAction += $"<div class='text-center'><i style='cursor: pointer;' class='fa fa-clipboard fa-lg text-primary mr-3' data-toggle='modal' data-target='#{modalId}'></i></div>" + notesModalHtml;
+                }
 
 
 

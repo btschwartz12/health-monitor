@@ -186,7 +186,18 @@ function SubmitWorkOrderForm() {
 
 					error: function (resp) {
 						console.log(resp);
-						var errorMessage = resp.responseJSON && resp.responseJSON.message ? resp.responseJSON.message : 'Error creating work order.';
+						var errorMessage
+
+						if (resp.status === 400) { // Bad Request
+							if (resp.responseText && resp.responseText === "Unauthorized") {
+								errorMessage = "You are unauthorized to create a work order for this site.";
+							} else {
+								errorMessage = resp.responseText ? resp.responseText : 'There was a problem with your request. Please try again.';
+							}
+						} else { // Other errors
+							errorMessage = 'Error creating work order.';
+						}
+
 						$('#errorMessage').text(errorMessage);
 						$('#errorMessage').removeClass('d-none');
 						$('#spinnerWorkOrder').addClass('d-none');

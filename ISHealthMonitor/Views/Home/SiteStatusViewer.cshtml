@@ -146,13 +146,18 @@
 				"data": "WorkOrderAction",
 				"orderable": false,
 			},
+			{
+				"sTitle": "Notes",
+				"data": "NotesAction",
+				"orderable": false,
+			},
 		];
 
 
 		var userIsAdmin = @Html.Raw(Json.Serialize(ViewBag.UserIsAdmin));
 
 		if (userIsAdmin) {
-			columns.push({ "sTitle": "Subscription\nInfo", "data": "Action", "orderable": false, });
+			columns.push({ "sTitle": "Subscription\nInfo", "data": "SubscribersAction", "orderable": false, });
 		}
 
 		var buttons = [
