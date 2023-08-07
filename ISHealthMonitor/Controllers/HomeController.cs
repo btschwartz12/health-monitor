@@ -59,17 +59,8 @@ namespace ISHealthMonitor.Controllers
 
             _logger.LogInformation("Home Page Visitor: " + CurrentEmployee.DisplayName + " (has reminders: " + userHasReminders.ToString() + ")");
 
-            
-
-
-            HomeViewModel model = new()
-            {
-                Username = username,
-                DisplayName = CurrentEmployee.DisplayName,
-            };
-
-
-            return View(model);
+    
+            return View();
         }
 
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace ISHealthMonitor.UI.Auth
+namespace ISHealthMonitor.Core.Helpers.Auth
 {
     public class AdminRequirement : IAuthorizationRequirement
     {

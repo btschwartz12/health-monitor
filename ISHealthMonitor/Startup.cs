@@ -15,7 +15,7 @@ using ISHealthMonitor.Core.Data.Contexts;
 using ISHealthMonitor.Core.DataAccess;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using ISHealthMonitor.Core.Implementations;
-using ISHealthMonitor.UI.Auth;
+using ISHealthMonitor.Core.Helpers.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
