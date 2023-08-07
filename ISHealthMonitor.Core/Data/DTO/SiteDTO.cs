@@ -48,12 +48,12 @@ namespace ISHealthMonitor.Core.Data.DTO
         [Display(Name = "SSL Thumbprint")]
         public string? SSLThumbprint { get; set; }
 
-        [Display(Name = "Notes")]
-		public string? Notes { get; set; }
+		[Required(ErrorMessage = "AllowWorkOrderCreation is required")]
+		[Display(Name = "Allow Work Order Creation?")]
+		public bool AllowWorkOrderCreation { get; set; }
 
-        [Required(ErrorMessage = "AllowWorkOrderCreation is required")]
-        [Display(Name = "Allow Work Order Creation?")]
-        public bool AllowWorkOrderCreation { get; set; }
+		[Display(Name = "Notes")]
+		public string? Notes { get; set; }
 
         public string? Action { get; set; }
 	}
