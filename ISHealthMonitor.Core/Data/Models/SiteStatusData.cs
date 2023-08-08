@@ -19,7 +19,7 @@ namespace ISHealthMonitor.Core.Data.Models
 		public string SSLExpirationDate { get; set; }
 		public string SSLCommonName { get; set; }
 		public string TimeUntilExpiration { get; set; }
-		public int NumSubscribedUsers { get; set; }
+		public string NumSubscribedUsers { get; set; }
 		public string SubscribersAction { get; set; }
 		public string WorkOrderAction { get; set; }
 		public string NotesAction { get; set; }

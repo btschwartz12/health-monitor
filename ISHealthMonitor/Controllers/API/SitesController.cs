@@ -47,12 +47,6 @@ namespace ISHealthMonitor.UI.Controllers.API
 		public async Task<string> GetSitesAsync()
 		{
 
-            //List<SiteDTO> siteDtoList = await ProcessJsonFileAsync(@"C:\Users\bschwartz\Downloads\data.json", "IS Application");
-
-            //foreach (SiteDTO site in siteDtoList)
-            //{
-            //	CreateSiteInternal(site);
-            //}
 
             var username = HttpContext.User.Identity.Name;
 
@@ -301,8 +295,9 @@ namespace ISHealthMonitor.UI.Controllers.API
                 }
 
 
-
-                siteStatus.NumSubscribedUsers = _healthModel.GetNumSubscriptionsForSite(site.ID);
+				int numSubs = _healthModel.GetNumSubscriptionsForSite(site.ID);
+				siteStatus.NumSubscribedUsers = $"<div class='text-center'><a href='/Reminders/ConfigurationBuilder/?siteID={site.ID}' target='_blank' style='text-decoration: none;'>{numSubs}</a></div>"
+;
 
 				model.SiteStatusList.Add(siteStatus);
 

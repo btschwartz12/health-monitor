@@ -24,7 +24,7 @@ using System.Security.Claims;
 
 namespace ISHealthMonitor.Controllers
 {
-    //[Authorize]
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

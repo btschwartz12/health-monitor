@@ -87,7 +87,7 @@ namespace ISHealthMonitor.UI.Controllers
             return View("~/Views/Home/ConfigurationHistory.cshtml");
 		}
 
-		public IActionResult ConfigurationBuilder(int groupID = 0)
+		public IActionResult ConfigurationBuilder(int groupID = 0, int siteID = 0)
         {
 
 			var username = HttpContext.User.Identity.Name;
@@ -101,12 +101,41 @@ namespace ISHealthMonitor.UI.Controllers
 
             if (groupID == 0)
 			{
-				ReminderConfiguration viewModel = new ReminderConfiguration()
+				if (siteID == 0)
 				{
-					GroupID = 0,
-			        UserReminders = new List<UserReminderDTO> { },
-			    };
-			    return View("~/Views/Home/ConfigurationBuilder.cshtml", viewModel);
+					ReminderConfiguration viewModel = new ReminderConfiguration()
+					{
+						GroupID = 0,
+						UserReminders = new List<UserReminderDTO> { },
+					};
+					return View("~/Views/Home/ConfigurationBuilder.cshtml", viewModel);
+				}
+				else
+				{
+
+					int intervalID = _healthModel.GetReminderIntervals()[0].ID;
+
+					var reminder = new UserReminderDTO()
+					{
+						ID = 0,
+						UserName = "x",
+						ISHealthMonitorSiteID = siteID,
+						ISHealthMonitorIntervalID = intervalID,
+						ISHealthMonitorGroupSubmissionID = 0,
+						Action = "x",
+						Site = _healthModel.GetSiteDTO(siteID),
+						ReminderInterval = _healthModel.GetReminderIntervalDTO(intervalID)
+					};
+
+					ReminderConfiguration viewModel = new ReminderConfiguration()
+					{
+						GroupID = 0,
+						UserReminders = new List<UserReminderDTO> { reminder },
+					};
+					return View("~/Views/Home/ConfigurationBuilder.cshtml", viewModel);
+
+				}
+				
 			}
 			else
 			{

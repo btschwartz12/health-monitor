@@ -51,7 +51,7 @@ namespace ISHealthMonitor.Core.Implementations
 
         public EmployeeDTO GetEmployeeByEmail(string email)
         {
-            if (email == null && _env.IsEnvironment("Local"))
+            if ((email == null || email == "null") && _env.IsEnvironment("Local"))
             {
                 email = _config.GetValue<string>("LocalUser");
             }

@@ -577,7 +577,8 @@ namespace ISHealthMonitor.Core.Models
 						PendingWorkOrder = pendingWorkOrder,
 						WorkOrderURL = workOrderURL,
 						WorkOrderSubmittedDate = pendingWorkOrder ? workOrderData["SubmittedDate"] : "",
-						Notes = site.Notes
+						Notes = site.Notes,
+						AllowWorkOrderCreation = site.AllowWorkOrderCreation
 					};
 				})
 				.ToList();
