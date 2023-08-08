@@ -168,8 +168,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 			{
 				ISHealthMonitorUserReminderDbSet newReminderDbSet = new ISHealthMonitorUserReminderDbSet
 				{
-					UserName = username,
-					ISHealthMonitorSiteID = reminder.Site.ID,
+                    UserName = employee.Email,
+                    ISHealthMonitorSiteID = reminder.Site.ID,
 					ISHealthMonitorIntervalID = reminder.ReminderInterval.ID,
 					ISHealthMonitorGroupSubmissionID = nextGroupID,
 					Active = true,
