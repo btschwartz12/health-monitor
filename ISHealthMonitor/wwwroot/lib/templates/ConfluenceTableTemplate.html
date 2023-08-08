@@ -73,6 +73,10 @@
             <td class="confluenceTd" data-highlight-colour="@site.RowColor">@site.Notes</td>
             <td class="confluenceTd" data-highlight-colour="@site.RowColor">
                 <div>
+                    <a target="_blank" href="https://healthmonitor.hyland.com/Reminders/ConfigurationBuilder?siteID=@site.ID">Create Reminder</a>
+                </div>
+                <div>
+
                     @if (@site.AllowWorkOrderCreation)
                     {
                     <a target="_blank" href="https://healthmonitor.hyland.com/Home/WorkOrderBuilder?siteId=@site.ID">Create Work Order</a>
@@ -87,7 +91,7 @@
                     <p>Existing work order submitted <a target="_blank" href="@site.WorkOrderURL">@site.WorkOrderSubmittedDate</a></p>
                     }
                     
-                    <a target="_blank" href="https://healthmonitor.hyland.com/Reminders/ConfigurationBuilder?siteID=@site.ID">Create Reminder</a>
+                    
                 </div>
             </td>
 
