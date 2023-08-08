@@ -19,8 +19,9 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-    [Authorize]
-    public class UsersController : ControllerBase
+	[Authorize]
+
+	public class UsersController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;
@@ -74,6 +75,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 		[HttpPut]
 		[Route("DeleteUser")]
+		[Authorize(Policy = "Admin")]
 		public IActionResult DeleteUser(int id)
 		{
 
@@ -97,7 +99,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 
         [HttpPost]
         [Route("CreateUser")]
-        public IActionResult CreateUser([FromBody] List<UserDTO> userDTOs)
+		[Authorize(Policy = "Admin")]
+		public IActionResult CreateUser([FromBody] List<UserDTO> userDTOs)
         {
             var username = HttpContext.User.Identity.Name;
 

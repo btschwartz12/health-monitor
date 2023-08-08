@@ -13,8 +13,8 @@ namespace ISHealthMonitor.UI.Controllers.API
 {
 	[Route("api/[controller]")]
 	[ApiController]
-    [Authorize]
-    public class SettingsController : ControllerBase
+	[Authorize(Policy = "Admin")]
+	public class SettingsController : ControllerBase
 	{
 		private readonly IHealthModel _healthModel;
 		private readonly IEmployee _employee;

@@ -23,9 +23,10 @@ namespace ISHealthMonitor.Core.Contracts
 		void UpdateSite(ISHealthMonitorSiteDbSet site);
 		void DeleteSite(int id);
 		
-		// Site Subscriptions
+		// Site Special
 		Dictionary<string, List<string>> GetSubscriptionsForSite(int siteId);
 		int GetNumSubscriptionsForSite(int siteId);
+		bool ResetWorkOrderStatusForSite(int siteId);
 
 		// Foreign-key checking
 		List<string> GetSubscribedUsersForSite(int siteId);

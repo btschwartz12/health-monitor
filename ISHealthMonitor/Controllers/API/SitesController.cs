@@ -74,8 +74,35 @@ namespace ISHealthMonitor.UI.Controllers.API
             return JsonConvert.SerializeObject(retList);
 		}
 
-        [HttpPut]
+		[HttpGet("ResetWorkOrderStatus")]
+		[Authorize(Policy = "Admin")]
+		public IActionResult ResetWorkOrderStatus(int siteID)
+		{
+
+			var username = HttpContext.User.Identity.Name;
+
+			var employee = _employee.GetEmployeeByEmail(username);
+
+			try
+			{
+				var success = _healthModel.ResetWorkOrderStatusForSite(siteID);
+
+				if (success)
+				{
+					_logger.LogInformation($"Work order status for Site ID={siteID.ToString()} reset by {employee.GUID}");
+					return Ok(true);
+				}
+				return BadRequest();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpPut]
 		[Route("DeleteSite")]
+		[Authorize(Policy = "Admin")]
 		public IActionResult DeleteSite(int id)
 		{
 
@@ -101,6 +128,7 @@ namespace ISHealthMonitor.UI.Controllers.API
         
 		[HttpPost]
 		[Route("CreateSite")]
+		[Authorize(Policy = "Admin")]
 		public IActionResult CreateSite([FromBody] SiteDTO siteDTO)
 		{
 

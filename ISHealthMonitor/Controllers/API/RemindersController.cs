@@ -60,6 +60,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 		[HttpPut]
 		[Route("DeleteReminder")]
+		[Authorize(Policy = "Admin")]
 		public IActionResult DeleteReminder(int id)
 		{
 			var username = HttpContext.User.Identity.Name;
@@ -101,6 +102,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 		[HttpPost]
 		[Route("CreateReminder")]
+		[Authorize(Policy = "Admin")]
 		public IActionResult CreateReminder([FromBody] UserReminderDTO reminderDTO)
 		{
 

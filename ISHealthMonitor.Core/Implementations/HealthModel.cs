@@ -58,15 +58,48 @@ namespace ISHealthMonitor.Core.Models
 							  SSLSubject = d.SSLSubject,
 							  SSLCommonName = d.SSLCommonName,
 							  SSLThumbprint = d.SSLThumbprint,
-							  Action = "<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' " +
-										"onclick=showSiteAddEditModal(" + d.ID + ")></i><i style='cursor: pointer;' class='fa fa-trash fa-lg " +
-										" text-danger' onclick=showSiteDeleteModal(" + d.ID + ")></i></div>",
+							  Action = GenerateAction(d),
 							  Notes = d.Notes,
 							  AllowWorkOrderCreation = d.AllowWorkOrderCreation
 						  })
 				  .ToList();
 
 			return result;
+		}
+
+		private string GenerateAction(ISHealthMonitorSiteDbSet d)
+		{
+			var workOrderData = GetPendingWorkOrderData(d.ID);
+			if (workOrderData["Exists"] == "false")
+			{
+				return $"<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' onclick='showSiteAddEditModal({d.ID})'></i><i style='cursor: pointer;' class='fa fa-trash fa-lg text-danger' onclick='showSiteDeleteModal({d.ID})'></i></div>";
+			}
+
+			string modalId = $"workOrderModal{d.ID}";
+
+			string modalHtml = $@"<div class='modal fade' id='{modalId}' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+			<div class='modal-dialog' role='document'>
+				<div class='modal-content'>
+					<div class='modal-header'>
+						<h5 class='modal-title' id='exampleModalLabel'>Work Order Details</h5>
+						<button type='button' class='close' data-dismiss='modal' aria-label='Close'>
+							<span aria-hidden='true'>&times;</span>
+						</button>
+					</div>
+					<div class='modal-body'>
+						The HealthMonitor currently thinks that the work order for this site created on <a href='{workOrderData["URL"]}' target='_blank'>{workOrderData["SubmittedDate"]}</a> is unfinished. If this is not the case and the work order is completed, please reset.
+						<div id='alert{d.ID}' class='alert alert-danger' style='display: none;'>Error resetting work order status</div>
+						<div id='successAlert{d.ID}' class='alert alert-success' style='display: none;'>Successfully forgot the work order status of the site</div>
+					</div>
+					<div class='modal-footer'>
+						<button type='button' class='btn btn-danger' onclick='resetWorkOrderStatus({d.ID})'>Reset</button>
+						<button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>";
+
+			return $"<div class='text-center'><i style='cursor: pointer;' class='fa fa-pencil fa-lg text-primary mr-3' onclick='showSiteAddEditModal({d.ID})'></i><i style='cursor: pointer;' class='fa fa-trash fa-lg text-danger mr-3' onclick='showSiteDeleteModal({d.ID})'></i><i style='cursor: pointer;' class='fa fa-wrench fa-lg text-info' data-toggle='modal' data-target='#{modalId}'></i></div>" + modalHtml;
 		}
 
 		public ISHealthMonitorSiteDbSet GetSite(int id)
@@ -99,7 +132,9 @@ namespace ISHealthMonitor.Core.Models
 				SSLIssuer = site.SSLIssuer,
 				SSLSubject = site.SSLSubject,
 				SSLCommonName = site.SSLCommonName,
-				SSLThumbprint = site.SSLThumbprint
+				SSLThumbprint = site.SSLThumbprint,
+				AllowWorkOrderCreation = site.AllowWorkOrderCreation,
+				Notes = site.Notes,
 			};
 		}
 
@@ -1403,6 +1438,23 @@ namespace ISHealthMonitor.Core.Models
 			res.Add("SubmittedDate", site.HSIDBWorkOrderLastSubmittedDate.ToString());
 
 			return res;
+		}
+
+		public bool ResetWorkOrderStatusForSite(int siteId)
+		{
+			var site = GetSite(siteId);
+
+			if (site == null)
+			{
+				return false;
+			}
+
+			site.HSIDBWorkOrderCurrentObjectID = null;
+			site.HSIDBWorkOrderLastSubmittedDate = null;
+
+			UpdateSite(site);
+
+			return true;
 		}
 	}
 }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -121,7 +122,8 @@ namespace ISHealthMonitor.UI.Controllers.API
             }
             if (resp["Message"] == "Failed")
             {
-                return BadRequest(resp["Description"]);
+				_logger.LogInformation($"Failed to create work order for Site ID={model.SiteID.ToString()} by {employee.GUID}: {resp["Description"]}");
+				return BadRequest("Error creating work order");
             }
 
             return BadRequest();

@@ -45,6 +45,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 		[HttpPut]
 		[Route("DeleteReminderInterval")]
+		[Authorize(Policy = "Admin")]
 		public IActionResult DeleteReminderInterval(int id)
 		{
 
@@ -73,6 +74,7 @@ namespace ISHealthMonitor.UI.Controllers.API
 
 		[HttpPost]
 		[Route("CreateReminderInterval")]
+		[Authorize(Policy = "Admin")]
 		public IActionResult CreateReminderInterval([FromBody] ReminderIntervalDTO reminderIntervalDTO)
 		{
 
