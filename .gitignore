@@ -12,6 +12,9 @@ Logs/
 *.userosscache
 *.sln.docstates
 
+*appsettings*
+.DS_Store
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
